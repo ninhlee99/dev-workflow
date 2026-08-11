@@ -1,8 +1,8 @@
 ---
-description: "<Ticket ID> Verify evidence against original requirements."
+description: "<Ticket ID> Present conflict decisions and spec changes for user sign-off before plan."
 argument-hint: "<Ticket ID>"
 arguments: [ticket_id]
 ---
 
-Confirm requirement evidence.
+User confirms conflict decisions and spec changes.
 Invoke `skills/confirm`.

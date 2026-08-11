@@ -28,7 +28,7 @@ usage() {
 Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|G1|G2|G3|G4|G5|G6|G7] [--json]
 
 Checks worklog artifacts under workspaces/<project-slug>/worklogs/<Ticket_ID>/.
-Default --min G6 (enough to ship). Use --min G5 before confirm, etc.
+Default --min G6 (enough to ship). Use --min G5 before review, etc.
 
 Exit: 0 PASS · 1 FAIL · 2 usage/path error
 EOF

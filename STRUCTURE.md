@@ -21,9 +21,10 @@ dev-workflow/
 │   ├── dev-workflow:start.md
 │   ├── dev-workflow:spec.md
 │   ├── dev-workflow:conflict.md
+│   ├── dev-workflow:confirm.md
 │   ├── dev-workflow:plan.md
 │   ├── dev-workflow:build.md
-│   ├── dev-workflow:confirm.md
+│   ├── dev-workflow:review.md
 │   ├── dev-workflow:check.md
 │   ├── dev-workflow:ship.md
 │   └── dev-workflow:status.md
@@ -50,7 +51,7 @@ dev-workflow/
 │   ├── 03-qa-log.md            # Open questions tracker (G4: must be empty to advance)
 │   ├── 04-plan.md              # TDD-ready task breakdown mapped to ACs/claims
 │   ├── 05-impl-log.md          # Implementation log + AC↔test coverage map
-│   ├── 06-review-qa.md         # Confirm evidence table (How/By/Date per AC)
+│   ├── 06-review-qa.md         # Review evidence table (How/By/Date per AC — G6)
 │   ├── 07-ship.md              # Ship notes and PR description
 │   ├── gate-checklist.md       # Manual gate checklist (supplement to check-gates.sh)
 │   ├── pr-checklist.md         # PR review checklist

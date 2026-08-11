@@ -27,13 +27,13 @@
 ## How it works
 
 ```
-learning ──► coaching ──► spec ──► conflict ──► plan
-                                                  │
-                                                build
-                                                  │
-                                               confirm
-                                                  │
-                                              check ──► ship
+learning ──► coaching ──► spec ──► conflict ──► confirm (user sign-off) ──► plan
+                                                                               │
+                                                                             build
+                                                                               │
+                                                                            review
+                                                                               │
+                                                                           check ──► ship
 ```
 
 Each arrow is a **gate**. The AI refuses to advance until all criteria for the current gate pass — or a valid WAIVE entry exists in the worklog.
@@ -42,11 +42,12 @@ Each arrow is a **gate**. The AI refuses to advance until all criteria for the c
 2. **coaching** — Developer corrects misunderstandings or adds new/changed specs.
 3. **spec** — Requirements normalised into explicit Acceptance Criteria (Scenario, Negative, Permission, Edge cases, UI states).
 4. **conflict** — Every delta between spec and current code is documented with a decision, owner, and date.
-5. **plan** — TDD-ready task breakdown; each task maps to an AC or conflict claim.
-6. **build** — Code + tests written test-first; coverage map locked before PASS.
-7. **confirm** — Evidence table filled (How/By/Date per AC); UI checklist if the ticket touches UI.
-8. **check** — `bin/check-gates.sh` runs programmatic gate validation.
-9. **ship** — Ship notes and PR description drafted from the confirmed worklog.
+5. **confirm** — AI presents all conflict decisions and spec changes to the user; user signs off explicitly before any coding starts.
+6. **plan** — TDD-ready task breakdown; each task maps to an AC or conflict claim.
+7. **build** — Code + tests written test-first; coverage map locked before PASS.
+8. **review** — Evidence table filled (How/By/Date per AC); UI checklist if the ticket touches UI.
+9. **check** — `bin/check-gates.sh` runs programmatic gate validation.
+10. **ship** — Ship notes and PR description drafted from the reviewed worklog.
 
 ---
 
@@ -102,14 +103,18 @@ agy plugin install ./hosts/antigravity
 # 2. Start a ticket — AI routes to first failing gate
 /dev-workflow:start TICKET-123 https://linear.app/…/TICKET-123
 
-# 3. If learning is complete, jump straight to spec
-/dev-workflow:spec TICKET-123 https://linear.app/…/TICKET-123
+# 3. Step through the pipeline manually if needed
+/dev-workflow:spec    TICKET-123   # write ACs
+/dev-workflow:conflict TICKET-123  # detect conflicts
+/dev-workflow:confirm TICKET-123   # YOU sign off on all decisions
+/dev-workflow:plan    TICKET-123   # TDD-ready plan
+/dev-workflow:build   TICKET-123   # implement + tests
+/dev-workflow:review  TICKET-123   # fill evidence table
+/dev-workflow:check   TICKET-123   # programmatic gate check
+/dev-workflow:ship    TICKET-123   # PR notes
 
-# 4. Check gate status at any time
+# Check gate status at any time
 /dev-workflow:status TICKET-123
-
-# 5. Run programmatic gate checker before ship
-/dev-workflow:check TICKET-123
 ```
 
 The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123/` and fill artifact files step by step.
@@ -125,9 +130,10 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | `/dev-workflow:start` | `<Ticket ID> [URL] [extra]` | Entry point — evaluates all gates and routes to the first failing one |
 | `/dev-workflow:spec` | `<Ticket ID> [URL or spec]` | Normalises requirements into `02-spec.md` with full AC table (Scenario + NEG/PERM/EDGE + UI states) |
 | `/dev-workflow:conflict` | `<Ticket ID> [decision]` | Detects spec-vs-code conflicts; every delta gets a decision, owner, and date in `03-conflict-report.md` |
-| `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim |
+| `/dev-workflow:confirm` | `<Ticket ID>` | AI presents all conflict decisions and spec changes; **user must explicitly sign off** before plan can start |
+| `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim; requires user sign-off (G2.5) |
 | `/dev-workflow:build` | `<Ticket ID>` | Implements with TDD; records AC↔test coverage map in `05-impl-log.md`; refuses coding if prior gates fail |
-| `/dev-workflow:confirm` | `<Ticket ID>` | Fills evidence table (How/By/Date per AC) in `06-review-qa.md`; includes UI checklist when applicable |
+| `/dev-workflow:review` | `<Ticket ID>` | Fills evidence table (How/By/Date per AC) in `06-review-qa.md`; includes UI checklist when applicable |
 | `/dev-workflow:check` | `<Ticket ID> [slug] [G5\|G6\|G7]` | Runs `bin/check-gates.sh`; reports PASS/FAIL per gate with actionable messages |
 | `/dev-workflow:ship` | `<Ticket ID>` | Drafts ship notes and PR description in `07-ship.md`; requires G6 PASS |
 | `/dev-workflow:status` | `[Ticket ID]` | Prints current gate status and knowledge coverage |
@@ -141,11 +147,12 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 |------|-----------|-----------------|
 | **G0** | Domain knowledge exists and matches ticket scope | → `:learning` or `:coaching` |
 | **G1** | `02-spec.md` has Scenario AC + NEG + PERM + EDGE (+ UI states if UI ticket) | → `:spec` |
-| **G2** | Every non-MATCH conflict has decision + owner + date | → `:conflict` |
+| **G2** | Every non-MATCH conflict has decision + owner + date in `03-conflict-report.md` | → `:conflict` |
+| **G2.5** | User explicitly signs off on all conflict decisions and spec changes | → `:confirm` |
 | **G3** | Every task in `04-plan.md` maps to an AC or conflict claim | → `:plan` |
 | **G4** | `03-qa-log.md` has zero OPEN questions | → `:conflict` |
 | **G5** | 100% AC/claim → test coverage map; all tests pass | → `:build` |
-| **G6** | Evidence table filled (How/By/Date) for all ACs; UI checklist done if applicable | → `:confirm` |
+| **G6** | Evidence table filled (How/By/Date) for all ACs; UI checklist done if applicable | → `:review` |
 | **G7** | `07-ship.md` complete with release evidence and PR notes | → `:ship` |
 
 ### WAIVE policy

@@ -1,17 +1,25 @@
 ---
 name: confirm
 description: >-
-  Confirm AC and conflict decisions with evidence checklist before ship.
-  Use /dev-workflow:confirm after build — How/By/Date, not bare ok.
-argument-hint: "<Ticket ID> Run only after build — confirm with PM/BA that the result matches original requirements"
+  User reviews and signs off on conflict decisions and spec changes before plan.
+  Lists all open questions, non-MATCH decisions, and spec deltas for user to confirm.
+argument-hint: "<Ticket ID> Run after conflict — present decisions for user sign-off before plan"
 arguments: [ticket_id]
 disable-model-invocation: true
 ---
 
 # /dev-workflow:confirm
 
-Confirm outcome against original requirements using evidence.
-Fill `templates/06-review-qa.md` with AC/NEG/PERM/EDGE How/By proof (+ UI checklist if UI).
-Run `/dev-workflow:check <Ticket> [slug] G6` before any G6 PASS claim.
-Missing evidence or checker failure keeps confirm FAIL.
-Do not ship from this stage and never invent PASS.
+Present conflict decisions and spec changes to user for explicit sign-off.
+
+Steps:
+1. Read `03-conflict-report.md` — list every non-MATCH decision with status.
+2. Read `03-qa-log.md` — list any OPEN questions.
+3. Read `02-spec.md` — summarize spec changes vs original ticket.
+4. Ask user to confirm each decision; update decisions where user corrects.
+5. Mark OPEN questions as ANSWERED or escalate.
+6. When user signs off: record confirmation in `INDEX.md` Handoff section with date and owner.
+7. Only then PASS G2 and route to `:plan`.
+
+Block forward if any decision is still OPEN or user disagrees.
+Never auto-confirm — always wait for explicit user response.

@@ -20,14 +20,15 @@
 |---|---|---|---|
 | G0 Domain knowledge | ☐ PASS ☐ FAIL | `../domain-knowledge/` (+ repos) | empty → `:learning`; wrong/changed → `:coaching` |
 | G1 Spec clear | ☐ PASS ☐ FAIL ☐ WAIVE | `02-spec.md` | Scenario AC + Neg/Perm/Edge; UI if touches UI |
-| G2 Conflict confirmed | ☐ PASS ☐ FAIL ☐ WAIVE | `03-conflict-report.md` | every non-MATCH has a decision |
+| G2 Conflict documented | ☐ PASS ☐ FAIL ☐ WAIVE | `03-conflict-report.md` | every non-MATCH has decision + owner + date |
+| G2.5 User sign-off | ☐ PASS ☐ FAIL | `INDEX.md` Handoff | user confirms all decisions before plan |
 | G3 Plan | ☐ PASS ☐ FAIL ☐ WAIVE | `04-plan.md` | task ↔ AC/claim + regression |
 | G4 No open Qs | ☐ PASS ☐ FAIL ☐ WAIVE | `03-qa-log.md` | OPEN = FAIL |
 | G5 Build+tests | ☐ PASS ☐ FAIL ☐ WAIVE | `05-impl-log.md` | 100% map + tests PASS |
-| G6 Confirm | ☐ PASS ☐ FAIL ☐ WAIVE | `06-review-qa.md` | evidence + UI if touches UI |
+| G6 Review evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06-review-qa.md` | How/By/Date per AC; UI checklist if touches UI |
 | G7 Ship | ☐ PASS ☐ FAIL ☐ WAIVE | `07-ship.md` | `:ship` |
 
-**Build only when G0–G4 PASS.** G5 needs evidence.
+**Build only when G0–G2.5 PASS.** G5 needs evidence.
 
 ## Touched repos (from PROJECT.md — do not hardcode)
 

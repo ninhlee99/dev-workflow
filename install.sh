@@ -9,7 +9,7 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STAGES=(start learning coaching spec conflict plan build confirm check ship status)
+STAGES=(start learning coaching spec conflict confirm plan build review check ship status)
 PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"
 # Optional: set DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS to a project .claude/commands dir to sync there.
 
@@ -130,7 +130,7 @@ cat > "$ORCH/SKILL.md" <<'SKILLEOF'
 name: dev-workflow
 description: >-
   Thin pointer. Prefer Cursor commands /dev-workflow and /dev-workflow:<stage>.
-  Stages: start|learning|coaching|spec|conflict|plan|build|confirm|check|ship|status.
+  Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|check|ship|status.
   Confirm (not QA). Real logic lives in the plugin (see Source below).
 argument-hint: "Use /dev-workflow or /dev-workflow:<stage> with <Ticket ID> (or topic for coaching; brief for learning)."
 disable-model-invocation: true
@@ -142,7 +142,7 @@ disable-model-invocation: true
 
 Source: $DEV_WORKFLOW_PLUGIN or plugin dir linked as ~/.claude/skills/dev-workflow-plugin
 
-Stages: start|learning|coaching|spec|conflict|plan|build|confirm|check|ship|status
+Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|check|ship|status
 
 When a stage command runs, follow `skills/<stage>/` and shared `references/` + `templates/` in that plugin.
 SKILLEOF
