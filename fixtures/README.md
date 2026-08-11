@@ -1,12 +1,34 @@
 # Fixtures (check-gates smoke)
 
+```bash
+chmod +x bin/check-gates.sh
+export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
+```
+
 ## FAIL G1 (empty AC)
 
 ```bash
-chmod +x bin/check-gates.sh
-DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures" \
-  ./bin/check-gates.sh FIX-FAIL --project demo --min G1
-# expect exit 1 — "no filled AC-xx row"
+./bin/check-gates.sh FIX-FAIL --project demo --min G1
+# expect exit 1 — no filled AC-xx row
 ```
 
-Optional PASS path: fill Given/When/Then on `AC-01` (and later gates artifacts) under a copy of this worklog; not required for v1.6 smoke.
+## FAIL G8 missing evidence
+
+```bash
+./bin/check-gates.sh FAIL-G8-missing --project demo --min G8
+# expect exit 1 — missing 06b-test-evidence.md
+```
+
+## FAIL G8 failing tests
+
+```bash
+./bin/check-gates.sh FAIL-G8-failing --project demo --min G8
+# expect exit 1 — Overall FAIL
+```
+
+## PASS G8
+
+```bash
+./bin/check-gates.sh PASS-G8 --project demo --min G8
+# expect exit 0
+```

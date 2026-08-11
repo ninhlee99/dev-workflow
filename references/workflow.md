@@ -14,15 +14,16 @@ Goal: clear requirements before code. Use `workspaces/<project-slug>/` from `pro
 | G0 | domain knowledge matches ticket scope | empty → `:learning`; wrong/changed → `:coaching` |
 | G1 | AC has Scenario + NEG/PERM/EDGE (+ UI states if UI) | `:spec` |
 | G2 | each non-MATCH has decision, owner, date | `:conflict` |
-| G2.5 | user signs off on all conflict decisions and spec changes | `:confirm` |
-| G3 | tasks map to AC/claims + regression | `:plan` |
-| G4 | `03-qa-log` has no OPEN | `:conflict` |
-| G5 | AC/claim coverage map complete + tests pass | `:build` |
-| G6 | AC evidence has How/By (+ UI evidence if UI) | `:review` |
-| G6.5 | test evidence recorded in `06b-test-evidence.md`; zero failing tests | `:test` |
-| G7 | ship artifact complete (`07-ship`) | `:ship` |
+| G3 | user signs off on all conflict decisions and spec changes | `:confirm` |
+| G4 | tasks map to AC/claims + regression | `:plan` |
+| G5 | `03-qa-log` has no OPEN | `:conflict` |
+| G6 | AC/claim coverage map complete + tests pass | `:build` |
+| G7 | AC evidence has How/By (+ UI evidence if UI) | `:review` |
+| G8 | test evidence in `06b-test-evidence.md`; zero failing tests | `:test` |
 
-WAIVE only on worklog INDEX: `Gate/claim | reason | owner | expiry | PM note`. No money/permission/legacy waive unless PM.
+Ship: require G8 PASS (or valid WAIVE), then fill `07-ship.md` via `:ship`.
+
+WAIVE only on worklog INDEX: `Gate/claim | reason | owner | expiry | PM note`. No money/permission/legacy waive unless PM. `--strict`: no WAIVE on G8.
 
 ## Stage order
 `:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → `:test` → `/dev-workflow:check` → `:ship` → `:status`

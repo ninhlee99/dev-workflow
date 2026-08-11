@@ -8,6 +8,20 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- **Gate renumber (integer-only G0–G8):** removed decimal gates `G2.5` / `G6.5`.
+  - G3 = user confirm sign-off
+  - G4 = plan
+  - G5 = no open Qs
+  - G6 = build + coverage
+  - G7 = review evidence
+  - G8 = test evidence
+- **`bin/check-gates.sh`:** enforces G3 + G8; default `--min G8`; adds `--strict` (reject G8 WAIVE, require UI screenshot paths, reject thin/placeholder test output).
+- Skills/docs/templates/README synced to G0–G8 mapping.
+
+### Added
+- Fixtures: `PASS-G8`, `FAIL-G8-missing`, `FAIL-G8-failing` under `fixtures/workspaces/demo/worklogs/`.
+
 ---
 
 ## [0.1.0] — 2026-08-11

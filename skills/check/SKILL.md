@@ -3,7 +3,7 @@ name: check
 description: >-
   Run bin/check-gates.sh on a ticket worklog and report PASS/FAIL.
   Paths auto-resolve from the user project (cwd/git/workspaces). Use /dev-workflow:check.
-argument-hint: "<Ticket ID> [project-slug?] [G5|G6|G7?] — run gate checker; print PASS/FAIL and next fix"
+argument-hint: "<Ticket ID> [project-slug?] [G6|G7|G8?] — run gate checker; print PASS/FAIL and next fix"
 arguments: [ticket_id, project_slug, min_gate]
 disable-model-invocation: true
 ---
@@ -12,6 +12,7 @@ disable-model-invocation: true
 
 Run real checker only; never infer PASS.
 Resolve paths via `references/project-root.md`.
-Execute checker for ticket, optional slug, and min gate (`G5|G6|G7`, default `G6`).
+Execute `bin/check-gates.sh` for ticket, optional slug, and min gate (`G0`–`G8`, default `G8`).
+Optional `--strict` for CI (no G8 WAIVE; UI screenshots required).
 Report exit code and gate verdict (`0=PASS/WAIVE`, nonzero=FAIL/error) plus next stage.
 If checker is not run or exit is nonzero, refuse PASS.

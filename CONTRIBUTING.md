@@ -52,9 +52,16 @@ Always test with the `fixtures/workspaces/demo` fixture:
 ```bash
 DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh FIX-FAIL --project demo --min G1
-```
+# expect exit 1
 
-Expected: FAIL on G1 (fixture is intentionally incomplete).
+DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+  ./bin/check-gates.sh PASS-G8 --project demo --min G8
+# expect exit 0
+
+DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+  ./bin/check-gates.sh FAIL-G8-missing --project demo --min G8
+# expect exit 1
+```
 
 ---
 
@@ -85,7 +92,8 @@ Scope: stage name or component (e.g. `spec`, `check-gates`, `install`).
 ## Pull request checklist
 
 - [ ] `bash install.sh` runs without errors
-- [ ] `bin/check-gates.sh FIX-FAIL --project demo --min G1` still exits 1 (fixture FAIL preserved)
+- [ ] `bin/check-gates.sh FIX-FAIL --project demo --min G1` exits 1
+- [ ] `bin/check-gates.sh PASS-G8 --project demo --min G8` exits 0
 - [ ] All changed `references/` and `skills/` files stay within word-count budget
 - [ ] `CHANGELOG.md` updated under `[Unreleased]`
 - [ ] No hardcoded project names or absolute paths in plugin source

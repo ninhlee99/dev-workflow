@@ -14,5 +14,5 @@ Compare spec to running behavior and force decisions.
 Read `references/conflict-check.md`.
 Write required artifacts: `03-conflict-README.md`, `03-conflict-report.md`, `03-qa-log.md`.
 Classify claims as MATCH/NO/UNCLEAR; request explicit confirm for non-MATCH.
-Any OPEN/UNCLEAR keeps G2/G4 FAIL and blocks `:plan`/`:build`.
+Any OPEN/UNCLEAR keeps G2/G5 FAIL and blocks `:confirm`/`:plan`/`:build`.
 Never guess claim decisions.

@@ -1,5 +1,5 @@
 # Runtime workspaces — project-specific data, not tracked in plugin repo
-workspaces/
+/workspaces/
 
 # OS / editor
 .DS_Store

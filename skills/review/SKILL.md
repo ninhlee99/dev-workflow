@@ -10,8 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:review
 
-Verify outcome against original requirements using evidence.
+Verify outcome against original requirements using evidence (G7).
 Fill `templates/06-review-qa.md` with AC/NEG/PERM/EDGE How/By proof (+ UI checklist if UI).
-Run `/dev-workflow:check <Ticket> [slug] G6` before any G6 PASS claim.
+Run `/dev-workflow:check <Ticket> [slug] G7` before any G7 PASS claim.
 Missing evidence or checker failure keeps review FAIL.
 Do not ship from this stage and never invent PASS.

@@ -4,15 +4,19 @@ Project home: `workspaces/<project-slug>/` (knowledge + worklogs below; see `ref
 
 | Gate | PASS when | Command if FAIL |
 |---|---|---|
-| G0 Knowledge | `workspaces/<project-slug>/domain-knowledge/` covers ticket scope (G0 DoD) | empty / Needs learning → `:learning`; wrong knowledge / changed spec → `:coaching` |
-| G1 Spec | Scenario AC + Neg/Perm/Edge (+ UI states if touches UI) | `/dev-workflow:spec` |
-| G2 Conflict | every non-MATCH claim has decision+owner+date | `/dev-workflow:conflict` |
-| G3 Plan | task ↔ AC/claim + regression matrix | `/dev-workflow:plan` |
-| G4 Open Qs | no OPEN rows in `03-qa-log` | `/dev-workflow:conflict` |
-| G5 Build | 100% coverage map + test commands PASS | `/dev-workflow:build` |
-| G6 Confirm | AC evidence (How/By) + UI checklist if touches UI | `/dev-workflow:confirm` |
-| G7 Ship | `07-ship` + pre-merge | `/dev-workflow:ship` |
+| G0 Knowledge | domain-knowledge covers ticket scope | empty → `:learning`; wrong/changed → `:coaching` |
+| G1 Spec | Scenario AC + Neg/Perm/Edge (+ UI states if touches UI) | `:spec` |
+| G2 Conflict | every non-MATCH claim has decision+owner+date | `:conflict` |
+| G3 Confirm | user sign-off recorded on INDEX Handoff | `:confirm` |
+| G4 Plan | task ↔ AC/claim + regression matrix | `:plan` |
+| G5 Open Qs | no OPEN rows in `03-qa-log` | `:conflict` |
+| G6 Build | 100% coverage map + tests PASS | `:build` |
+| G7 Review | AC evidence (How/By) + UI checklist if touches UI | `:review` |
+| G8 Test | `06b-test-evidence` filled; zero failing tests | `:test` |
 
-Partial confirm → G2/G4 FAIL — do not Build.
+Ship after G8 PASS → `:ship` fills `07-ship`.
 
-WAIVE needs reason + owner + expiry; forbid waive money/permission/legacy unless PM note.
+Partial confirm → G2/G3/G5 FAIL — do not Build.
+
+WAIVE needs reason + owner + expiry; forbid waive money/permission/legacy unless PM note.  
+`--strict` rejects G8 WAIVE.

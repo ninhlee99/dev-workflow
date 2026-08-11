@@ -48,9 +48,9 @@ Each arrow is a **gate**. The AI refuses to advance until all criteria for the c
 6. **plan** — TDD-ready task breakdown; each task maps to an AC or conflict claim.
 7. **build** — Code + tests written test-first; coverage map locked before PASS.
 8. **review** — Evidence table filled (How/By/Date per AC); UI checklist if the ticket touches UI.
-9. **test** — Real test suite run; output, screenshots, and logs recorded as durable evidence in `06b-test-evidence.md`; G6.5 requires zero failing tests.
-10. **check** — `bin/check-gates.sh` runs programmatic gate validation.
-11. **ship** — Ship notes and PR description drafted from the reviewed worklog.
+9. **test** — Real test suite run; output, screenshots, and logs recorded as durable evidence in `06b-test-evidence.md`; G8 requires zero failing tests.
+10. **check** — `bin/check-gates.sh` runs programmatic gate validation (G0–G8; optional `--strict`).
+11. **ship** — Ship notes and PR description drafted after G8 PASS.
 
 ---
 
@@ -135,12 +135,12 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | `/dev-workflow:spec` | `<Ticket ID> [URL or spec]` | Normalises requirements into `02-spec.md` with full AC table (Scenario + NEG/PERM/EDGE + UI states) |
 | `/dev-workflow:conflict` | `<Ticket ID> [decision]` | Detects spec-vs-code conflicts; every delta gets a decision, owner, and date in `03-conflict-report.md` |
 | `/dev-workflow:confirm` | `<Ticket ID>` | AI presents all conflict decisions and spec changes; **user must explicitly sign off** before plan can start |
-| `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim; requires user sign-off (G2.5) |
+| `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim; requires user sign-off (G3) |
 | `/dev-workflow:build` | `<Ticket ID>` | Implements with TDD; records AC↔test coverage map in `05-impl-log.md`; refuses coding if prior gates fail |
-| `/dev-workflow:review` | `<Ticket ID>` | Fills evidence table (How/By/Date per AC) in `06-review-qa.md`; includes UI checklist when applicable |
-| `/dev-workflow:test` | `<Ticket ID>` | Runs real test suite; records output, screenshots, and logs in `06b-test-evidence.md`; G6.5 gate |
-| `/dev-workflow:check` | `<Ticket ID> [slug] [G5\|G6\|G7]` | Runs `bin/check-gates.sh`; reports PASS/FAIL per gate with actionable messages |
-| `/dev-workflow:ship` | `<Ticket ID>` | Drafts ship notes and PR description in `07-ship.md`; requires G6.5 PASS |
+| `/dev-workflow:review` | `<Ticket ID>` | Fills evidence table (How/By/Date per AC) in `06-review-qa.md`; includes UI checklist when applicable (G7) |
+| `/dev-workflow:test` | `<Ticket ID>` | Runs real test suite; records output, screenshots, and logs in `06b-test-evidence.md`; G8 gate |
+| `/dev-workflow:check` | `<Ticket ID> [slug] [G6\|G7\|G8]` | Runs `bin/check-gates.sh`; reports PASS/FAIL per gate; supports `--strict` |
+| `/dev-workflow:ship` | `<Ticket ID>` | Drafts ship notes and PR description in `07-ship.md`; requires G8 PASS |
 | `/dev-workflow:status` | `[Ticket ID]` | Prints current gate status and knowledge coverage |
 | `/dev-workflow` | `<Ticket ID> [URL] [extra]` | Alias for `:start` |
 
@@ -153,13 +153,14 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | **G0** | Domain knowledge exists and matches ticket scope | → `:learning` or `:coaching` |
 | **G1** | `02-spec.md` has Scenario AC + NEG + PERM + EDGE (+ UI states if UI ticket) | → `:spec` |
 | **G2** | Every non-MATCH conflict has decision + owner + date in `03-conflict-report.md` | → `:conflict` |
-| **G2.5** | User explicitly signs off on all conflict decisions and spec changes | → `:confirm` |
-| **G3** | Every task in `04-plan.md` maps to an AC or conflict claim | → `:plan` |
-| **G4** | `03-qa-log.md` has zero OPEN questions | → `:conflict` |
-| **G5** | 100% AC/claim → test coverage map; all tests pass | → `:build` |
-| **G6** | Evidence table filled (How/By/Date) for all ACs; UI checklist done if applicable | → `:review` |
-| **G6.5** | Test evidence recorded in `06b-test-evidence.md`; zero failing tests | → `:test` |
-| **G7** | `07-ship.md` complete with release evidence and PR notes | → `:ship` |
+| **G3** | User explicitly signs off on all conflict decisions and spec changes | → `:confirm` |
+| **G4** | Every task in `04-plan.md` maps to an AC or conflict claim | → `:plan` |
+| **G5** | `03-qa-log.md` has zero OPEN questions | → `:conflict` |
+| **G6** | 100% AC/claim → test coverage map; all tests pass | → `:build` |
+| **G7** | Evidence table filled (How/By/Date) for all ACs; UI checklist done if applicable | → `:review` |
+| **G8** | Test evidence recorded in `06b-test-evidence.md`; zero failing tests | → `:test` |
+
+Ship requires **G8 PASS**, then `:ship` fills `07-ship.md`.
 
 ### WAIVE policy
 
@@ -251,7 +252,7 @@ Run the gate checker directly from the terminal, independently of any AI:
 
 ```bash
 export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project my-project --min G6
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project my-project --min G8 --strict
 ```
 
 Or via AI (runs the same script, reports results in chat):
@@ -267,7 +268,8 @@ Or via AI (runs the same script, reports results in chat):
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--project <slug>` | auto-detect | Override project slug |
-| `--min <Gx>` | `G6` | Minimum gate to check through |
+| `--min <Gx>` | `G8` | Minimum gate to check through (`G0`–`G8`) |
+| `--strict` | off | Reject G8 WAIVE; require UI screenshot paths; reject placeholder test output |
 | `--json` | off | Output JSON for CI integration |
 
 **CI integration example (GitHub Actions):**
@@ -277,7 +279,8 @@ Or via AI (runs the same script, reports results in chat):
   run: |
     ./bin/check-gates.sh ${{ env.TICKET_ID }} \
       --project ${{ env.PROJECT_SLUG }} \
-      --min G5 \
+      --min G8 \
+      --strict \
       --json
 ```
 

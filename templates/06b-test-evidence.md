@@ -23,7 +23,7 @@ List paths or embed inline for any UI-touching AC. Leave N/A if no UI.
 
 ## Failing / passing summary
 
-One row per test suite. G6.5 FAIL if any suite has failures.
+One row per test suite. G8 FAIL if any suite has failures.
 
 | Suite | Total | Passed | Failed | Skipped | Result |
 |---|---|---|---|---|---|
@@ -37,6 +37,6 @@ One row per test suite. G6.5 FAIL if any suite has failures.
 
 - **Dev:** [name]
 - **Date:** [YYYY-MM-DD]
-- **G6.5 verdict:** ☐ PASS ☐ FAIL
+- **G8 verdict:** ☐ PASS ☐ FAIL
 
-**Forbid G6.5 PASS** when any suite has failures or the evidence table is empty.
+**Forbid G8 PASS** when any suite has failures or the evidence table is empty.

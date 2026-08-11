@@ -59,12 +59,17 @@ Run these after installing on any host to confirm the plugin is wired correctly:
 # 1. Verify gate checker is executable
 ./bin/check-gates.sh --help
 
-# 2. Run against the demo fixture — must exit 1 (FAIL expected)
+# 2. FIX-FAIL — must exit 1
 DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh FIX-FAIL --project demo --min G1
-echo "Exit: $?"   # expect 1
+# expect exit 1
 
-# 3. Confirm commands are visible in the AI host
+# 3. PASS-G8 — must exit 0
+DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+  ./bin/check-gates.sh PASS-G8 --project demo --min G8
+# expect exit 0
+
+# 4. Confirm commands are visible in the AI host
 # Claude Code:  /dev-workflow:status
 # Cursor:       /dev-workflow:status
 # Codex:        dev-workflow:status skill
