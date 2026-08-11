@@ -1,6 +1,6 @@
 # dev-workflow
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#installation)
 
@@ -48,9 +48,9 @@ Each arrow is a **gate**. The AI refuses to advance until all criteria for the c
 6. **plan** — TDD-ready task breakdown; each task maps to an AC or conflict claim.
 7. **build** — Code + tests written test-first; coverage map locked before PASS.
 8. **review** — Evidence table filled (How/By/Date per AC); UI checklist if the ticket touches UI.
-9. **test** — Real test suite run; output, screenshots, and logs recorded as durable evidence in `06b-test-evidence.md`; G8 requires zero failing tests.
-10. **check** — `bin/check-gates.sh` runs programmatic gate validation (G0–G8; optional `--strict`).
-11. **ship** — Ship notes and PR description drafted after G8 PASS.
+9. **test** — Real test suite + machine evidence (Commit SHA, CI URL / junit path) in `06b-test-evidence.md`; G8.
+10. **check** — `bin/check-gates.sh` validates G0–G9 (optional `--strict`; Risk P0/P1 implies machine evidence).
+11. **ship** — Ship safety (migration / flag / monitor / rollback) in `07-ship.md`; G9 PASS before merge.
 
 ---
 
@@ -132,15 +132,15 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | `/dev-workflow:learning` | `[brief or path]` | AI self-learns the project: reads codebase, docs, APIs; builds `domain-knowledge/`; stops to ask on unclear business rules |
 | `/dev-workflow:coaching` | `<topic or ticket>` | Developer corrects AI: add new spec, update changed rule, override wrong understanding |
 | `/dev-workflow:start` | `<Ticket ID> [URL] [extra]` | Entry point — evaluates all gates and routes to the first failing one |
-| `/dev-workflow:spec` | `<Ticket ID> [URL or spec]` | Normalises requirements into `02-spec.md` with full AC table (Scenario + NEG/PERM/EDGE + UI states) |
+| `/dev-workflow:spec` | `<Ticket ID> [URL or spec]` | Normalises requirements into `02-spec.md`; **requires Risk P0/P1/P2** |
 | `/dev-workflow:conflict` | `<Ticket ID> [decision]` | Detects spec-vs-code conflicts; every delta gets a decision, owner, and date in `03-conflict-report.md` |
-| `/dev-workflow:confirm` | `<Ticket ID>` | AI presents all conflict decisions and spec changes; **user must explicitly sign off** before plan can start |
-| `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim; requires user sign-off (G3) |
+| `/dev-workflow:confirm` | `<Ticket ID>` | Waits for human `CONFIRM G3: <Ticket> <name> <date>` (P0 also `CONFIRM G3-PM:`) — AI must not invent |
+| `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim; requires G3 |
 | `/dev-workflow:build` | `<Ticket ID>` | Implements with TDD; records AC↔test coverage map in `05-impl-log.md`; refuses coding if prior gates fail |
 | `/dev-workflow:review` | `<Ticket ID>` | Fills evidence table (How/By/Date per AC) in `06-review-qa.md`; includes UI checklist when applicable (G7) |
-| `/dev-workflow:test` | `<Ticket ID>` | Runs real test suite; records output, screenshots, and logs in `06b-test-evidence.md`; G8 gate |
-| `/dev-workflow:check` | `<Ticket ID> [slug] [G6\|G7\|G8]` | Runs `bin/check-gates.sh`; reports PASS/FAIL per gate; supports `--strict` |
-| `/dev-workflow:ship` | `<Ticket ID>` | Drafts ship notes and PR description in `07-ship.md`; requires G8 PASS |
+| `/dev-workflow:test` | `<Ticket ID>` | Runs tests; records output + machine evidence (SHA/CI/junit) in `06b-test-evidence.md`; G8 |
+| `/dev-workflow:check` | `<Ticket ID> [slug] [G8\|G9]` | Runs `bin/check-gates.sh` (G0–G9); supports `--strict` |
+| `/dev-workflow:ship` | `<Ticket ID>` | Fills ship safety in `07-ship.md`; requires G9 PASS |
 | `/dev-workflow:status` | `[Ticket ID]` | Prints current gate status and knowledge coverage |
 | `/dev-workflow` | `<Ticket ID> [URL] [extra]` | Alias for `:start` |
 
@@ -151,16 +151,27 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | Gate | Criterion | Blocked command |
 |------|-----------|-----------------|
 | **G0** | Domain knowledge exists and matches ticket scope | → `:learning` or `:coaching` |
-| **G1** | `02-spec.md` has Scenario AC + NEG + PERM + EDGE (+ UI states if UI ticket) | → `:spec` |
-| **G2** | Every non-MATCH conflict has decision + owner + date in `03-conflict-report.md` | → `:conflict` |
-| **G3** | User explicitly signs off on all conflict decisions and spec changes | → `:confirm` |
+| **G1** | Spec + **Risk P0/P1/P2** + Scenario AC (+ UI states if UI) | → `:spec` |
+| **G2** | Every non-MATCH conflict has decision + owner + date | → `:conflict` |
+| **G3** | Human phrase `CONFIRM G3: <Ticket> <name> <date>` on INDEX (P0 + `CONFIRM G3-PM:`) | → `:confirm` |
 | **G4** | Every task in `04-plan.md` maps to an AC or conflict claim | → `:plan` |
 | **G5** | `03-qa-log.md` has zero OPEN questions | → `:conflict` |
 | **G6** | 100% AC/claim → test coverage map; all tests pass | → `:build` |
-| **G7** | Evidence table filled (How/By/Date) for all ACs; UI checklist done if applicable | → `:review` |
-| **G8** | Test evidence recorded in `06b-test-evidence.md`; zero failing tests | → `:test` |
+| **G7** | Evidence table filled (How/By/Date); UI checklist if applicable | → `:review` |
+| **G8** | Test evidence + machine fields (SHA / CI URL or junit); zero failing tests | → `:test` |
+| **G9** | Ship safety: migration / feature flag / monitor / rollback | → `:ship` |
 
-Ship requires **G8 PASS**, then `:ship` fills `07-ship.md`.
+### Risk lanes
+
+See `references/risk.md`.
+
+| Tier | Lane | Notes |
+|------|------|-------|
+| **P0** | Hard | Money/auth/PII/legacy — no WAIVE G3/G8; dual confirm; machine evidence mandatory |
+| **P1** | Hard | Default behavior change — full G0–G9 |
+| **P2** | Fast | Chore/docs — may WAIVE G2/G4/G5/G7 with INDEX rows |
+
+Ship merge requires **G9 PASS** (`--min G9`).
 
 ### WAIVE policy
 
@@ -206,7 +217,8 @@ workspaces/
             ├── 05-impl-log.md
             ├── 06-review-qa.md
             ├── 06b-test-evidence.md
-            └── 07-ship.md
+            ├── 07-ship.md
+            └── (optional) ../pilot/PILOT-v0.2.md
 ```
 
 ---
@@ -223,6 +235,7 @@ dev-workflow/
 ├── skills/                     # Stage logic (one SKILL.md per stage; symlinks to references/ + templates/)
 ├── references/                 # Shared knowledge loaded on-demand by skills
 │   ├── workflow.md             # Gate table + dispatch rules
+│   ├── risk.md                 # P0/P1/P2 hard/fast lanes
 │   ├── project-root.md         # Path resolution algorithm
 │   ├── learning.md             # learning stage rules
 │   ├── coaching.md             # coaching stage rules
@@ -252,10 +265,10 @@ Run the gate checker directly from the terminal, independently of any AI:
 
 ```bash
 export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project my-project --min G8 --strict
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project my-project --min G9 --strict
 ```
 
-Or via AI (runs the same script, reports results in chat):
+Or via AI:
 
 ```
 /dev-workflow:check TICKET-123
@@ -268,18 +281,18 @@ Or via AI (runs the same script, reports results in chat):
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--project <slug>` | auto-detect | Override project slug |
-| `--min <Gx>` | `G8` | Minimum gate to check through (`G0`–`G8`) |
-| `--strict` | off | Reject G8 WAIVE; require UI screenshot paths; reject placeholder test output |
-| `--json` | off | Output JSON for CI integration |
+| `--min <Gx>` | `G8` | Check through gate (`G0`–`G9`); use `G9` before merge |
+| `--strict` | off | Reject G8 WAIVE; require machine evidence + UI screenshots; reject thin output |
+| `--json` | off | JSON for CI |
 
-**CI integration example (GitHub Actions):**
+**CI example:**
 
 ```yaml
 - name: Gate check
   run: |
     ./bin/check-gates.sh ${{ env.TICKET_ID }} \
       --project ${{ env.PROJECT_SLUG }} \
-      --min G8 \
+      --min G9 \
       --strict \
       --json
 ```

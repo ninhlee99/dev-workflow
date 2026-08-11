@@ -1,6 +1,7 @@
-# 02 Spec: fixture
+# 02 Spec: FAIL-G8-failing
 
 - **Touches UI?** ☐ No
+- **Risk:** ☐ P0 ☑ P1 ☐ P2
 - **Date:** 2026-08-11
 
 ## Scenario AC (required)

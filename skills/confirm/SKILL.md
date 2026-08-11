@@ -1,26 +1,25 @@
 ---
 name: confirm
 description: >-
-  User reviews and signs off on conflict decisions and spec changes before plan.
-  Lists all open questions, non-MATCH decisions, and spec deltas for user to confirm.
-argument-hint: "<Ticket ID> Run after conflict — present decisions for user sign-off before plan"
+  User signs off with anti-spoof phrase CONFIRM G3 before plan.
+  P0 also requires CONFIRM G3-PM. Never invent the phrase.
+argument-hint: "<Ticket ID> Run after conflict — wait for user CONFIRM G3 phrase"
 arguments: [ticket_id]
 disable-model-invocation: true
 ---
 
 # /dev-workflow:confirm
 
-Present conflict decisions and spec changes to user for explicit sign-off (G3).
+Present conflict decisions and spec deltas; wait for **human** sign-off (G3).
 
 Steps:
-1. Read `03-conflict-report.md` — list every non-MATCH decision with status.
-2. Read `03-qa-log.md` — list any OPEN questions.
-3. Read `02-spec.md` — summarize spec changes vs original ticket.
-4. Ask user to confirm each decision; update decisions where user corrects.
-5. Mark OPEN questions as ANSWERED or escalate.
-6. When user signs off: set `G3 user sign-off: ☑ PASS`, `Signed off by`, `Signed off at` on `INDEX.md` Handoff.
-7. Only then PASS G3 and route to `:plan`.
+1. Read risk from INDEX/spec (`references/risk.md`).
+2. List non-MATCH decisions + OPEN questions + spec deltas.
+3. Ask user to reply exactly:
+   `CONFIRM G3: <Ticket_ID> <name> <YYYY-MM-DD>`
+4. If Risk P0, also require PM:
+   `CONFIRM G3-PM: <Ticket_ID> <pm-name> <YYYY-MM-DD>`
+5. Paste the exact phrases into INDEX (do not fabricate).
+6. Set G3 PASS only after phrases recorded; then route to `:plan`.
 
-Block forward if any decision is still OPEN or user disagrees.
-Never auto-confirm — always wait for explicit user response.
-G2 = conflict documented; G3 = user signed off. Do not conflate.
+Never auto-confirm. G2 = documented; G3 = human CONFIRM phrase.

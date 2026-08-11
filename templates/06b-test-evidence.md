@@ -4,6 +4,18 @@
 - **Tested by:** [name/AI]
 - **Ticket:** [ID]
 - **Touches UI?** ☐ Yes ☐ No (copy from `02-spec`)
+- **Risk:** ☐ P0 ☐ P1 ☐ P2
+
+## Machine evidence (required for P0/P1 and `--strict`)
+
+| Field | Value |
+|---|---|
+| Commit SHA | [40-char or short SHA] |
+| CI run URL | [https://… or N/A-local] |
+| JUnit / XML / log path | [path or URL] |
+| Branch | [name] |
+
+**Forbid G8 PASS** when any required machine field is empty/`[…]` placeholder (P0/P1/`--strict`).
 
 ## Test run output
 

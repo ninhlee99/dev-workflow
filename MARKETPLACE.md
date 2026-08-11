@@ -64,9 +64,12 @@ DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh FIX-FAIL --project demo --min G1
 # expect exit 1
 
-# 3. PASS-G8 — must exit 0
+# 3. PASS-G8 / PASS-G9
 DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh PASS-G8 --project demo --min G8
+# expect exit 0
+DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+  ./bin/check-gates.sh PASS-G9 --project demo --min G9
 # expect exit 0
 
 # 4. Confirm commands are visible in the AI host

@@ -1,4 +1,4 @@
-# Worklog INDEX: PASS-G8
+# Worklog INDEX: PASS-G9
 
 - **Project slug:** `demo`
 - **Touches UI?** ☐ No
@@ -15,7 +15,7 @@
 - **Signed off at:** 2026-08-11
 
 ```
-CONFIRM G3: PASS-G8 Ninh Lee 2026-08-11
+CONFIRM G3: PASS-G9 Ninh Lee 2026-08-11
 ```
 
 ## Waivers

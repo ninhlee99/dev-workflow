@@ -4,6 +4,16 @@
 - **Tested by:** fixture
 - **Ticket:** PASS-G8
 - **Touches UI?** ☐ No
+- **Risk:** ☑ P1
+
+## Machine evidence (required for P0/P1 and `--strict`)
+
+| Field | Value |
+|---|---|
+| Commit SHA | abcdef1234567890 |
+| CI run URL | N/A-local |
+| JUnit / XML / log path | /tmp/junit-PASS-G8.xml |
+| Branch | main |
 
 ## Test run output
 

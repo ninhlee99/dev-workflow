@@ -1,35 +1,20 @@
 ---
 name: test
 description: >-
-  Run real tests and record evidence (output, screenshots, logs) as proof before ship.
-  Fill 06b-test-evidence.md. Gate G8: no failing tests + evidence recorded.
-argument-hint: "<Ticket ID> Run after review — record test evidence in 06b-test-evidence.md"
+  Run real tests; record output plus machine evidence (CI URL, SHA, junit).
+  Gate G8. Required for P0/P1 and --strict.
+argument-hint: "<Ticket ID> Run after review — fill 06b-test-evidence.md with machine evidence"
 arguments: [ticket_id]
 disable-model-invocation: true
 ---
 
 # /dev-workflow:test
 
-Run actual tests and capture evidence before check/ship (G8).
+Capture durable + machine-verifiable test proof (G8).
 
-## Steps
-
-1. Open or create ticket `06b-test-evidence.md` from `templates/06b-test-evidence.md`.
-2. Run full test suite (unit + integration + e2e if applicable).
-3. Paste raw test output into *Test run output* (no placeholder).
-4. Attach screenshot/recording paths for any UI-touching AC.
-5. Fill *Failing / passing summary* — one row per suite.
-6. Zero failing tests required; else STOP.
-7. Fill *Sign-off* (Dev + date) and set G8 verdict PASS.
-8. Update worklog `INDEX.md` G8 → PASS.
-9. Run `/dev-workflow:check <Ticket> [slug] G8` before claiming PASS.
-
-## Gate G8
-
-| Condition | Result |
-|---|---|
-| All suites pass AND evidence filled | PASS |
-| Any failing test | FAIL |
-| Evidence empty / placeholder | FAIL |
-
-WAIVE only via INDEX five-field entry. `--strict` rejects G8 WAIVE.
+1. Fill `06b-test-evidence.md` from template.
+2. Run suites; paste raw output (no placeholder).
+3. Fill machine evidence table: Commit SHA, CI run URL (or N/A-local), junit/xml/log path.
+4. UI tickets: screenshot paths required (P0/`--strict`).
+5. Overall PASS only if zero failures.
+6. Run `/dev-workflow:check <Ticket> [slug] G8` before claiming PASS.

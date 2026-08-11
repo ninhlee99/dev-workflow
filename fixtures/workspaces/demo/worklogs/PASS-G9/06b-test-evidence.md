@@ -1,43 +1,44 @@
-# 06b Test Evidence: FAIL-G8-failing
+# 06b Test Evidence: PASS-G9
 
 - **Date:** 2026-08-11
 - **Tested by:** fixture
-- **Ticket:** FAIL-G8-failing
+- **Ticket:** PASS-G9
 - **Touches UI?** ☐ No
 - **Risk:** ☑ P1
 
-## Machine evidence
+## Machine evidence (required for P0/P1 and `--strict`)
 
 | Field | Value |
 |---|---|
 | Commit SHA | abcdef1234567890 |
 | CI run URL | N/A-local |
-| JUnit / XML / log path | /tmp/junit-fail.xml |
+| JUnit / XML / log path | /tmp/junit-PASS-G9.xml |
 | Branch | main |
 
 ## Test run output
 
 ```
 rspec
-1 example, 1 failure
+Finished in 0.12 seconds
+3 examples, 0 failures
 ```
 
 ## Screenshots / recordings
 
 | AC / scenario | File / URL | Notes |
 |---|---|---|
-| AC-01 | N/A | |
+| AC-01 | N/A | no UI |
 
 ## Failing / passing summary
 
 | Suite | Total | Passed | Failed | Skipped | Result |
 |---|---|---|---|---|---|
-| Unit | 1 | 0 | 1 | 0 | ☑ FAIL |
+| Unit | 3 | 3 | 0 | 0 | ☑ PASS |
 
-**Overall:** ☐ PASS (zero failures) ☑ FAIL (see failing rows above)
+**Overall:** ☑ PASS (zero failures) ☐ FAIL (see failing rows above)
 
 ## Sign-off
 
 - **Dev:** fixture
 - **Date:** 2026-08-11
-- **G8 verdict:** ☑ FAIL
+- **G8 verdict:** ☑ PASS

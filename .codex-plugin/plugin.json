@@ -1,6 +1,6 @@
 {
   "name": "dev-workflow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Clear spec & requirements before coding. Multi-project workspaces. Enforce via check-gates.",
   "author": {
     "name": "Ninh Lee",

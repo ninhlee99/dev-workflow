@@ -6,21 +6,24 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [Unreleased]
-
-### Changed
-- **Gate renumber (integer-only G0–G8):** removed decimal gates `G2.5` / `G6.5`.
-  - G3 = user confirm sign-off
-  - G4 = plan
-  - G5 = no open Qs
-  - G6 = build + coverage
-  - G7 = review evidence
-  - G8 = test evidence
-- **`bin/check-gates.sh`:** enforces G3 + G8; default `--min G8`; adds `--strict` (reject G8 WAIVE, require UI screenshot paths, reject thin/placeholder test output).
-- Skills/docs/templates/README synced to G0–G8 mapping.
+## [0.2.0] — 2026-08-11
 
 ### Added
-- Fixtures: `PASS-G8`, `FAIL-G8-missing`, `FAIL-G8-failing` under `fixtures/workspaces/demo/worklogs/`.
+- **Risk tiers P0/P1/P2** + hard/fast lanes (`references/risk.md`).
+- **G9 ship safety** gate: migration / feature flag / monitor / rollback in `07-ship.md`.
+- **G3 anti-spoof:** requires literal human phrase `CONFIRM G3: <Ticket> <name> <date>` (P0 also `CONFIRM G3-PM:`).
+- **G8 machine evidence:** Commit SHA + CI run URL or junit/xml/log path.
+- **Pilot metrics template** `templates/pilot-metrics.md` for 10-ticket before/after measurement.
+- Fixtures: `PASS-G9` (+ updated PASS/FAIL G8 for machine evidence + CONFIRM G3).
+
+### Changed
+- Version bump to `0.2.0` across all marketplace manifests.
+- `check-gates.sh` enforces Risk, CONFIRM G3, machine evidence, G9; P0 implies no G3/G8 WAIVE.
+- Fixed doc drift in `conflict-check.md` and `07-ship.md`.
+- README / INDEX / skills / checklists synced to G0–G9.
+
+### Notes
+- Prior G0–G8 renumber from 0.1.x retained; G9 is new.
 
 ---
 
@@ -39,5 +42,6 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Neutral language:** no project-specific names or hardcoded paths in plugin source.
 - **Token-optimised docs:** all references and skill files written for minimal AI context load.
 
-[Unreleased]: https://github.com/ninhlee99/dev-workflow/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ninhlee99/dev-workflow/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.1.0

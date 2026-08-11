@@ -2,6 +2,8 @@
 
 - **Project slug:** `demo`
 - **Touches UI?** ☐ No
+- **Risk:** ☐ P0 ☑ P1 ☐ P2
+- **Lane:** ☑ hard ☐ fast
 - **Updated:** 2026-08-11
 
 ## Handoff
@@ -12,11 +14,9 @@
 - **Signed off by:** Ninh Lee
 - **Signed off at:** 2026-08-11
 
-## Gate status
-
-| Gate | Status |
-|---|---|
-| G8 Test evidence | ☐ |
+```
+CONFIRM G3: FAIL-G8-failing Ninh Lee 2026-08-11
+```
 
 ## Waivers
 

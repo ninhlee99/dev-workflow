@@ -1,22 +1,18 @@
 # Gate checklist: [Ticket_ID]
 
-Project home: `workspaces/<project-slug>/` (knowledge + worklogs below; see `references/project-root.md`).
+Project home: `workspaces/<project-slug>/`. Risk: see `references/risk.md`.
 
 | Gate | PASS when | Command if FAIL |
 |---|---|---|
-| G0 Knowledge | domain-knowledge covers ticket scope | empty → `:learning`; wrong/changed → `:coaching` |
-| G1 Spec | Scenario AC + Neg/Perm/Edge (+ UI states if touches UI) | `:spec` |
-| G2 Conflict | every non-MATCH claim has decision+owner+date | `:conflict` |
-| G3 Confirm | user sign-off recorded on INDEX Handoff | `:confirm` |
-| G4 Plan | task ↔ AC/claim + regression matrix | `:plan` |
-| G5 Open Qs | no OPEN rows in `03-qa-log` | `:conflict` |
+| G0 Knowledge | domain-knowledge covers ticket scope | `:learning` / `:coaching` |
+| G1 Spec | Scenario AC + Risk P0/P1/P2 (+ UI states if UI) | `:spec` |
+| G2 Conflict | every non-MATCH has decision+owner+date | `:conflict` |
+| G3 Confirm | literal `CONFIRM G3: <Ticket> <name> <date>` (P0 + `CONFIRM G3-PM:`) | `:confirm` |
+| G4 Plan | task ↔ AC/claim + regression | `:plan` |
+| G5 Open Qs | no OPEN in `03-qa-log` | `:conflict` |
 | G6 Build | 100% coverage map + tests PASS | `:build` |
-| G7 Review | AC evidence (How/By) + UI checklist if touches UI | `:review` |
-| G8 Test | `06b-test-evidence` filled; zero failing tests | `:test` |
+| G7 Review | AC evidence How/By (+ UI checklist) | `:review` |
+| G8 Test | output + machine evidence (SHA/CI/junit); zero failures | `:test` |
+| G9 Ship | migration / flag / monitor / rollback filled | `:ship` |
 
-Ship after G8 PASS → `:ship` fills `07-ship`.
-
-Partial confirm → G2/G3/G5 FAIL — do not Build.
-
-WAIVE needs reason + owner + expiry; forbid waive money/permission/legacy unless PM note.  
-`--strict` rejects G8 WAIVE.
+P2 fast lane may WAIVE G2/G4/G5/G7 with INDEX rows. P0: no WAIVE G3/G8.

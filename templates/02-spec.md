@@ -4,6 +4,7 @@
 - **Date:** [YYYY-MM-DD]
 - **Confirmed by:** [name]
 - **Touches UI?** ☐ Yes ☐ No
+- **Risk:** ☐ P0 ☐ P1 ☐ P2   (required — see `references/risk.md`)
 - **Touched repos:** ☐ (list from PROJECT.md)
 
 If the full spec lives elsewhere (e.g. `tasks/specs/Feature.md`), link it — do not duplicate unless needed.

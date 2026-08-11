@@ -2,20 +2,54 @@
 
 - **PR:** [url]
 - **Date:** [YYYY-MM-DD]
+- **Ticket:** [ID]
+- **Risk:** ☐ P0 ☐ P1 ☐ P2
+- **Commit SHA:** [sha]
+- **Checker:** `check-gates.sh --min G9` exit 0 ☐
 
 ## Pre-merge
 
-- [ ] G1–G6 PASS, or WAIVE complete (reason + owner + expiry) on INDEX
-- [ ] G5 coverage map 100% PASS
-- [ ] G6 AC evidence + UI (if touches) complete
-- [ ] CI green
+- [ ] G0–G8 PASS (or valid INDEX WAIVE; P0: no G3/G8 WAIVE)
+- [ ] G8 machine evidence filled (CI URL / SHA / junit)
+- [ ] CI green on PR
 - [ ] Worklog link in PR description
-- [ ] Coverage gap ritual printed at spec/plan/build — no open gaps
+- [ ] Coverage gap ritual closed
+
+## Ship safety (G9 — required)
+
+### Migration / data
+
+- **Has migration?** ☐ Yes ☐ No
+- **Backward compatible?** ☐ Yes ☐ No ☐ N/A
+- **Notes:** …
+
+### Feature flag / dark launch
+
+- **Flag name / N/A:** …
+- **Default off in prod?** ☐ Yes ☐ N/A
+- **Rollout plan:** …
+
+### Monitor / alert
+
+- **Dashboard or log query:** …
+- **Alert / owner on-call:** …
+- **First 24h watch:** …
+
+### Rollback
+
+- **Rollback steps:** …
+- **Data repair needed?** ☐ Yes ☐ No
+- **Time-to-rollback estimate:** …
+
+**G9 FAIL** if any section above is still `…` / empty while Risk is P0/P1.  
+P2 may mark N/A with reason in Notes.
 
 ## Deploy notes
 
 - …
 
-## Rollback
+## Links
 
-- …
+- Worklog INDEX: …
+- Test evidence: `06b-test-evidence.md`
+- Pilot row (if in pilot): …

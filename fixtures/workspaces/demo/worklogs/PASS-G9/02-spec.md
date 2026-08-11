@@ -1,4 +1,4 @@
-# 02 Spec: PASS-G8
+# 02 Spec: PASS-G9
 
 - **Touches UI?** ☐ No
 - **Risk:** ☐ P0 ☑ P1 ☐ P2
