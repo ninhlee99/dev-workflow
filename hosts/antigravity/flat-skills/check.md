@@ -1,0 +1,1 @@
+/Users/ninh.le/Documents/daijob/project/plugins/dev-workflow/skills/check/SKILL.md

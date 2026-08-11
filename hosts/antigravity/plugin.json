@@ -1,0 +1,5 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "dev-workflow",
+  "description": "Clear spec & requirements before coding. Multi-project workspaces. Gated delivery with learning, conflict-check, TDD evidence, and check-gates enforce."
+}

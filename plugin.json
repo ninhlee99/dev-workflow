@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "dev-workflow",
+  "version": "0.1.0",
+  "description": "Clear spec & requirements before coding. Multi-project workspaces with gated delivery and check-gates enforce.",
+  "author": {
+    "name": "Dev Workflow Maintainers"
+  },
+  "homepage": "https://github.com/",
+  "license": "MIT",
+  "keywords": [
+    "spec",
+    "requirements",
+    "conflict-check",
+    "learning",
+    "coaching",
+    "tdd",
+    "gates",
+    "multi-project"
+  ]
+}

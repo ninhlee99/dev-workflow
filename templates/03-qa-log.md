@@ -1,0 +1,23 @@
+# 03 QA log (conflict Q&A): [Ticket_ID]
+
+- **Date:** [YYYY-MM-DD]
+
+## Q&A
+
+| # | claim_id | Agent question | Dev answer (after PM/BA/comtor) | Status |
+|---|---|---|---|---|
+| 1 | C-01 | | | ☐ OPEN ☐ CONFIRMED ☐ WAIVED |
+
+## Open questions (G4)
+
+Any OPEN row → G4 FAIL.
+
+## WAIVE (if any)
+
+| claim_id | Reason | Owner | Expiry (YYYY-MM-DD) | PM note? |
+|---|---|---|---|---|
+| | | | | ☐ |
+
+## G4
+
+☐ PASS (no OPEN left)  ☐ FAIL

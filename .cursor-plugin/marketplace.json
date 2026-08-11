@@ -1,0 +1,19 @@
+{
+  "name": "dev-workflow-marketplace",
+  "owner": {
+    "name": "Dev Workflow Maintainers"
+  },
+  "metadata": {
+    "description": "Cursor marketplace catalog for dev-workflow plugin"
+  },
+  "plugins": [
+    {
+      "name": "dev-workflow",
+      "source": "./",
+      "description": "Clear spec & requirements before coding with gated delivery stages and check-gates enforce.",
+      "version": "0.1.0",
+      "skills": "./skills",
+      "commands": "./commands"
+    }
+  ]
+}

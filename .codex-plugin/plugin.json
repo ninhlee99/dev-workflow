@@ -1,0 +1,25 @@
+{
+  "name": "dev-workflow",
+  "version": "0.1.0",
+  "description": "Clear spec & requirements before coding. Multi-project workspaces. Enforce via check-gates.",
+  "author": {
+    "name": "Dev Workflow Maintainers"
+  },
+  "homepage": "https://github.com/",
+  "license": "MIT",
+  "keywords": [
+    "spec",
+    "requirements",
+    "conflict-check",
+    "learning",
+    "coaching",
+    "tdd",
+    "gates"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Dev Workflow",
+    "shortDescription": "Clear-spec gated delivery for multi-repo projects",
+    "longDescription": "Learn domain, clarify specs, conflict-check against running code, plan/TDD/build with evidence maps, confirm with How/By, and enforce gates via check-gates.sh. Works across multiple project workspaces."
+  }
+}
