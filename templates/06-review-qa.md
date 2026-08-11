@@ -12,7 +12,7 @@
 
 ## AC evidence (required — forbid "ok" only)
 
-One row per AC. G6 FAIL if `How verified` or `By` missing.
+One row per AC. G7 FAIL if `How verified` or `By` missing.
 
 | ID | How verified (steps / test / screen) | Actual vs expected | By (Dev / PM) | Date | OK? |
 |---|---|---|---|---|---|
@@ -27,7 +27,7 @@ One row per AC. G6 FAIL if `How verified` or `By` missing.
 |---|---|---|
 | C-01 | ☐ | |
 
-## UI checklist (required if Touches UI = Yes; empty → G6 FAIL)
+## UI checklist (required if Touches UI = Yes; empty → G7 FAIL)
 
 | State | Verified? | How / screenshot path | Note |
 |---|---|---|---|
@@ -55,4 +55,4 @@ One row per AC. G6 FAIL if `How verified` or `By` missing.
 
 ☐ PASS — ready to ship  ☐ FAIL — needs fix (list tasks)
 
-**Forbid G6 PASS** when any AC evidence row lacks How/By, or UI checklist is empty while Touches UI = Yes.
+**Forbid G7 PASS** when any AC evidence row lacks How/By, or UI checklist is empty while Touches UI = Yes.

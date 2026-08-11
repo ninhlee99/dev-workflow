@@ -1,0 +1,283 @@
+# User guide — dev-workflow v0.4
+
+This guide explains **how to use** the plugin day-to-day.  
+For install hosts → [MARKETPLACE.md](../MARKETPLACE.md). For design layout → [STRUCTURE.md](../STRUCTURE.md).
+
+---
+
+## 1. What this plugin does
+
+Forces a **requirement-first** path before code:
+
+1. Learn / coach domain knowledge  
+2. Write testable acceptance criteria (and Risk tier)  
+3. Detect conflicts with current code  
+4. **You** confirm decisions (`CONFIRM G3:…`)  
+5. Plan → build (TDD) → review evidence → run tests with machine proof  
+6. Ship only after safety checklist (G9) and checker PASS  
+
+AI must not invent PASS. `bin/check-gates.sh` is the judge.
+
+### Naming (easy to mix up)
+
+| Word | Means | When |
+|------|--------|------|
+| **confirm** (`:confirm`, G3) | Human sign-off on conflict/spec decisions | **Before** plan/build |
+| **review** (`:review`, G7) | Fill How/By/Date evidence after code | **After** build |
+| **test** (`:test`, G8) | Real test run + SHA/CI/junit | After review |
+| **check** (`:check`) | Run `check-gates.sh` | Before ship/merge |
+
+---
+
+## 2. First-time setup (once per machine)
+
+```bash
+git clone https://github.com/ninhlee99/dev-workflow.git
+cd dev-workflow
+bash install.sh
+```
+
+Then in your **product** repo (recommended):
+
+1. Copy `templates/ci/github-actions-dev-workflow.yml` → `.github/workflows/dev-workflow-gates.yml`
+2. Branch protection → require status check `dev-workflow-gates`
+3. Optional marker at project root:
+
+```json
+{ "projectSlug": "my-app" }
+```
+
+Save as `.dev-workflow.json` (see `templates/workspaces/_project/dev-workflow.json.example`).
+
+Smoke test:
+
+```bash
+export DEV_WORKFLOW_WORKSPACES_ROOT=/path/to/dev-workflow/fixtures
+/path/to/dev-workflow/bin/check-gates.sh PASS-G9 --project demo --min G9 --strict
+# expect RESULT: PASS
+```
+
+---
+
+## 3. Daily flow for one ticket
+
+### 3.1 First time on a project
+
+```
+/dev-workflow:learning
+```
+
+Paste a short brief: project name, repos, domains.  
+AI creates `workspaces/<slug>/` and asks when business rules are unclear.  
+You answer with `/dev-workflow:coaching` when AI is wrong or specs change.
+
+### 3.2 Start a ticket
+
+```
+/dev-workflow:start TICKET-123 https://your-tracker/TICKET-123
+```
+
+AI jumps to the **first failing gate**. You can also run stages manually (below).
+
+### 3.3 Spec (G1)
+
+```
+/dev-workflow:spec TICKET-123
+```
+
+Must produce `02-spec.md` with:
+
+- **Risk:** P0 / P1 / P2 (required)
+- Scenario AC rows (Given / When / Then) filled
+- NEG / PERM / EDGE as needed
+- UI states if Touches UI = Yes
+- If **P0**: also fill `02b-security.md`
+
+**How to choose Risk**
+
+| Choose | When |
+|--------|------|
+| **P0** | Money, authz/permission, PII, legacy data, irreversible migration |
+| **P1** | Normal behavior / API change (default) |
+| **P2** | Copy, config, docs, tiny non-behavioral chore |
+
+### 3.4 Conflict (G2)
+
+```
+/dev-workflow:conflict TICKET-123
+```
+
+Fills `03-conflict-report.md` + `03-qa-log.md`.  
+Every non-MATCH needs decision + owner + date.
+
+### 3.5 Confirm (G3) — **you must type this**
+
+```
+/dev-workflow:confirm TICKET-123
+```
+
+AI lists decisions. You reply **exactly**:
+
+```text
+CONFIRM G3: TICKET-123 Your Name 2026-08-11
+```
+
+If Risk = **P0**, also:
+
+```text
+CONFIRM G3-PM: TICKET-123 PM Name 2026-08-11
+```
+
+Rules:
+
+- AI **must not invent** these lines  
+- Forbidden names: AI, ChatGPT, Claude, Copilot, Cursor, Assistant, Bot  
+- Phrases must appear in **both** `INDEX.md` and `03b-human-confirm.md`  
+- `03b-human-confirm.md` must contain `Source: user-message`
+
+### 3.6 Plan → Build → Review → Test
+
+```
+/dev-workflow:plan   TICKET-123
+/dev-workflow:build  TICKET-123
+/dev-workflow:review TICKET-123
+/dev-workflow:test   TICKET-123
+```
+
+| Stage | Artifact | Must include |
+|-------|----------|--------------|
+| plan | `04-plan.md` | Tasks mapped to AC/claims |
+| build | `05-impl-log.md` | Coverage map, no MISSING, PASS marks |
+| review | `06-review-qa.md` | How/By/Date per AC (+ UI checklist if UI) |
+| test | `06b-test-evidence.md` | Raw test output + **Commit SHA** + CI URL **or** junit path |
+
+### 3.7 Check + Ship (merge gate)
+
+```
+/dev-workflow:check TICKET-123
+/dev-workflow:ship  TICKET-123
+```
+
+Before merge, from terminal (or CI):
+
+```bash
+export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min G9 --strict
+```
+
+`--strict` turns on CI-native checks (SHA vs git HEAD, junit parse) and implies `--verify-net`.
+
+Ship artifact `07-ship.md` must cover: migration, feature flag, **canary %**, **soak time**, on-call, SLO, rollback.  
+Canary `N/A` needs a reason ≥ 10 characters.
+
+---
+
+## 4. Commands cheat sheet
+
+| Command | When to use | You must provide |
+|---------|-------------|------------------|
+| `:learning` | New project / empty knowledge | Brief or path |
+| `:coaching` | AI wrong / spec changed | Topic + correction |
+| `:start` | Begin ticket | Ticket ID (+ URL) |
+| `:spec` | Clarify requirements | Ticket ID; set Risk |
+| `:conflict` | Spec vs code | Ticket ID |
+| `:confirm` | Before any plan/code | **Your** `CONFIRM G3:…` |
+| `:plan` | After G3 PASS | Ticket ID |
+| `:build` | Implement | Ticket ID |
+| `:review` | Evidence table | Ticket ID |
+| `:test` | Real test run | Ticket ID + machine fields |
+| `:check` | Run checker | Ticket ID; optional slug / G8\|G9 |
+| `:ship` | Pre-merge notes | Ticket ID |
+| `:status` | Where am I? | Optional Ticket ID |
+
+---
+
+## 5. Worklog files (per ticket)
+
+Created under `workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
+
+| File | Role | Gate |
+|------|------|------|
+| `INDEX.md` | Status, Risk, Pilot, waivers, CONFIRM lines | all |
+| `01-intent.md` | Raw intent | — |
+| `02-spec.md` | ACs + Risk | G1 |
+| `02b-security.md` | Threat / secrets / contract (**P0 only**) | G1 |
+| `03-conflict-report.md` | Claims MATCH/NO/UNCLEAR | G2 |
+| `03-qa-log.md` | Open questions | G5 |
+| `03b-human-confirm.md` | Exact human CONFIRM text | G3 |
+| `04-plan.md` | Tasks | G4 |
+| `05-impl-log.md` | Coverage map | G6 |
+| `06-review-qa.md` | How verified | G7 |
+| `06b-test-evidence.md` | Tests + SHA/CI/junit | G8 |
+| `07-ship.md` | Ship safety | G9 |
+
+---
+
+## 6. Gates (G0–G9) in one table
+
+| Gate | PASS means | If FAIL run |
+|------|------------|-------------|
+| G0 | Domain knowledge ready | `:learning` / `:coaching` |
+| G1 | Spec + Risk (+ security if P0) | `:spec` |
+| G2 | Conflicts decided | `:conflict` |
+| G3 | Human CONFIRM in INDEX + `03b` | `:confirm` |
+| G4 | Plan mapped | `:plan` |
+| G5 | No OPEN questions | `:conflict` |
+| G6 | Coverage + tests logged PASS | `:build` |
+| G7 | Review evidence filled | `:review` |
+| G8 | Test evidence + machine fields | `:test` |
+| G9 | Ship safety complete | `:ship` |
+
+**P2 fast lane:** G2/G4/G5/G7 are soft (warn) unless `--strict`.  
+**P0:** no WAIVE on G3/G8; dual confirm; security file required.
+
+WAIVE row format on INDEX:
+
+```text
+- G4/task-3 | reason | owner | 2026-12-31 | PM note
+```
+
+---
+
+## 7. Pilot (prove the workflow works)
+
+1. Copy `templates/pilot-metrics.md` → `workspaces/<slug>/pilot/PILOT-v0.4.md`
+2. Fill **Scores (machine)** block with baseline numbers  
+3. On pilot tickets set `Pilot: ☑ yes` on INDEX  
+4. After 10 tickets:
+
+```bash
+./bin/pilot-score.sh workspaces/<slug>/pilot/PILOT-v0.4.md
+# expect RESULT: PASS
+```
+
+Success bar: each of miss-spec / reopen / escape ≤ half of baseline; `gate_blocks ≥ 1`; `tickets_completed ≥ 10`.
+
+---
+
+## 8. Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `worklog not found` | `cd` into product project, or set `DEV_WORKFLOW_WORKSPACES_ROOT` / `--project <slug>` |
+| G3 FAIL missing CONFIRM | Type exact phrase; ensure both INDEX and `03b-human-confirm.md` |
+| G3 FAIL AI name | Use a real human name, not Claude/Cursor/… |
+| G8 FAIL SHA | Put real `git rev-parse HEAD` into machine evidence table |
+| G8 FAIL junit | Path must exist; XML must have `failures="0"` |
+| G9 FAIL canary N/A | Add reason: `N/A (internal tool, no canary)` |
+| Checker PASS but PR merges without it | Enable required status check from CI template |
+
+---
+
+## 9. Related docs
+
+| Doc | Content |
+|-----|---------|
+| [README.md](../README.md) | Overview + install + command index |
+| [references/risk.md](../references/risk.md) | P0/P1/P2 + timeboxes |
+| [references/security.md](../references/security.md) | P0 security file rules |
+| [references/pilot.md](../references/pilot.md) | Pilot ops |
+| [references/maturity.md](../references/maturity.md) | Expert rubric |
+| [references/enforce.md](../references/enforce.md) | Checker flags |
+| [MARKETPLACE.md](../MARKETPLACE.md) | Host install |
+| [CONTRIBUTING.md](../CONTRIBUTING.md) | Develop the plugin |

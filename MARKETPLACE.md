@@ -1,46 +1,35 @@
-# Marketplace & Distribution
+# Marketplace & install — v0.4
 
-This document covers installation from each supported host marketplace and the release checklist for maintainers publishing a new version.
+## Hosts
 
----
-
-## Supported hosts
-
-| Host | Manifest | Status |
-|------|----------|--------|
-| Claude Code | `.claude-plugin/plugin.json` + `.claude-plugin/marketplace.json` | ✅ |
-| Cursor | `.cursor-plugin/plugin.json` + `.cursor-plugin/marketplace.json` + `plugin.json` | ✅ |
-| Codex | `.codex-plugin/plugin.json` + `.agents/plugins/marketplace.json` | ✅ |
-| Antigravity | `hosts/antigravity/plugin.json` | ✅ |
+| Host | Manifests | Install |
+|------|-----------|---------|
+| Claude Code | `.claude-plugin/{plugin,marketplace}.json` | `/plugin marketplace add …` then install |
+| Cursor | `.cursor-plugin/*` + `plugin.json` | `bash install.sh` |
+| Codex | `.codex-plugin/plugin.json` | `bash install.sh` |
+| Antigravity | `hosts/antigravity/plugin.json` | `rebuild.sh` then `agy plugin install` |
 
 ---
 
-## Installation
+## Install commands
 
 ### Claude Code
 
-```bash
-# Add the plugin source (local path or GitHub URL)
-/plugin marketplace add /path/to/dev-workflow
-# or
+```text
 /plugin marketplace add https://github.com/ninhlee99/dev-workflow
-
-# Install
 /plugin install dev-workflow@dev-workflow-marketplace
-
-# Reload
 /reload-plugins
 ```
 
 ### Cursor / Codex / local
 
 ```bash
-git clone git@github.com:ninhlee99/dev-workflow.git
+git clone https://github.com/ninhlee99/dev-workflow.git
 cd dev-workflow
 bash install.sh
 ```
 
-`install.sh` handles all hosts in one pass (Claude Code links, Cursor commands, Codex skills, Antigravity bundle).
+Deploys colon commands to `~/.cursor/commands/` and `~/.claude/commands/`, symlinks skills, builds Antigravity bundle.
 
 ### Antigravity
 
@@ -49,77 +38,34 @@ bash hosts/antigravity/rebuild.sh
 agy plugin install ./hosts/antigravity
 ```
 
+After install, read **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)**.
+
 ---
 
-## Smoke test (post-install)
-
-Run these after installing on any host to confirm the plugin is wired correctly:
+## Smoke test
 
 ```bash
-# 1. Verify gate checker is executable
-./bin/check-gates.sh --help
+chmod +x bin/check-gates.sh bin/pilot-score.sh
+export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
 
-# 2. FIX-FAIL — must exit 1
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
-  ./bin/check-gates.sh FIX-FAIL --project demo --min G1
-# expect exit 1
-
-# 3. PASS-G8 / PASS-G9
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
-  ./bin/check-gates.sh PASS-G8 --project demo --min G8
-# expect exit 0
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
-  ./bin/check-gates.sh PASS-G9 --project demo --min G9
-# expect exit 0
-
-# 4. Confirm commands are visible in the AI host
-# Claude Code:  /dev-workflow:status
-# Cursor:       /dev-workflow:status
-# Codex:        dev-workflow:status skill
+./bin/check-gates.sh FIX-FAIL --project demo --min G1          # expect FAIL
+./bin/check-gates.sh PASS-G8 --project demo --min G8           # expect PASS
+./bin/check-gates.sh PASS-G9 --project demo --min G9 --strict  # expect PASS
+./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md  # expect PASS
 ```
+
+In the AI host, confirm `/dev-workflow:status` appears.
 
 ---
 
 ## Release checklist (maintainers)
 
-Before tagging a new version:
-
-### 1. Update version in all manifests
-
-```bash
-# Files to bump — must all have the same version string
-plugin.json
-.claude-plugin/plugin.json
-.cursor-plugin/plugin.json
-.codex-plugin/plugin.json
-hosts/antigravity/plugin.json
-```
-
-Search for current version and replace:
+1. Bump `"version"` in all `plugin.json` / `marketplace.json` files  
+2. Update `CHANGELOG.md`  
+3. `bash install.sh` + smoke commands above  
+4. `git tag vX.Y.Z && git push origin main vX.Y.Z`  
+5. Smoke-install on one live host  
 
 ```bash
 grep -r '"version"' . --include='*.json' | grep -v node_modules
 ```
-
-### 2. Update CHANGELOG.md
-
-Move entries from `[Unreleased]` to a new `[x.y.z] — YYYY-MM-DD` section.
-
-### 3. Run install and smoke tests
-
-```bash
-bash install.sh
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
-  ./bin/check-gates.sh FIX-FAIL --project demo --min G1
-```
-
-### 4. Tag and push
-
-```bash
-git tag v<x.y.z>
-git push origin main v<x.y.z>
-```
-
-### 5. Verify on at least one live host
-
-Install the tagged version on Claude Code or Cursor and run `/dev-workflow:status` to confirm commands load.

@@ -59,12 +59,15 @@ DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
 # expect exit 0
 
 DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
-  ./bin/check-gates.sh PASS-G9 --project demo --min G9
+  ./bin/check-gates.sh PASS-G9 --project demo --min G9 --strict
 # expect exit 0
 
 DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh FAIL-G8-missing --project demo --min G8
 # expect exit 1
+
+./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md
+# expect exit 0
 ```
 
 ---
@@ -98,9 +101,10 @@ Scope: stage name or component (e.g. `spec`, `check-gates`, `install`).
 - [ ] `bash install.sh` runs without errors
 - [ ] `bin/check-gates.sh FIX-FAIL --project demo --min G1` exits 1
 - [ ] `bin/check-gates.sh PASS-G8 --project demo --min G8` exits 0
-- [ ] `bin/check-gates.sh PASS-G9 --project demo --min G9` exits 0
-- [ ] All changed `references/` and `skills/` files stay within word-count budget
-- [ ] `CHANGELOG.md` updated under `[Unreleased]`
+- [ ] `bin/check-gates.sh PASS-G9 --project demo --min G9 --strict` exits 0
+- [ ] `bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md` exits 0
+- [ ] `CHANGELOG.md` updated under `[Unreleased]` (or new version section)
+- [ ] Docs still match gates (README + `docs/USER-GUIDE.md` + STRUCTURE)
 - [ ] No hardcoded project names or absolute paths in plugin source
 
 ---

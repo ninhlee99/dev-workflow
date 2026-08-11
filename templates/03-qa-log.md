@@ -8,9 +8,9 @@
 |---|---|---|---|---|
 | 1 | C-01 | | | ☐ OPEN ☐ CONFIRMED ☐ WAIVED |
 
-## Open questions (G4)
+## Open questions (G5)
 
-Any OPEN row → G4 FAIL.
+Any OPEN row → G5 FAIL.
 
 ## WAIVE (if any)
 
@@ -18,6 +18,6 @@ Any OPEN row → G4 FAIL.
 |---|---|---|---|---|
 | | | | | ☐ |
 
-## G4
+## G5
 
 ☐ PASS (no OPEN left)  ☐ FAIL

@@ -35,7 +35,7 @@ CONFIRM G3: …
 | G0 Domain knowledge | ☐ PASS ☐ FAIL | `../domain-knowledge/` (+ repos) | empty → `:learning`; wrong/changed → `:coaching` |
 | G1 Spec clear | ☐ PASS ☐ FAIL ☐ WAIVE | `02-spec.md` (+ `02b-security.md` if P0) | Scenario AC + Risk; P0 security |
 | G2 Conflict documented | ☐ PASS ☐ FAIL ☐ WAIVE | `03-conflict-report.md` | P2 soft unless `--strict` |
-| G3 User sign-off | ☐ PASS ☐ FAIL | `INDEX.md` Handoff | requires literal CONFIRM G3: |
+| G3 User sign-off | ☐ PASS ☐ FAIL | `INDEX.md` + `03b-human-confirm.md` | literal `CONFIRM G3:` (P0 + PM); no AI names |
 | G4 Plan | ☐ PASS ☐ FAIL ☐ WAIVE | `04-plan.md` | task ↔ AC/claim + regression |
 | G5 No open Qs | ☐ PASS ☐ FAIL ☐ WAIVE | `03-qa-log.md` | OPEN = FAIL |
 | G6 Build+tests | ☐ PASS ☐ FAIL ☐ WAIVE | `05-impl-log.md` | 100% map + tests PASS |

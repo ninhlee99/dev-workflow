@@ -2,15 +2,15 @@
 
 - **Start date:** [YYYY-MM-DD]
 
-## G5 PASS rules (required)
+## G6 PASS rules (required)
 
-G5 PASS only when **all** are true:
+G6 PASS only when **all** are true:
 
 1. Every AC / NEG / PERM / EDGE in `02-spec` (and confirmed claims) has a map row below
 2. Each row has **test path** + **command** + **Result = PASS** (paste summary)
 3. No claim/AC left `☐` uncovered
 
-Missing map or red tests → **G5 FAIL** — no `:confirm` / `:ship`.
+Missing map or red tests → **G6 FAIL** — no `:review` / `:test` / `:ship`.
 
 ## Slice log
 
@@ -35,6 +35,6 @@ Missing map or red tests → **G5 FAIL** — no `:confirm` / `:ship`.
 |---|---|---|
 | C-01 | ☐ | |
 
-## G5
+## G6
 
 ☐ PASS  ☐ FAIL — missing: …

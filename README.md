@@ -4,89 +4,92 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#installation)
 
-> **Requirement-first AI workflow.** Enforce clear specs, explicit acceptance criteria, and gate-checked delivery before any code is written. Eliminates missed specs, logic bugs, and UI regressions.
+> **Requirement-first AI delivery workflow.** Clear specs → human confirm → TDD → machine-verified evidence → safe ship. Checker (`bin/check-gates.sh`) is the source of truth — AI must not invent PASS.
+
+**Full how-to (recommended):** [docs/USER-GUIDE.md](./docs/USER-GUIDE.md)
 
 ---
 
-## Table of Contents
+## Table of contents
 
-- [How it works](#how-it-works)
-- [Prerequisites](#prerequisites)
+- [Why](#why)
+- [Flow](#flow)
 - [Installation](#installation)
 - [Quick start](#quick-start)
-- [Stages & commands](#stages--commands)
-- [Gates](#gates)
-- [Workspace layout](#workspace-layout)
-- [Repository structure](#repository-structure)
-- [Enforcement (CLI)](#enforcement-cli)
-- [Contributing](#contributing)
+- [Commands](#commands)
+- [Gates & risk](#gates--risk)
+- [Confirm phrase (required)](#confirm-phrase-required)
+- [Worklog artifacts](#worklog-artifacts)
+- [CLI enforcement](#cli-enforcement)
+- [Org CI & pilot](#org-ci--pilot)
+- [Documentation map](#documentation-map)
 - [License](#license)
 
 ---
 
-## How it works
+## Why
 
-```
-learning ──► coaching ──► spec ──► conflict ──► confirm (user sign-off) ──► plan
-                                                                               │
-                                                                             build
-                                                                               │
-                                                                            review
-                                                                               │
-                                                                             test (evidence)
-                                                                               │
-                                                                           check ──► ship
-```
+Without a gated process, AI coding often:
 
-Each arrow is a **gate**. The AI refuses to advance until all criteria for the current gate pass — or a valid WAIVE entry exists in the worklog.
+- Misses business rules  
+- Ships UI/logic bugs  
+- Marks “done” without evidence  
 
-1. **learning** — AI reads the codebase and domain docs, builds a knowledge base, pauses to ask when a business rule is unclear.
-2. **coaching** — Developer corrects misunderstandings or adds new/changed specs.
-3. **spec** — Requirements normalised into explicit Acceptance Criteria (Scenario, Negative, Permission, Edge cases, UI states).
-4. **conflict** — Every delta between spec and current code is documented with a decision, owner, and date.
-5. **confirm** — AI presents all conflict decisions and spec changes to the user; user signs off explicitly before any coding starts.
-6. **plan** — TDD-ready task breakdown; each task maps to an AC or conflict claim.
-7. **build** — Code + tests written test-first; coverage map locked before PASS.
-8. **review** — Evidence table filled (How/By/Date per AC); UI checklist if the ticket touches UI.
-9. **test** — Real test suite + machine evidence (Commit SHA, CI URL / junit path) in `06b-test-evidence.md`; G8.
-10. **check** — `bin/check-gates.sh` validates G0–G9 (optional `--strict`; Risk P0/P1 implies machine evidence).
-11. **ship** — Ship safety (migration / flag / monitor / rollback) in `07-ship.md`; G9 PASS before merge.
+This plugin blocks advance until artifacts and gates pass (G0–G9), with Risk lanes (P0/P1/P2) and optional pilot scoring.
 
 ---
 
-## Prerequisites
+## Flow
 
-| Requirement | Version |
-|-------------|---------|
-| Bash | 4+ (`brew install bash` on macOS) |
-| AI host | Claude Code **or** Cursor **or** Codex **or** Antigravity |
-| Git | any recent version |
+```
+learning → coaching → spec → conflict → confirm → plan
+                                              ↓
+                                            build
+                                              ↓
+                                           review
+                                              ↓
+                                            test
+                                              ↓
+                                    check (--strict) → ship (G9)
+```
+
+| Step | Meaning |
+|------|---------|
+| learning / coaching | AI learns domain; you correct mistakes |
+| spec | Testable ACs + **Risk P0/P1/P2** (+ `02b-security.md` if P0) |
+| conflict | Spec vs running code; decisions recorded |
+| confirm | **You** type `CONFIRM G3:…` (see below) |
+| plan / build | TDD plan + implementation + coverage map |
+| review / test | Human-readable evidence + machine evidence (SHA/CI/junit) |
+| check / ship | Programmatic gates; ship safety before merge |
 
 ---
 
 ## Installation
 
-### Claude Code
+### Prerequisites
+
+- Bash 4+ (`brew install bash` on macOS)  
+- One of: Claude Code, Cursor, Codex, Antigravity  
+- Git  
+
+### Cursor / Codex / local (common)
 
 ```bash
-/plugin marketplace add /path/to/dev-workflow
-/plugin install dev-workflow@dev-workflow-marketplace
-/reload-plugins
-```
-
-### Cursor / Codex / local
-
-```bash
-git clone git@github.com:ninhlee99/dev-workflow.git
+git clone https://github.com/ninhlee99/dev-workflow.git
 cd dev-workflow
 bash install.sh
 ```
 
-`install.sh` will:
-- Symlink `references/` and `templates/` into each stage skill.
-- Deploy colon commands to `~/.cursor/commands/` and `~/.claude/commands/`.
-- Create a thin pointer skill at `~/.cursor/skills/dev-workflow/`.
-- Build the Antigravity host bundle.
+`install.sh` deploys slash commands, skill symlinks, and host bundles.
+
+### Claude Code
+
+```text
+/plugin marketplace add https://github.com/ninhlee99/dev-workflow
+/plugin install dev-workflow@dev-workflow-marketplace
+/reload-plugins
+```
 
 ### Antigravity
 
@@ -95,220 +98,186 @@ bash hosts/antigravity/rebuild.sh
 agy plugin install ./hosts/antigravity
 ```
 
+More host detail: [MARKETPLACE.md](./MARKETPLACE.md).
+
 ---
 
 ## Quick start
 
-```
-# 1. Teach the AI about your project (first time only)
+```text
+# 1) First time on a project
 /dev-workflow:learning
 
-# 2. Start a ticket — AI routes to first failing gate
-/dev-workflow:start TICKET-123 https://linear.app/…/TICKET-123
+# 2) Start a ticket (routes to first failing gate)
+/dev-workflow:start TICKET-123 https://tracker/TICKET-123
 
-# 3. Step through the pipeline manually if needed
-/dev-workflow:spec    TICKET-123   # write ACs
-/dev-workflow:conflict TICKET-123  # detect conflicts
-/dev-workflow:confirm TICKET-123   # YOU sign off on all decisions
-/dev-workflow:plan    TICKET-123   # TDD-ready plan
-/dev-workflow:build   TICKET-123   # implement + tests
-/dev-workflow:review  TICKET-123   # fill evidence table
-/dev-workflow:test    TICKET-123   # run tests + record evidence
-/dev-workflow:check   TICKET-123   # programmatic gate check
-/dev-workflow:ship    TICKET-123   # PR notes
+# 3) Typical manual path
+/dev-workflow:spec     TICKET-123
+/dev-workflow:conflict TICKET-123
+/dev-workflow:confirm  TICKET-123    ← you must reply with CONFIRM G3:…
+/dev-workflow:plan     TICKET-123
+/dev-workflow:build    TICKET-123
+/dev-workflow:review   TICKET-123
+/dev-workflow:test     TICKET-123
+/dev-workflow:check    TICKET-123
+/dev-workflow:ship     TICKET-123
 
-# Check gate status at any time
+# Anytime
 /dev-workflow:status TICKET-123
 ```
 
-The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123/` and fill artifact files step by step.
+Worklogs live at: `workspaces/<project-slug>/worklogs/<Ticket_ID>/`.
+
+Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 
 ---
 
-## Stages & commands
+## Commands
 
-| Command | Arguments | What it does |
-|---------|-----------|--------------|
-| `/dev-workflow:learning` | `[brief or path]` | AI self-learns the project: reads codebase, docs, APIs; builds `domain-knowledge/`; stops to ask on unclear business rules |
-| `/dev-workflow:coaching` | `<topic or ticket>` | Developer corrects AI: add new spec, update changed rule, override wrong understanding |
-| `/dev-workflow:start` | `<Ticket ID> [URL] [extra]` | Entry point — evaluates all gates and routes to the first failing one |
-| `/dev-workflow:spec` | `<Ticket ID> [URL or spec]` | Normalises requirements into `02-spec.md`; **requires Risk P0/P1/P2** |
-| `/dev-workflow:conflict` | `<Ticket ID> [decision]` | Detects spec-vs-code conflicts; every delta gets a decision, owner, and date in `03-conflict-report.md` |
-| `/dev-workflow:confirm` | `<Ticket ID>` | Waits for human `CONFIRM G3: <Ticket> <name> <date>` (P0 also `CONFIRM G3-PM:`) — AI must not invent |
-| `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim; requires G3 |
-| `/dev-workflow:build` | `<Ticket ID>` | Implements with TDD; records AC↔test coverage map in `05-impl-log.md`; refuses coding if prior gates fail |
-| `/dev-workflow:review` | `<Ticket ID>` | Fills evidence table (How/By/Date per AC) in `06-review-qa.md`; includes UI checklist when applicable (G7) |
-| `/dev-workflow:test` | `<Ticket ID>` | Runs tests; records output + machine evidence (SHA/CI/junit) in `06b-test-evidence.md`; G8 |
-| `/dev-workflow:check` | `<Ticket ID> [slug] [G8\|G9]` | Runs `bin/check-gates.sh` (G0–G9); supports `--strict` |
-| `/dev-workflow:ship` | `<Ticket ID>` | Fills ship safety in `07-ship.md`; requires G9 PASS |
-| `/dev-workflow:status` | `[Ticket ID]` | Prints current gate status and knowledge coverage |
-| `/dev-workflow` | `<Ticket ID> [URL] [extra]` | Alias for `:start` |
+| Command | Arguments | Effect |
+|---------|-----------|--------|
+| `/dev-workflow:learning` | `[brief/path]` | AI builds `domain-knowledge/`; asks when unclear |
+| `/dev-workflow:coaching` | `<topic/ticket>` | You teach corrections / new or changed specs |
+| `/dev-workflow:start` | `<Ticket> [URL]` | Enter pipeline at first failing gate |
+| `/dev-workflow:spec` | `<Ticket> [URL/spec]` | Write `02-spec.md`; set Risk; P0 → `02b-security.md` |
+| `/dev-workflow:conflict` | `<Ticket> [decision]` | Write conflict report + QA log |
+| `/dev-workflow:confirm` | `<Ticket>` | Wait for human `CONFIRM G3:`; write INDEX + `03b-human-confirm.md` |
+| `/dev-workflow:plan` | `<Ticket>` | TDD plan mapped to ACs/claims |
+| `/dev-workflow:build` | `<Ticket>` | Implement + coverage map; refuses if prior gates fail |
+| `/dev-workflow:review` | `<Ticket>` | How/By/Date evidence (`06-review-qa.md`) |
+| `/dev-workflow:test` | `<Ticket>` | Real tests + SHA/CI/junit (`06b-test-evidence.md`) |
+| `/dev-workflow:check` | `<Ticket> [slug] [G8\|G9]` | Run `check-gates.sh` |
+| `/dev-workflow:ship` | `<Ticket>` | Fill `07-ship.md` (G9); refuse if checker fails |
+| `/dev-workflow:status` | `[Ticket]` | Gate + knowledge status |
+| `/dev-workflow` | `<Ticket> [URL]` | Alias for `:start` |
 
 ---
 
-## Gates
+## Gates & risk
 
-| Gate | Criterion | Blocked command |
-|------|-----------|-----------------|
-| **G0** | Domain knowledge exists and matches ticket scope | → `:learning` or `:coaching` |
-| **G1** | Spec + Risk P0/P1/P2 (+ UI); **P0 requires `02b-security.md`** | → `:spec` |
-| **G2** | Conflict decisions (P2 soft unless `--strict`) | → `:conflict` |
-| **G3** | `CONFIRM G3:` on INDEX **+** `03b-human-confirm.md` (no AI names; P0 + PM) | → `:confirm` |
-| **G4** | Plan mapped to AC/claims (P2 soft unless `--strict`) | → `:plan` |
-| **G5** | No OPEN questions (P2 soft unless `--strict`) | → `:conflict` |
-| **G6** | Coverage map + tests PASS | → `:build` |
-| **G7** | Review evidence (P2 soft unless `--strict`) | → `:review` |
-| **G8** | Test + machine evidence; `--strict`/P0 = CI-native verify | → `:test` |
-| **G9** | Ship safety + canary/soak/on-call/SLO + rollback | → `:ship` |
+| Gate | PASS means | Retry with |
+|------|------------|------------|
+| **G0** | Domain knowledge covers ticket | `:learning` / `:coaching` |
+| **G1** | Spec + Risk (+ security if P0) | `:spec` |
+| **G2** | Conflicts decided (P2 soft unless `--strict`) | `:conflict` |
+| **G3** | Human confirm in INDEX **and** `03b-human-confirm.md` | `:confirm` |
+| **G4** | Plan mapped (P2 soft unless `--strict`) | `:plan` |
+| **G5** | No OPEN questions (P2 soft unless `--strict`) | `:conflict` |
+| **G6** | Coverage map + PASS | `:build` |
+| **G7** | Review evidence (P2 soft unless `--strict`) | `:review` |
+| **G8** | Tests + machine evidence (`--strict` = CI-native) | `:test` |
+| **G9** | Ship safety (canary/soak/on-call/SLO/rollback) | `:ship` |
 
-### Risk lanes
-
-See `references/risk.md`.
-
-| Tier | Lane | Notes |
+| Risk | Lane | Notes |
 |------|------|-------|
-| **P0** | Hard | Money/auth/PII/legacy — no WAIVE G3/G8; dual confirm; machine evidence mandatory |
-| **P1** | Hard | Default behavior change — full G0–G9 |
-| **P2** | Fast | Chore/docs — may WAIVE G2/G4/G5/G7 with INDEX rows |
+| **P0** | Hard | Money/auth/PII/legacy — dual CONFIRM; no WAIVE G3/G8; `02b-security.md` |
+| **P1** | Hard | Default product change — full G0–G9 |
+| **P2** | Fast | Chore — G2/G4/G5/G7 soft unless `--strict` |
 
-Ship merge requires **G9 PASS** (`--min G9`).
+Details: [references/risk.md](./references/risk.md).
 
-### WAIVE policy
+### WAIVE
 
-A gate may be waived only when the worklog `INDEX.md` contains a row with all five fields:
+On `INDEX.md`:
 
+```text
+- G4/task-2 | reason | owner | 2026-12-31 | PM note
 ```
-Gate/claim | reason | owner | expiry YYYY-MM-DD | PM note
-```
 
-**Forbidden without PM sign-off:** waiving any gate involving money flows, permission logic, or legacy data migration.
+No WAIVE for money/permission/legacy without PM. P0 cannot WAIVE G3/G8.
 
 ---
 
-## Workspace layout
+## Confirm phrase (required)
 
-Auto-created on first run. Project slug is resolved from environment → `.dev-workflow.json` → git remote → cwd name.
+After `:confirm`, reply exactly:
 
+```text
+CONFIRM G3: TICKET-123 Your Name 2026-08-11
 ```
-workspaces/
-└── <project-slug>/
-    ├── PROJECT.md                  # Project overview, repos, domains
-    ├── domain-knowledge/
-    │   ├── INDEX.md                # Knowledge coverage tracker
-    │   ├── architecture.md
-    │   ├── business.md
-    │   ├── glossary.md
-    │   ├── changelog.md
-    │   └── domains/<domain>.md
-    ├── repos/
-    │   └── <repo-slug>/
-    │       ├── NOTES.md
-    │       ├── map-flows.md
-    │       ├── map-models.md
-    │       └── open-questions.md
-    └── worklogs/
-        └── <Ticket_ID>/
-            ├── INDEX.md            # Gate status + waivers
-            ├── 01-intent.md
-            ├── 02-spec.md
-            ├── 03-conflict-report.md
-            ├── 03-qa-log.md
-            ├── 04-plan.md
-            ├── 05-impl-log.md
-            ├── 06-review-qa.md
-            ├── 06b-test-evidence.md
-            ├── 07-ship.md
-            └── (optional) ../pilot/PILOT-v0.2.md
+
+P0 also:
+
+```text
+CONFIRM G3-PM: TICKET-123 PM Name 2026-08-11
 ```
+
+Forbidden in the name field: `AI`, `ChatGPT`, `Claude`, `Copilot`, `Cursor`, `Assistant`, `Bot`.  
+Must be stored in **INDEX.md** and **03b-human-confirm.md** with `Source: user-message`.
 
 ---
 
-## Repository structure
+## Worklog artifacts
 
 ```
-dev-workflow/
-├── bin/
-│   ├── check-gates.sh          # Programmatic gate enforcer (exit 0=PASS, 1=FAIL, 2=error)
-│   └── lib/
-│       └── resolve-paths.sh    # Auto-detects project root, workspaces root, project slug
-├── commands/                   # Slash command definitions (one .md per stage)
-├── skills/                     # Stage logic (one SKILL.md per stage; symlinks to references/ + templates/)
-├── references/                 # Shared knowledge loaded on-demand by skills
-│   ├── workflow.md             # Gate table + dispatch rules
-│   ├── risk.md                 # P0/P1/P2 hard/fast lanes
-│   ├── security.md             # P0 02b-security rules
-│   ├── pilot.md                # 10-ticket pilot ops
-│   ├── project-root.md         # Path resolution algorithm
-│   ├── learning.md             # learning stage rules
-│   ├── coaching.md             # coaching stage rules
-│   ├── conflict-check.md       # conflict detection steps
-│   └── enforce.md              # Enforcement policy
-├── templates/                  # Artifact templates (filled by AI per ticket)
-├── hosts/
-│   └── antigravity/            # Antigravity-specific bundle (built by rebuild.sh)
-├── fixtures/
-│   └── workspaces/demo/        # Example workspace for gate checker smoke tests
-├── .claude-plugin/             # Claude Code marketplace manifest
-├── .cursor-plugin/             # Cursor marketplace manifest
-├── .codex-plugin/              # Codex manifest
-├── plugin.json                 # Agent Plugins (Cursor Cloud) manifest
-├── install.sh                  # Installer — wires symlinks + deploys commands to host tools
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── MARKETPLACE.md
-└── STRUCTURE.md
+workspaces/<project-slug>/
+├── PROJECT.md
+├── domain-knowledge/
+├── repos/<repo-slug>/
+├── pilot/PILOT-v0.4.md          # optional measurable proof
+└── worklogs/<Ticket_ID>/
+    ├── INDEX.md                 # Risk, Pilot, gates, CONFIRM, waivers
+    ├── 01-intent.md
+    ├── 02-spec.md
+    ├── 02b-security.md          # P0 only
+    ├── 03-conflict-report.md
+    ├── 03-qa-log.md
+    ├── 03b-human-confirm.md     # exact human CONFIRM text
+    ├── 04-plan.md
+    ├── 05-impl-log.md
+    ├── 06-review-qa.md
+    ├── 06b-test-evidence.md
+    └── 07-ship.md
 ```
 
 ---
 
-## Enforcement (CLI)
-
-Run the gate checker directly from the terminal, independently of any AI:
+## CLI enforcement
 
 ```bash
 export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project my-project --min G9 --strict
-# optional: --verify-net
+
+# Pre-merge (recommended)
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 \
+  --project my-project --min G9 --strict
+
+# Pilot score (after 10 tickets)
+"$DEV_WORKFLOW_PLUGIN/bin/pilot-score.sh" \
+  workspaces/my-project/pilot/PILOT-v0.4.md
 ```
 
-Or via AI:
+| Flag | Default | Meaning |
+|------|---------|---------|
+| `--project` | auto | Project slug |
+| `--min` | `G8` | Check through gate; use `G9` before merge |
+| `--strict` | off | SHA/junit verify; implies `--verify-net`; no P2 soft; no G8 WAIVE |
+| `--verify-net` | off* | HTTP HEAD on CI URL (*on when `--strict`) |
+| `--json` | off | Machine-readable result |
 
-```
-/dev-workflow:check TICKET-123
-```
-
-**Exit codes:** `0` = PASS, `1` = FAIL, `2` = usage/path error.
-
-**Flags:**
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--project <slug>` | auto-detect | Override project slug |
-| `--min <Gx>` | `G8` | Check through gate (`G0`–`G9`); use `G9` before merge |
-| `--strict` | off | CI-native verify; implies `--verify-net`; no P2 soft; no G8 WAIVE |
-| `--verify-net` | off (on with `--strict`) | HTTP HEAD check on CI run URL |
-| `--json` | off | JSON for CI |
-
-**CI example:**
-
-```yaml
-- name: Gate check
-  run: |
-    ./bin/check-gates.sh ${{ env.TICKET_ID }} \
-      --project ${{ env.PROJECT_SLUG }} \
-      --min G9 \
-      --strict \
-      --json
-```
+Exit: `0` PASS · `1` FAIL · `2` usage/path error.
 
 ---
 
-## Org CI (required)
+## Org CI & pilot
 
-Copy `templates/ci/github-actions-dev-workflow.yml` into the product repo and mark `dev-workflow-gates` as a **required** status check.  
-Pilot proof: `bin/pilot-score.sh workspaces/<slug>/pilot/PILOT-v0.4.md` (see `references/maturity.md`).
+1. Copy [templates/ci/github-actions-dev-workflow.yml](./templates/ci/github-actions-dev-workflow.yml) into the **product** repo.  
+2. Require status check `dev-workflow-gates` on the default branch.  
+3. Run a 10-ticket pilot → `pilot-score.sh` must exit 0.  
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development workflow, adding stages, gate editing guidelines, commit conventions, and release steps.
+See [docs/USER-GUIDE.md §7](./docs/USER-GUIDE.md#7-pilot-prove-the-workflow-works) and [references/maturity.md](./references/maturity.md).
+
+---
+
+## Documentation map
+
+| Doc | Audience | Content |
+|-----|----------|---------|
+| **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)** | Developers | Full day-to-day guide |
+| [MARKETPLACE.md](./MARKETPLACE.md) | Installers | Host-specific install + smoke |
+| [STRUCTURE.md](./STRUCTURE.md) | Contributors | Annotated tree |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Contributors | How to change the plugin |
+| [CHANGELOG.md](./CHANGELOG.md) | Everyone | Version history |
+| [references/](./references/) | AI + advanced users | Gates, risk, security, pilot, enforce |
 
 ---
 

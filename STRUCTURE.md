@@ -1,129 +1,86 @@
-# Structure — dev-workflow
+# Structure — dev-workflow v0.4
 
-This document explains the purpose of every directory and key file.
+Annotated layout. **Edit** `references/` and `templates/` only; re-run `bash install.sh` to refresh skill symlinks.
 
 ---
 
-## Directory tree
+## Tree
 
 ```
 dev-workflow/
+├── bin/
+│   ├── check-gates.sh              # G0–G9 enforcer (PASS/FAIL)
+│   ├── pilot-score.sh              # 10-ticket measurable success bar
+│   └── lib/resolve-paths.sh        # Project/workspace/slug resolution
 │
-├── bin/                        # Shell scripts (no external dependencies)
-│   ├── check-gates.sh          # Gate enforcer — exits 0 PASS / 1 FAIL / 2 error
-│   └── lib/
-│       └── resolve-paths.sh    # Shared path-resolution library (sourced by check-gates.sh)
+├── commands/                       # Slash commands (Cursor / Claude)
+│   ├── dev-workflow.md             # alias → :start
+│   └── dev-workflow:<stage>.md     # one file per stage
 │
-├── commands/                   # Slash command definitions for Claude Code and Cursor
-│   ├── dev-workflow.md         # Alias for :start
-│   ├── dev-workflow:learning.md
-│   ├── dev-workflow:coaching.md
-│   ├── dev-workflow:start.md
-│   ├── dev-workflow:spec.md
-│   ├── dev-workflow:conflict.md
-│   ├── dev-workflow:confirm.md
-│   ├── dev-workflow:plan.md
-│   ├── dev-workflow:build.md
-│   ├── dev-workflow:review.md
-│   ├── dev-workflow:check.md
-│   ├── dev-workflow:ship.md
-│   └── dev-workflow:status.md
+├── skills/<stage>/SKILL.md         # Stage instructions (AI)
+│   ├── references/ → ../../references
+│   └── templates/  → ../../templates
 │
-├── skills/                     # Stage logic — one subdirectory per stage
-│   └── <stage>/
-│       ├── SKILL.md            # Stage instructions loaded by the AI
-│       ├── references/         # Symlink → ../../references  (set by install.sh)
-│       └── templates/          # Symlink → ../../templates   (set by install.sh)
+├── references/                     # Shared rules (load on demand)
+│   ├── workflow.md                 # Gate table + stage order
+│   ├── risk.md                     # P0/P1/P2 + timeboxes
+│   ├── security.md                 # P0 02b-security
+│   ├── pilot.md                    # Pilot ops
+│   ├── maturity.md                 # Expert rubric (≥8)
+│   ├── enforce.md                  # Checker flags
+│   ├── project-root.md             # Path resolution
+│   ├── learning.md / coaching.md
+│   └── conflict-check.md
 │
-├── references/                 # Shared knowledge files — loaded on demand inside skills
-│   ├── workflow.md             # Gate table, dispatch rules, output contract
-│   ├── project-root.md         # Path resolution algorithm and workspace auto-creation
-│   ├── learning.md             # Rules for the learning stage
-│   ├── coaching.md             # Rules for the coaching stage
-│   ├── conflict-check.md       # Conflict detection steps and claim format
-│   └── enforce.md              # Enforcement policy and WAIVE rules
+├── templates/                      # Filled per ticket / project
+│   ├── INDEX.md
+│   ├── 01-intent.md … 07-ship.md
+│   ├── 02b-security.md             # P0
+│   ├── 03b-human-confirm.md        # G3 anti-forge
+│   ├── 06b-test-evidence.md        # G8
+│   ├── pilot-metrics.md
+│   ├── gate-checklist.md / pr-checklist.md
+│   ├── ci/github-actions-dev-workflow.yml
+│   ├── domain-knowledge/
+│   └── workspaces/_project|/_repo/
 │
-├── templates/                  # Artifact templates — AI fills one per ticket per stage
-│   ├── INDEX.md                # Worklog index: gate status, waivers, next action
-│   ├── 01-intent.md            # Raw ticket intent capture
-│   ├── 02-spec.md              # Acceptance Criteria (Scenario + NEG/PERM/EDGE + UI states)
-│   ├── 03-conflict-report.md   # Spec-vs-code conflict claims and decisions
-│   ├── 03-qa-log.md            # Open questions tracker (G4: must be empty to advance)
-│   ├── 04-plan.md              # TDD-ready task breakdown mapped to ACs/claims
-│   ├── 05-impl-log.md          # Implementation log + AC↔test coverage map
-│   ├── 06-review-qa.md         # Review evidence table (How/By/Date per AC — G6)
-│   ├── 07-ship.md              # Ship notes and PR description
-│   ├── gate-checklist.md       # Manual gate checklist (supplement to check-gates.sh)
-│   ├── pr-checklist.md         # PR review checklist
-│   ├── outcomes.md             # Outcome tracking
-│   ├── domain-knowledge/       # Knowledge-base templates (filled during :learning)
-│   │   ├── INDEX.md
-│   │   ├── architecture.md
-│   │   ├── business.md
-│   │   ├── glossary.md
-│   │   ├── changelog.md
-│   │   └── domains/_template.md
-│   └── workspaces/             # Workspace scaffold templates
-│       ├── _project/
-│       │   ├── PROJECT.md                  # Project overview template
-│       │   └── dev-workflow.json.example   # Marker file example for path resolution
-│       └── _repo/
-│           ├── NOTES.md
-│           ├── map-flows.md
-│           ├── map-models.md
-│           └── open-questions.md
+├── docs/
+│   └── USER-GUIDE.md               # Day-to-day usage (start here for humans)
 │
-├── hosts/                      # Host-specific adaptations
-│   └── antigravity/
-│       ├── plugin.json         # Antigravity manifest
-│       ├── rebuild.sh          # Builds the Antigravity bundle (flat-skills, symlinks, commands)
-│       └── commands/           # Antigravity command copies (generated by rebuild.sh)
-│
-├── fixtures/                   # Test fixtures — static; not user data
-│   └── workspaces/demo/        # Demo workspace with a deliberately failing worklog
-│       ├── PROJECT.md
-│       ├── domain-knowledge/INDEX.md
-│       └── worklogs/FIX-FAIL/
-│           ├── INDEX.md
-│           └── 02-spec.md
-│
-├── .claude-plugin/             # Claude Code marketplace manifest
-│   ├── plugin.json
-│   └── marketplace.json
-├── .cursor-plugin/             # Cursor marketplace manifest
-│   ├── plugin.json
-│   └── marketplace.json
-├── .codex-plugin/              # Codex manifest
-│   └── plugin.json
-│
-├── plugin.json                 # Agent Plugins / Cursor Cloud manifest
-├── install.sh                  # Installer — symlinks, command deployment, Antigravity build
-├── README.md
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── MARKETPLACE.md
-├── STRUCTURE.md                # (this file)
+├── fixtures/workspaces/demo/       # Checker smoke data + sample pilot
+├── hosts/antigravity/              # Antigravity bundle
+├── .claude-plugin/ .cursor-plugin/ .codex-plugin/
+├── plugin.json
+├── install.sh
+├── README.md MARKETPLACE.md CONTRIBUTING.md CHANGELOG.md
 └── LICENSE
 ```
+
+**Stages in `install.sh`:**  
+`start learning coaching spec conflict confirm plan build review test check ship status`
+
+---
+
+## Worklog artifacts ↔ gates
+
+| Template | Gate |
+|----------|------|
+| domain-knowledge / PROJECT.md | G0 |
+| `02-spec.md` (+ `02b-security.md` if P0) | G1 |
+| `03-conflict-report.md` | G2 |
+| `03b-human-confirm.md` + INDEX CONFIRM | G3 |
+| `04-plan.md` | G4 |
+| `03-qa-log.md` (no OPEN) | G5 |
+| `05-impl-log.md` | G6 |
+| `06-review-qa.md` | G7 |
+| `06b-test-evidence.md` | G8 |
+| `07-ship.md` | G9 |
 
 ---
 
 ## Design principles
 
-### Single source of truth
-
-`references/` and `templates/` are the canonical versions of all shared content.  
-`install.sh` creates symlinks from `skills/<stage>/references` and `skills/<stage>/templates` pointing back to these directories.  
-Never duplicate content across stages — edit the root copy and re-run `bash install.sh`.
-
-### Load on demand
-
-Skills only load the reference files they need for a given stage. This keeps AI context small and reduces token cost.
-
-### Neutral by default
-
-No project-specific names or absolute paths appear in plugin source files. Project context is resolved at runtime via environment variables, `.dev-workflow.json` markers, or git remote names.
-
-### Programmatic enforcement
-
-`bin/check-gates.sh` is the source of truth for gate PASS/FAIL — not AI self-reporting. The AI calls this script (via `/dev-workflow:check`) and reports the result. CI can also call it directly.
+1. **Single source of truth** — root `references/` + `templates/` only.  
+2. **Load on demand** — skills list only needed refs (token discipline).  
+3. **Neutral paths** — no hardcoded customer repos; resolve via env/marker/git.  
+4. **Programmatic truth** — `check-gates.sh` / `pilot-score.sh`, not AI self-claim.

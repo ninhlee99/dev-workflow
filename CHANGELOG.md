@@ -6,6 +6,15 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [Unreleased]
+
+### Changed
+- Docs clarity: `docs/USER-GUIDE.md` as primary guide; README/STRUCTURE/MARKETPLACE/enforce synced to v0.4.
+- Template gate labels fixed (`03-qa-log`→G5, `05-impl-log`→G6, `06-review-qa`→G7).
+- Naming table: confirm (G3) vs review (G7) vs test (G8).
+
+---
+
 ## [0.4.0] — 2026-08-11
 
 ### Added
