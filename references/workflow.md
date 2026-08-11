@@ -19,11 +19,12 @@ Goal: clear requirements before code. Use `workspaces/<project-slug>/` from `pro
 | G4 | `03-qa-log` has no OPEN | `:conflict` |
 | G5 | AC/claim coverage map complete + tests pass | `:build` |
 | G6 | AC evidence has How/By (+ UI evidence if UI) | `:review` |
+| G6.5 | test evidence recorded in `06b-test-evidence.md`; zero failing tests | `:test` |
 | G7 | ship artifact complete (`07-ship`) | `:ship` |
 
 WAIVE only on worklog INDEX: `Gate/claim | reason | owner | expiry | PM note`. No money/permission/legacy waive unless PM.
 
 ## Stage order
-`:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → `/dev-workflow:check` → `:ship` → `:status`
+`:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → `:test` → `/dev-workflow:check` → `:ship` → `:status`
 
 If current stage already PASS, jump to next. End `:spec`, end `:plan`, and before close `:build`: print uncovered AC/claim map; any gap = FAIL.

@@ -33,6 +33,8 @@ learning ──► coaching ──► spec ──► conflict ──► confirm 
                                                                                │
                                                                             review
                                                                                │
+                                                                             test (evidence)
+                                                                               │
                                                                            check ──► ship
 ```
 
@@ -46,8 +48,9 @@ Each arrow is a **gate**. The AI refuses to advance until all criteria for the c
 6. **plan** — TDD-ready task breakdown; each task maps to an AC or conflict claim.
 7. **build** — Code + tests written test-first; coverage map locked before PASS.
 8. **review** — Evidence table filled (How/By/Date per AC); UI checklist if the ticket touches UI.
-9. **check** — `bin/check-gates.sh` runs programmatic gate validation.
-10. **ship** — Ship notes and PR description drafted from the reviewed worklog.
+9. **test** — Real test suite run; output, screenshots, and logs recorded as durable evidence in `06b-test-evidence.md`; G6.5 requires zero failing tests.
+10. **check** — `bin/check-gates.sh` runs programmatic gate validation.
+11. **ship** — Ship notes and PR description drafted from the reviewed worklog.
 
 ---
 
@@ -110,6 +113,7 @@ agy plugin install ./hosts/antigravity
 /dev-workflow:plan    TICKET-123   # TDD-ready plan
 /dev-workflow:build   TICKET-123   # implement + tests
 /dev-workflow:review  TICKET-123   # fill evidence table
+/dev-workflow:test    TICKET-123   # run tests + record evidence
 /dev-workflow:check   TICKET-123   # programmatic gate check
 /dev-workflow:ship    TICKET-123   # PR notes
 
@@ -134,8 +138,9 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | `/dev-workflow:plan` | `<Ticket ID>` | Produces TDD-ready `04-plan.md`; each task maps to an AC/claim; requires user sign-off (G2.5) |
 | `/dev-workflow:build` | `<Ticket ID>` | Implements with TDD; records AC↔test coverage map in `05-impl-log.md`; refuses coding if prior gates fail |
 | `/dev-workflow:review` | `<Ticket ID>` | Fills evidence table (How/By/Date per AC) in `06-review-qa.md`; includes UI checklist when applicable |
+| `/dev-workflow:test` | `<Ticket ID>` | Runs real test suite; records output, screenshots, and logs in `06b-test-evidence.md`; G6.5 gate |
 | `/dev-workflow:check` | `<Ticket ID> [slug] [G5\|G6\|G7]` | Runs `bin/check-gates.sh`; reports PASS/FAIL per gate with actionable messages |
-| `/dev-workflow:ship` | `<Ticket ID>` | Drafts ship notes and PR description in `07-ship.md`; requires G6 PASS |
+| `/dev-workflow:ship` | `<Ticket ID>` | Drafts ship notes and PR description in `07-ship.md`; requires G6.5 PASS |
 | `/dev-workflow:status` | `[Ticket ID]` | Prints current gate status and knowledge coverage |
 | `/dev-workflow` | `<Ticket ID> [URL] [extra]` | Alias for `:start` |
 
@@ -153,6 +158,7 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | **G4** | `03-qa-log.md` has zero OPEN questions | → `:conflict` |
 | **G5** | 100% AC/claim → test coverage map; all tests pass | → `:build` |
 | **G6** | Evidence table filled (How/By/Date) for all ACs; UI checklist done if applicable | → `:review` |
+| **G6.5** | Test evidence recorded in `06b-test-evidence.md`; zero failing tests | → `:test` |
 | **G7** | `07-ship.md` complete with release evidence and PR notes | → `:ship` |
 
 ### WAIVE policy
@@ -198,6 +204,7 @@ workspaces/
             ├── 04-plan.md
             ├── 05-impl-log.md
             ├── 06-review-qa.md
+            ├── 06b-test-evidence.md
             └── 07-ship.md
 ```
 

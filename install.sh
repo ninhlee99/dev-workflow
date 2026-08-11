@@ -9,7 +9,7 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STAGES=(start learning coaching spec conflict confirm plan build review check ship status)
+STAGES=(start learning coaching spec conflict confirm plan build review test check ship status)
 PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"
 # Optional: set DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS to a project .claude/commands dir to sync there.
 

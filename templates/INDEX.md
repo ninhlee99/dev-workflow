@@ -26,6 +26,7 @@
 | G4 No open Qs | ☐ PASS ☐ FAIL ☐ WAIVE | `03-qa-log.md` | OPEN = FAIL |
 | G5 Build+tests | ☐ PASS ☐ FAIL ☐ WAIVE | `05-impl-log.md` | 100% map + tests PASS |
 | G6 Review evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06-review-qa.md` | How/By/Date per AC; UI checklist if touches UI |
+| G6.5 Test evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06b-test-evidence.md` | zero failing tests + evidence recorded |
 | G7 Ship | ☐ PASS ☐ FAIL ☐ WAIVE | `07-ship.md` | `:ship` |
 
 **Build only when G0–G2.5 PASS.** G5 needs evidence.
