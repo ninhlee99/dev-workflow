@@ -172,8 +172,8 @@ if need_gate G1; then
     if ! grep -qE '\|[[:space:]]*AC-[0-9]+[[:space:]]*\|[[:space:]]*[^|[:space:]]+' "$SPEC"; then
       maybe_fail G1 "no filled AC-xx row (Given empty / template only)"
     fi
-    if grep -qiE 'Đụng UI\?\*\*.*Yes|Đụng UI\?.*☑ Yes|Đụng UI\?.*\[x\] Yes' "$SPEC"; then
-      grep -qE 'UI states|Happy' "$SPEC" || maybe_fail G1 "Đụng UI=Yes but UI states section missing/empty marker"
+    if grep -qiE 'Touches UI\?.*☑ Yes|Touches UI\?.*\[x\] Yes|Touches UI\?\*\*.*Yes' "$SPEC"; then
+      grep -qE 'UI states|Happy' "$SPEC" || maybe_fail G1 "Touches UI=Yes but UI states section missing/empty marker"
     fi
   fi
 fi
@@ -188,7 +188,7 @@ if need_gate G2; then
       maybe_fail G2 "03-conflict-report marks G2 FAIL"
     fi
     if grep -qE '☐ PASS[[:space:]]+☐ FAIL' "$CREPORT" && ! grep -qE '☑ PASS|\[x\] PASS' "$CREPORT"; then
-      warn "G2: G2 PASS not checked — confirm all non-KHỚP decided"
+      warn "G2: G2 PASS not checked — confirm all non-MATCH conflicts decided"
     fi
   fi
 fi
@@ -246,15 +246,12 @@ if need_gate G6; then
     if [[ "${empty_how:-0}" -gt 0 ]]; then
       maybe_fail G6 "$empty_how AC evidence row(s) missing How verified"
     fi
-    if grep -qiE 'Đụng UI\?\*\*.*Yes|Đụng UI\?.*☑ Yes' "$REVIEW" || grep -qiE 'Đụng UI\?\*\*.*Yes' "$SPEC" 2>/dev/null; then
-      if file_ok "$SPEC" && grep -qiE 'Đụng UI\?.*Yes' "$SPEC"; then
+    if grep -qiE 'Touches UI\?.*☑ Yes|Touches UI\?.*\[x\] Yes|Touches UI\?\*\*.*Yes' "$REVIEW" || grep -qiE 'Touches UI\?\*\*.*Yes' "$SPEC" 2>/dev/null; then
+      if file_ok "$SPEC" && grep -qiE 'Touches UI\?.*Yes' "$SPEC"; then
         grep -qE 'UI checklist|Happy' "$REVIEW" || maybe_fail G6 "UI ticket but UI checklist section missing"
       fi
     fi
-    if grep -qiE '^\*\*Cấm|^Cấm' "$REVIEW"; then
-      :
-    fi
-    if ! grep -qE '☑ PASS|\[x\] PASS|☐ PASS — sẵn sàng' "$REVIEW"; then
+    if ! grep -qE '☑ PASS|\[x\] PASS' "$REVIEW"; then
       warn "G6: PASS not clearly checked on 06-review-qa"
     fi
   fi

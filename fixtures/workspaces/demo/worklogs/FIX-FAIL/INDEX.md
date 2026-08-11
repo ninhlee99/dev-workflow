@@ -2,7 +2,7 @@
 
 - **Project slug:** `demo`
 - **Ticket:** (fixture — expect G1 FAIL)
-- **Đụng UI?** ☐ No
+- **Touches UI?** ☐ No
 - **Updated:** 2026-08-11
 
 ## Gate status

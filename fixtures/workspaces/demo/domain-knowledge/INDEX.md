@@ -5,7 +5,7 @@
 - **Needs learning:** no
 - **Needs coaching:** no
 
-## Đã có
+## Coverage
 
 | Area | File | Status |
 |---|---|---|
