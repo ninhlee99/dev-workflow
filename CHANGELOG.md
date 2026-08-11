@@ -6,6 +6,22 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.4.0] — 2026-08-11
+
+### Added
+- **Anti-forge G3:** require `03b-human-confirm.md` + ban AI/tool names; Source: user-message.
+- **`--strict` ⇒ `--verify-net`** for CI URL checks.
+- **`bin/pilot-score.sh`** machine success bar (all measurable metrics ≥ target).
+- **GitHub Actions required-check template** `templates/ci/github-actions-dev-workflow.yml`.
+- **Maturity rubric** `references/maturity.md` (every criterion ≥ 8 mapped to controls).
+- Stage timeboxes for adoption; Pilot:yes enforce ticket row in pilot log at G9.
+- G9 tighter: canary N/A reason ≥10 chars; dashboard URL or query ≥15 chars.
+
+### Changed
+- Version `0.4.0`. Pilot template uses machine Scores block.
+
+---
+
 ## [0.3.0] — 2026-08-11
 
 ### Added
@@ -57,7 +73,8 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Neutral language:** no project-specific names or hardcoded paths in plugin source.
 - **Token-optimised docs:** all references and skill files written for minimal AI context load.
 
-[Unreleased]: https://github.com/ninhlee99/dev-workflow/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/ninhlee99/dev-workflow/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.4.0
 [0.3.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.3.0
 [0.2.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.1.0

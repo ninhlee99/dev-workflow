@@ -19,4 +19,17 @@ If unsure → **P1**.
 ## Fast lane (P2)
 
 Checker softens G2/G4/G5/G7 when Risk=P2 and not `--strict`.  
-Still need AC, `CONFIRM G3:`, tests/machine evidence, and G9 (N/A allowed with reason).
+Still need AC, `CONFIRM G3:` (+ `03b-human-confirm.md`), tests/machine evidence, and G9.
+
+## Stage timeboxes (adoption)
+
+| Stage | Soft max |
+|---|---|
+| learning (first project) | 1–2 sessions |
+| spec + conflict + confirm | ≤ 1 day for P1 |
+| plan | ≤ 2 h |
+| build | per estimate |
+| review + test + ship | ≤ 0.5 day after build green |
+| P2 full path | ≤ 2 h wall-clock target |
+
+If over timebox → escalate Risk or split ticket — do not skip G3/G8/G9.

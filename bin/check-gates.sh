@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check-gates.sh — gate checker for dev-workflow (v0.3.0).
+# check-gates.sh — gate checker for dev-workflow (v0.4.0).
 # Exit 0 = PASS. Exit 1 = FAIL. Exit 2 = usage/path error.
 set -euo pipefail
 
@@ -24,11 +24,10 @@ usage() {
   cat <<EOF
 Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9] [--strict] [--verify-net] [--json]
 
-Default --min G8. Use --min G9 before merge.
---strict: reject G8 WAIVE; CI-native verify (SHA/junit); UI screenshots; no P2 soft skips.
---verify-net: HTTP(S) HEAD check on CI run URL (optional network).
-P0: no G3/G8 WAIVE; requires 02b-security.md; machine evidence.
-P2: G2/G4/G5/G7 soft (warn) unless --strict.
+Default --min G8. Merge: --min G9 --strict (implies --verify-net).
+--strict: CI-native verify; no P2 soft; no G8 WAIVE; enable --verify-net.
+G3 requires INDEX phrase + 03b-human-confirm.md (no AI names).
+P0: 02b-security.md. Pilot:yes on INDEX requires pilot log row at G9.
 
 Exit: 0 PASS · 1 FAIL · 2 usage/path error
 EOF
@@ -79,6 +78,11 @@ done
 
 [[ -n "$TICKET" ]] || { usage; exit 2; }
 
+# --strict implies network verify when CI URLs are checked
+if [[ "$STRICT" -eq 1 ]]; then
+  VERIFY_NET=1
+fi
+
 if [[ -n "$PROJECT_SLUG" ]]; then
   export DEV_WORKFLOW_PROJECT_SLUG="$PROJECT_SLUG"
 fi
@@ -99,6 +103,7 @@ echo "resolved: project=$PROJECT_SLUG home=$PROJECT_HOME worklog=$WORKLOG" >&2
 INDEX="$WORKLOG/INDEX.md"
 SPEC="$WORKLOG/02-spec.md"
 SECURITY="$WORKLOG/02b-security.md"
+HCONFIRM="$WORKLOG/03b-human-confirm.md"
 CREPORT="$WORKLOG/03-conflict-report.md"
 QALOG="$WORKLOG/03-qa-log.md"
 PLAN="$WORKLOG/04-plan.md"
@@ -108,6 +113,7 @@ TESTEV="$WORKLOG/06b-test-evidence.md"
 SHIP="$WORKLOG/07-ship.md"
 DK_INDEX="$PROJECT_HOME/domain-knowledge/INDEX.md"
 PROJECT_MD="$PROJECT_HOME/PROJECT.md"
+PILOT_DIR="$PROJECT_HOME/pilot"
 
 file_ok() { [[ -f "$1" ]]; }
 
@@ -325,15 +331,34 @@ fi
 # --- G3 ---
 if need_gate G3; then
   file_ok "$INDEX" || maybe_fail G3 "missing INDEX.md (need CONFIRM G3:)"
+  file_ok "$HCONFIRM" || maybe_fail G3 "missing 03b-human-confirm.md (anti-forge human confirm file)"
+  confirm_ok_phrase() {
+    local src="$1"
+    grep -qE "CONFIRM G3:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$src"
+  }
+  banned_ai_name() {
+    local src="$1"
+    grep -qiE "CONFIRM G3(-PM)?:[[:space:]]*$TICKET[[:space:]]+(AI|ChatGPT|Claude|Copilot|Cursor|Assistant|Bot)\\b" "$src"
+  }
   if file_ok "$INDEX"; then
-    if ! grep -qE "CONFIRM G3:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$INDEX"; then
-      maybe_fail G3 "missing human phrase CONFIRM G3: $TICKET <name> <YYYY-MM-DD>"
-    fi
+    confirm_ok_phrase "$INDEX" || maybe_fail G3 "INDEX missing CONFIRM G3: $TICKET <name> <YYYY-MM-DD>"
+    banned_ai_name "$INDEX" && maybe_fail G3 "INDEX CONFIRM uses forbidden AI/tool name"
+  fi
+  if file_ok "$HCONFIRM"; then
+    confirm_ok_phrase "$HCONFIRM" || maybe_fail G3 "03b-human-confirm.md missing CONFIRM G3 phrase"
+    banned_ai_name "$HCONFIRM" && maybe_fail G3 "03b-human-confirm CONFIRM uses forbidden AI/tool name"
+    grep -qiE 'Source:.*user-message' "$HCONFIRM" || maybe_fail G3 "03b-human-confirm must set Source: user-message"
     if [[ "$RISK" == "P0" ]]; then
-      if ! grep -qE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$INDEX"; then
-        maybe_fail G3 "P0 requires CONFIRM G3-PM: $TICKET <pm> <YYYY-MM-DD>"
-      fi
+      grep -qE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$HCONFIRM" \
+        || maybe_fail G3 "P0 requires CONFIRM G3-PM in 03b-human-confirm.md"
+      banned_ai_name "$HCONFIRM" && true
+      grep -qiE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+(AI|ChatGPT|Claude|Copilot|Cursor|Assistant|Bot)\\b" "$HCONFIRM" \
+        && maybe_fail G3 "CONFIRM G3-PM uses forbidden AI/tool name"
     fi
+  fi
+  if file_ok "$INDEX" && [[ "$RISK" == "P0" ]]; then
+    grep -qE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$INDEX" \
+      || maybe_fail G3 "P0 requires CONFIRM G3-PM on INDEX"
   fi
 fi
 
@@ -477,8 +502,19 @@ if need_gate G9; then
       grep -qiE 'Has migration|Backward compatible|Migration' "$SHIP" || maybe_fail G9 "Migration section incomplete"
       grep -qiE 'Flag name|Feature flag|dark launch|N/A' "$SHIP" || maybe_fail G9 "Feature flag section incomplete"
       grep -qiE '### Canary|Canary %' "$SHIP" || maybe_fail G9 "Canary/soak section missing"
-      if ! field_nonempty "$SHIP" "Canary %"; then
-        maybe_fail G9 "Canary % empty/placeholder (use N/A + reason if none)"
+      canary_line="$(grep -i 'Canary %' "$SHIP" | head -1 || true)"
+      if [[ -z "$canary_line" ]] || [[ "$canary_line" =~ \.\.\.|… ]]; then
+        maybe_fail G9 "Canary % empty/placeholder"
+      elif echo "$canary_line" | grep -qiE 'N/?A'; then
+        reason="$(python3 -c "
+import re,sys
+s=sys.argv[1]
+m=re.search(r'N/?A\s*[\(\[—:\-]*\s*(.*)', s, re.I)
+print((m.group(1) if m else '').strip(' )]*'))
+" "$canary_line" 2>/dev/null || true)"
+        if [[ ${#reason} -lt 10 ]]; then
+          maybe_fail G9 "Canary N/A needs reason ≥10 chars (e.g. N/A (internal tool only))"
+        fi
       fi
       if ! field_nonempty "$SHIP" "Soak time"; then
         maybe_fail G9 "Soak time empty/placeholder"
@@ -487,6 +523,27 @@ if need_gate G9; then
         maybe_fail G9 "Alert/owner on-call empty/placeholder"
       fi
       grep -qiE 'SLO|error-budget|error budget' "$SHIP" || maybe_fail G9 "SLO/error-budget note missing"
+      # dashboard / log query must be URL or long concrete query
+      dash="$(grep -iE 'Dashboard or log query' "$SHIP" | head -1 || true)"
+      dash_val="$(echo "$dash" | sed -E 's/.*:[[:space:]]*//;s/\*//g;s/^[[:space:]]+//;s/[[:space:]]+$//')"
+      if placeholderish "$dash_val" || [[ "$dash_val" =~ ^\.\.\.|… ]]; then
+        maybe_fail G9 "Dashboard/log query empty"
+      elif [[ ! "$dash_val" =~ ^https?:// ]] && [[ ${#dash_val} -lt 15 ]]; then
+        maybe_fail G9 "Dashboard/log query must be http(s) URL or concrete query ≥15 chars"
+      fi
+    fi
+  fi
+
+  # Pilot mode: INDEX Pilot: ☑ yes → require ticket mentioned in pilot log
+  if file_ok "$INDEX" && grep -qE 'Pilot:.*☑ yes|Pilot:.*\[x\] yes|Pilot:.*\[X\] yes' "$INDEX" 2>/dev/null; then
+    pilot_hit=0
+    if [[ -d "$PILOT_DIR" ]]; then
+      if grep -R -l --include='PILOT*.md' -E "$TICKET" "$PILOT_DIR" >/dev/null 2>&1; then
+        pilot_hit=1
+      fi
+    fi
+    if [[ "$pilot_hit" -ne 1 ]]; then
+      maybe_fail G9 "Pilot:yes but ticket $TICKET not found in $PILOT_DIR/PILOT*.md"
     fi
   fi
 fi

@@ -15,7 +15,7 @@ Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
 | G0 | domain knowledge matches ticket scope | empty → `:learning`; wrong/changed → `:coaching` |
 | G1 | AC + Risk set; **P0 also `02b-security.md`** | `:spec` |
 | G2 | each non-MATCH has decision, owner, date (P2 soft unless `--strict`) | `:conflict` |
-| G3 | human `CONFIRM G3:` (P0 also `CONFIRM G3-PM:`) | `:confirm` |
+| G3 | human `CONFIRM G3:` on INDEX **and** `03b-human-confirm.md` (no AI names; P0 + PM) | `:confirm` |
 | G4 | tasks map to AC/claims (P2 soft unless `--strict`) | `:plan` |
 | G5 | no OPEN Qs (P2 soft unless `--strict`) | `:conflict` |
 | G6 | coverage map + tests pass | `:build` |

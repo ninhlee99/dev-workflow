@@ -21,3 +21,4 @@ CONFIRM G3: FAIL-G8-failing Ninh Lee 2026-08-11
 ## Waivers
 
 - (none)
+- **Pilot:** ☐ yes ☑ no

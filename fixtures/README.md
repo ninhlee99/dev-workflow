@@ -1,15 +1,8 @@
-# Fixtures (check-gates smoke) — v0.3.0
+# Fixtures — v0.4.0
 
 ```bash
-chmod +x bin/check-gates.sh
 export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
+./bin/check-gates.sh PASS-G8 --project demo --min G8          # exit 0
+./bin/check-gates.sh PASS-G9 --project demo --min G9 --strict # exit 0
+./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md  # exit 0
 ```
-
-| Ticket | Command | Expect |
-|---|---|---|
-| FIX-FAIL | `--min G1` | exit 1 |
-| FAIL-G8-missing | `--min G8` | exit 1 |
-| FAIL-G8-failing | `--min G8` | exit 1 |
-| PASS-G8 | `--min G8` | exit 0 |
-| PASS-G8 | `--min G8 --strict` | exit 0 (junit file verified) |
-| PASS-G9 | `--min G9` / `--min G9 --strict` | exit 0 |

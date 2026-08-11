@@ -1,6 +1,6 @@
 {
   "name": "dev-workflow",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Clear spec & requirements before coding. Multi-project workspaces. Learning, conflict-check, TDD evidence gates, /dev-workflow:check enforce.",
   "author": {
     "name": "Ninh Lee",

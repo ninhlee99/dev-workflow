@@ -32,7 +32,7 @@
 
 ### Monitor / alert / SLO
 
-- **Dashboard or log query:** grep PASS-G9 in app logs
+- **Dashboard or log query:** https://example.com/dashboard/PASS-G9
 - **Alert / owner on-call:** fixture-oncall
 - **SLO / error-budget note:** N/A fixture
 - **First 24h watch:** yes

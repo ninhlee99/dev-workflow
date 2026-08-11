@@ -1,6 +1,6 @@
 # dev-workflow
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#installation)
 
@@ -153,7 +153,7 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | **G0** | Domain knowledge exists and matches ticket scope | → `:learning` or `:coaching` |
 | **G1** | Spec + Risk P0/P1/P2 (+ UI); **P0 requires `02b-security.md`** | → `:spec` |
 | **G2** | Conflict decisions (P2 soft unless `--strict`) | → `:conflict` |
-| **G3** | `CONFIRM G3:` phrase (P0 + `CONFIRM G3-PM:`) | → `:confirm` |
+| **G3** | `CONFIRM G3:` on INDEX **+** `03b-human-confirm.md` (no AI names; P0 + PM) | → `:confirm` |
 | **G4** | Plan mapped to AC/claims (P2 soft unless `--strict`) | → `:plan` |
 | **G5** | No OPEN questions (P2 soft unless `--strict`) | → `:conflict` |
 | **G6** | Coverage map + tests PASS | → `:build` |
@@ -285,8 +285,8 @@ Or via AI:
 |------|---------|-------------|
 | `--project <slug>` | auto-detect | Override project slug |
 | `--min <Gx>` | `G8` | Check through gate (`G0`–`G9`); use `G9` before merge |
-| `--strict` | off | CI-native verify; no P2 soft; no G8 WAIVE; UI screenshots |
-| `--verify-net` | off | HTTP HEAD check on CI run URL |
+| `--strict` | off | CI-native verify; implies `--verify-net`; no P2 soft; no G8 WAIVE |
+| `--verify-net` | off (on with `--strict`) | HTTP HEAD check on CI run URL |
 | `--json` | off | JSON for CI |
 
 **CI example:**
@@ -303,7 +303,10 @@ Or via AI:
 
 ---
 
-## Contributing
+## Org CI (required)
+
+Copy `templates/ci/github-actions-dev-workflow.yml` into the product repo and mark `dev-workflow-gates` as a **required** status check.  
+Pilot proof: `bin/pilot-score.sh workspaces/<slug>/pilot/PILOT-v0.4.md` (see `references/maturity.md`).
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for development workflow, adding stages, gate editing guidelines, commit conventions, and release steps.
 

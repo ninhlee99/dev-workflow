@@ -1,0 +1,49 @@
+# .github/workflows/dev-workflow-gates.yml
+# Copy into the *product* repo (not only the plugin). Mark as required status check.
+name: dev-workflow-gates
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ticket:
+        description: Ticket ID (worklog folder name)
+        required: true
+      project:
+        description: Project slug
+        required: true
+      min_gate:
+        description: G8 or G9
+        default: G9
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve plugin
+        run: |
+          if [[ -n "${{ vars.DEV_WORKFLOW_PLUGIN_PATH }}" ]]; then
+            echo "PLUGIN=${{ vars.DEV_WORKFLOW_PLUGIN_PATH }}" >> "$GITHUB_ENV"
+          elif [[ -d "$HOME/.claude/plugins/dev-workflow" ]]; then
+            echo "PLUGIN=$HOME/.claude/plugins/dev-workflow" >> "$GITHUB_ENV"
+          else
+            git clone --depth 1 https://github.com/ninhlee99/dev-workflow.git /tmp/dev-workflow
+            echo "PLUGIN=/tmp/dev-workflow" >> "$GITHUB_ENV"
+          fi
+
+      - name: Gate check (strict)
+        env:
+          TICKET: ${{ github.event.inputs.ticket || github.head_ref }}
+          PROJECT: ${{ github.event.inputs.project || github.event.repository.name }}
+          MIN: ${{ github.event.inputs.min_gate || 'G9' }}
+        run: |
+          chmod +x "$PLUGIN/bin/check-gates.sh"
+          # Prefer explicit ticket input; else parse TICKET-123 from branch name
+          T="$TICKET"
+          if [[ ! "$T" =~ [A-Za-z0-9]+-[0-9]+ ]]; then
+            T="$(echo "$GITHUB_HEAD_REF" | grep -oE '[A-Za-z][A-Za-z0-9]*-[0-9]+' | head -1 || true)"
+          fi
+          [[ -n "$T" ]] || { echo "Set ticket input or name branch with Ticket-ID"; exit 2; }
+          "$PLUGIN/bin/check-gates.sh" "$T" --project "$PROJECT" --min "$MIN" --strict --verify-net --json
