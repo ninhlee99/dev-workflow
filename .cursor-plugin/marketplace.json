@@ -1,7 +1,8 @@
 {
   "name": "dev-workflow-marketplace",
   "owner": {
-    "name": "Ninh Lee"
+    "name": "Ninh Lee",
+    "email": "levanninh2101@gmail.com"
   },
   "metadata": {
     "description": "Cursor marketplace catalog for dev-workflow plugin"

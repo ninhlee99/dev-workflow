@@ -1,7 +1,8 @@
 {
   "name": "dev-workflow-marketplace",
   "owner": {
-    "name": "Ninh Lee"
+    "name": "Ninh Lee",
+    "email": "levanninh2101@gmail.com"
   },
   "metadata": {
     "description": "Marketplace for clear-spec delivery workflow (learning, conflict, TDD gates, check-gates enforce).",
@@ -14,7 +15,8 @@
       "description": "Clear spec & requirements before coding. Multi-project workspaces. Stages: learning|coaching|spec|conflict|plan|build|confirm|check|ship. Enforce via check-gates.",
       "version": "0.1.0",
       "author": {
-        "name": "Ninh Lee"
+        "name": "Ninh Lee",
+        "email": "levanninh2101@gmail.com"
       },
       "keywords": [
         "spec",
