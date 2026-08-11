@@ -14,7 +14,7 @@ commands/dev-workflow*.md
 references/*.md
 templates/
 bin/check-gates.sh
-README*.md STRUCTURE.md MARKETPLACE.md LICENSE
+README.md STRUCTURE.md MARKETPLACE.md LICENSE
 ```
 
 Stages: `start learning coaching spec conflict plan build confirm check ship status`.
