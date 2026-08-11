@@ -1,7 +1,7 @@
 {
   "name": "dev-workflow-marketplace",
   "owner": {
-    "name": "Dev Workflow Maintainers"
+    "name": "Ninh Lee"
   },
   "metadata": {
     "description": "Cursor marketplace catalog for dev-workflow plugin"

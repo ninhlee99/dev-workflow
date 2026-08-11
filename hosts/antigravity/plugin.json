@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Clear spec & requirements before coding. Multi-project workspaces. Gated delivery with learning, conflict-check, TDD evidence, and check-gates enforce.",
   "author": {
-    "name": "Dev Workflow Maintainers"
+    "name": "Ninh Lee"
   },
   "homepage": "https://github.com/ninhlee99/dev-workflow",
   "repository": "https://github.com/ninhlee99/dev-workflow",

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Clear spec & requirements before coding. Multi-project workspaces. Enforce via /dev-workflow:check → bin/check-gates.sh.",
   "author": {
-    "name": "Dev Workflow Maintainers"
+    "name": "Ninh Lee"
   },
   "homepage": "https://github.com/ninhlee99/dev-workflow",
   "repository": "https://github.com/ninhlee99/dev-workflow",
