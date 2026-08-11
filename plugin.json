@@ -7,6 +7,7 @@
     "name": "Dev Workflow Maintainers"
   },
   "homepage": "https://github.com/ninhlee99/dev-workflow",
+  "repository": "https://github.com/ninhlee99/dev-workflow",
   "license": "MIT",
   "keywords": [
     "spec",
