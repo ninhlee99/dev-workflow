@@ -13,15 +13,15 @@ Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
 | Gate | PASS means | FAIL command |
 |---|---|---|
 | G0 | domain knowledge matches ticket scope | empty → `:learning`; wrong/changed → `:coaching` |
-| G1 | AC has Scenario + NEG/PERM/EDGE (+ UI states if UI); Risk set | `:spec` |
-| G2 | each non-MATCH has decision, owner, date | `:conflict` |
-| G3 | human `CONFIRM G3: <Ticket> <name> <date>` on INDEX (P0 also `CONFIRM G3-PM:`) | `:confirm` |
-| G4 | tasks map to AC/claims + regression | `:plan` |
-| G5 | `03-qa-log` has no OPEN | `:conflict` |
-| G6 | AC/claim coverage map complete + tests pass | `:build` |
-| G7 | AC evidence has How/By (+ UI evidence if UI) | `:review` |
-| G8 | test evidence + machine fields (CI URL / SHA / junit); zero failing tests | `:test` |
-| G9 | ship safety: migration, flag, monitor, rollback filled | `:ship` |
+| G1 | AC + Risk set; **P0 also `02b-security.md`** | `:spec` |
+| G2 | each non-MATCH has decision, owner, date (P2 soft unless `--strict`) | `:conflict` |
+| G3 | human `CONFIRM G3:` (P0 also `CONFIRM G3-PM:`) | `:confirm` |
+| G4 | tasks map to AC/claims (P2 soft unless `--strict`) | `:plan` |
+| G5 | no OPEN Qs (P2 soft unless `--strict`) | `:conflict` |
+| G6 | coverage map + tests pass | `:build` |
+| G7 | AC evidence How/By (P2 soft unless `--strict`) | `:review` |
+| G8 | test evidence + machine fields; `--strict`/P0 = CI-native verify | `:test` |
+| G9 | ship safety + canary/soak/on-call/SLO + rollback | `:ship` |
 
 WAIVE only on INDEX: `Gate/claim | reason | owner | expiry | PM note`.  
 P0: no WAIVE G3/G8. `--strict` or P0/P1: machine evidence required. `--strict`: no G8 WAIVE.

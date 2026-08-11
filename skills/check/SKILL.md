@@ -1,8 +1,8 @@
 ---
 name: check
 description: >-
-  Run bin/check-gates.sh and report PASS/FAIL. Supports G0–G9 and --strict.
-argument-hint: "<Ticket ID> [slug?] [G8|G9?] — run gate checker; never invent PASS"
+  Run check-gates.sh (G0–G9). Supports --strict and --verify-net.
+argument-hint: "<Ticket ID> [slug?] [G8|G9?] — never invent PASS"
 arguments: [ticket_id, project_slug, min_gate]
 disable-model-invocation: true
 ---
@@ -10,6 +10,6 @@ disable-model-invocation: true
 # /dev-workflow:check
 
 Run real checker only.
-Default min G8; before merge use G9.
-Pass `--strict` for CI / when Risk P0.
-Report exit code + next stage. Nonzero = refuse PASS.
+Pre-ship: `--min G8`. Pre-merge: `--min G9 --strict`.
+Optional `--verify-net` for CI URL HTTP check.
+Nonzero exit = refuse PASS.

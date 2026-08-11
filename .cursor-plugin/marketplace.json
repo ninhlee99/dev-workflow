@@ -12,7 +12,7 @@
       "name": "dev-workflow",
       "source": "./",
       "description": "Clear spec & requirements before coding with gated delivery stages and check-gates enforce.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "skills": "./skills",
       "commands": "./commands"
     }

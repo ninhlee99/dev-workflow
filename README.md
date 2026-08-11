@@ -1,6 +1,6 @@
 # dev-workflow
 
-[![Version](https://img.shields.io/badge/version-0.2.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#installation)
 
@@ -151,15 +151,15 @@ The AI will create a workspace at `workspaces/<project-slug>/worklogs/TICKET-123
 | Gate | Criterion | Blocked command |
 |------|-----------|-----------------|
 | **G0** | Domain knowledge exists and matches ticket scope | → `:learning` or `:coaching` |
-| **G1** | Spec + **Risk P0/P1/P2** + Scenario AC (+ UI states if UI) | → `:spec` |
-| **G2** | Every non-MATCH conflict has decision + owner + date | → `:conflict` |
-| **G3** | Human phrase `CONFIRM G3: <Ticket> <name> <date>` on INDEX (P0 + `CONFIRM G3-PM:`) | → `:confirm` |
-| **G4** | Every task in `04-plan.md` maps to an AC or conflict claim | → `:plan` |
-| **G5** | `03-qa-log.md` has zero OPEN questions | → `:conflict` |
-| **G6** | 100% AC/claim → test coverage map; all tests pass | → `:build` |
-| **G7** | Evidence table filled (How/By/Date); UI checklist if applicable | → `:review` |
-| **G8** | Test evidence + machine fields (SHA / CI URL or junit); zero failing tests | → `:test` |
-| **G9** | Ship safety: migration / feature flag / monitor / rollback | → `:ship` |
+| **G1** | Spec + Risk P0/P1/P2 (+ UI); **P0 requires `02b-security.md`** | → `:spec` |
+| **G2** | Conflict decisions (P2 soft unless `--strict`) | → `:conflict` |
+| **G3** | `CONFIRM G3:` phrase (P0 + `CONFIRM G3-PM:`) | → `:confirm` |
+| **G4** | Plan mapped to AC/claims (P2 soft unless `--strict`) | → `:plan` |
+| **G5** | No OPEN questions (P2 soft unless `--strict`) | → `:conflict` |
+| **G6** | Coverage map + tests PASS | → `:build` |
+| **G7** | Review evidence (P2 soft unless `--strict`) | → `:review` |
+| **G8** | Test + machine evidence; `--strict`/P0 = CI-native verify | → `:test` |
+| **G9** | Ship safety + canary/soak/on-call/SLO + rollback | → `:ship` |
 
 ### Risk lanes
 
@@ -236,6 +236,8 @@ dev-workflow/
 ├── references/                 # Shared knowledge loaded on-demand by skills
 │   ├── workflow.md             # Gate table + dispatch rules
 │   ├── risk.md                 # P0/P1/P2 hard/fast lanes
+│   ├── security.md             # P0 02b-security rules
+│   ├── pilot.md                # 10-ticket pilot ops
 │   ├── project-root.md         # Path resolution algorithm
 │   ├── learning.md             # learning stage rules
 │   ├── coaching.md             # coaching stage rules
@@ -266,6 +268,7 @@ Run the gate checker directly from the terminal, independently of any AI:
 ```bash
 export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 "$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project my-project --min G9 --strict
+# optional: --verify-net
 ```
 
 Or via AI:
@@ -282,7 +285,8 @@ Or via AI:
 |------|---------|-------------|
 | `--project <slug>` | auto-detect | Override project slug |
 | `--min <Gx>` | `G8` | Check through gate (`G0`–`G9`); use `G9` before merge |
-| `--strict` | off | Reject G8 WAIVE; require machine evidence + UI screenshots; reject thin output |
+| `--strict` | off | CI-native verify; no P2 soft; no G8 WAIVE; UI screenshots |
+| `--verify-net` | off | HTTP HEAD check on CI run URL |
 | `--json` | off | JSON for CI |
 
 **CI example:**

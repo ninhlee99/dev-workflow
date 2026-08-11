@@ -15,7 +15,7 @@
 ### Migration / data
 
 - **Has migration?** ☐ Yes ☑ No
-- **Backward compatible?** ☐ Yes ☐ No ☑ N/A
+- **Backward compatible / expand-contract?** ☐ Yes ☐ No ☑ N/A
 - **Notes:** no schema change
 
 ### Feature flag / dark launch
@@ -24,10 +24,17 @@
 - **Default off in prod?** ☐ Yes ☑ N/A
 - **Rollout plan:** normal merge
 
-### Monitor / alert
+### Canary / soak
+
+- **Canary %:** N/A (internal tool fixture)
+- **Soak time before 100%:** 30m
+- **Abort criteria:** error rate > 1%
+
+### Monitor / alert / SLO
 
 - **Dashboard or log query:** grep PASS-G9 in app logs
 - **Alert / owner on-call:** fixture-oncall
+- **SLO / error-budget note:** N/A fixture
 - **First 24h watch:** yes
 
 ### Rollback

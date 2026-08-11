@@ -1,7 +1,7 @@
 ---
 name: spec
 description: >-
-  Normalize Intent + Spec; require Risk P0/P1/P2 and Scenario AC before coding.
+  Normalize Intent + Spec; set Risk P0/P1/P2. P0 must add 02b-security.md.
 argument-hint: "<Ticket ID> [ticket URL] [requirements path or paste]"
 arguments: [ticket_id, url_or_path, spec_path]
 disable-model-invocation: true
@@ -10,7 +10,7 @@ disable-model-invocation: true
 # /dev-workflow:spec
 
 Normalize requirements into worklog.
-Set **Risk** (P0/P1/P2) per `references/risk.md`.
-Fill `01-intent.md` + `02-spec.md` with Scenario AC + NEG/PERM/EDGE (+ UI if needed).
-Report uncovered AC/claims. Block forward when ambiguous.
+Set **Risk** per `references/risk.md`.
+If P0: create `02b-security.md` from template (`references/security.md`).
+Fill Scenario AC + NEG/PERM/EDGE (+ UI if needed).
 Empty knowledge → `:learning`; wrong/changed → `:coaching`.

@@ -32,8 +32,8 @@ CONFIRM G3: …
 | Gate | Status | Artifact | Note |
 |---|---|---|---|
 | G0 Domain knowledge | ☐ PASS ☐ FAIL | `../domain-knowledge/` (+ repos) | empty → `:learning`; wrong/changed → `:coaching` |
-| G1 Spec clear | ☐ PASS ☐ FAIL ☐ WAIVE | `02-spec.md` | Scenario AC + Risk; UI if touches UI |
-| G2 Conflict documented | ☐ PASS ☐ FAIL ☐ WAIVE | `03-conflict-report.md` | every non-MATCH has decision + owner + date |
+| G1 Spec clear | ☐ PASS ☐ FAIL ☐ WAIVE | `02-spec.md` (+ `02b-security.md` if P0) | Scenario AC + Risk; P0 security |
+| G2 Conflict documented | ☐ PASS ☐ FAIL ☐ WAIVE | `03-conflict-report.md` | P2 soft unless `--strict` |
 | G3 User sign-off | ☐ PASS ☐ FAIL | `INDEX.md` Handoff | requires literal CONFIRM G3: |
 | G4 Plan | ☐ PASS ☐ FAIL ☐ WAIVE | `04-plan.md` | task ↔ AC/claim + regression |
 | G5 No open Qs | ☐ PASS ☐ FAIL ☐ WAIVE | `03-qa-log.md` | OPEN = FAIL |

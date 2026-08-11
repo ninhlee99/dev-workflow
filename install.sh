@@ -13,7 +13,7 @@ STAGES=(start learning coaching spec conflict confirm plan build review test che
 PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"
 # Optional: set DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS to a project .claude/commands dir to sync there.
 
-echo "==> Plugin: $PLUGIN_DIR (v0.2.0)"
+echo "==> Plugin: $PLUGIN_DIR (v0.3.0)"
 
 # Remove obsolete qa stage if present
 if [[ -d "$PLUGIN_DIR/skills/qa" ]]; then

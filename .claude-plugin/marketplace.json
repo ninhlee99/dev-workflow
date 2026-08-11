@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Marketplace for clear-spec delivery workflow (learning, conflict, TDD gates, check-gates enforce).",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "plugins": [
     {
       "name": "dev-workflow",
       "source": "./",
       "description": "Clear spec & requirements before coding. Multi-project workspaces. Stages: learning|coaching|spec|conflict|plan|build|confirm|check|ship. Enforce via check-gates.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "author": {
         "name": "Ninh Lee",
         "email": "levanninh2101@gmail.com"

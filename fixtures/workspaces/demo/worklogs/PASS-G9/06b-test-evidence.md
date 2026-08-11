@@ -12,7 +12,7 @@
 |---|---|
 | Commit SHA | abcdef1234567890 |
 | CI run URL | N/A-local |
-| JUnit / XML / log path | /tmp/junit-PASS-G9.xml |
+| JUnit / XML / log path | junit-PASS-G9.xml |
 | Branch | main |
 
 ## Test run output

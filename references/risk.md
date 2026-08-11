@@ -4,9 +4,9 @@ Set **Risk** on worklog `INDEX.md` and `02-spec.md` before `:plan`.
 
 | Tier | When | Lane | Rules |
 |---|---|---|---|
-| **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | All G0–G9. No WAIVE on G3/G8. Dual confirm: `CONFIRM G3:` + `CONFIRM G3-PM:`. Machine evidence mandatory. `--strict` implied. |
-| **P1** | normal product behavior change | Hard | All G0–G9. WAIVE only with full INDEX fields. Machine evidence required for G8. |
-| **P2** | copy, config, docs, tiny non-behavioral chore | Fast | Required: G0, G1, G3, G6, G8, G9. G2/G4/G5/G7 may WAIVE with reason. Still forbid silent skip. |
+| **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | All G0–G9. No WAIVE G3/G8. Dual `CONFIRM G3` + `CONFIRM G3-PM`. Machine evidence + **CI-native verify** under `--strict`. **`02b-security.md` required**. |
+| **P1** | normal product behavior change | Hard | All G0–G9. Machine evidence required. `--strict` recommended before merge. |
+| **P2** | copy, config, docs, tiny non-behavioral chore | Fast | Required hard: G0, G1, G3, G6, G8, G9. **G2/G4/G5/G7 soft** unless `--strict` (warn, not fail). Still prefer INDEX WAIVE rows when skipping intentionally. |
 
 ## How to choose
 
@@ -16,9 +16,7 @@ Set **Risk** on worklog `INDEX.md` and `02-spec.md` before `:plan`.
 
 If unsure → **P1**.
 
-## Fast lane (P2) discipline
+## Fast lane (P2)
 
-- Still write AC (even one row).
-- Still get `CONFIRM G3:` from human.
-- Still attach test/machine evidence for touched paths.
-- Document WAIVE rows for skipped gates.
+Checker softens G2/G4/G5/G7 when Risk=P2 and not `--strict`.  
+Still need AC, `CONFIRM G3:`, tests/machine evidence, and G9 (N/A allowed with reason).

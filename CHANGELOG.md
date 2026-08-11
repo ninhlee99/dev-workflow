@@ -6,6 +6,21 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.3.0] — 2026-08-11
+
+### Added
+- **CI-native verify** (`--strict` / P0): SHA vs git HEAD, junit/xml parse for failures, optional `--verify-net` HTTP check.
+- **P2 soft gates** in checker: G2/G4/G5/G7 warn-only unless `--strict`.
+- **P0 security mini-gate:** `02b-security.md` + `references/security.md`.
+- **G9 deepened:** canary %, soak time, on-call, SLO/error-budget.
+- **Pilot ops guide:** `references/pilot.md` with success bar for 10-ticket proof.
+
+### Changed
+- Version `0.3.0` across manifests.
+- `07-ship.md`, risk/enforce/workflow docs and skills synced.
+
+---
+
 ## [0.2.0] — 2026-08-11
 
 ### Added
@@ -42,6 +57,7 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Neutral language:** no project-specific names or hardcoded paths in plugin source.
 - **Token-optimised docs:** all references and skill files written for minimal AI context load.
 
-[Unreleased]: https://github.com/ninhlee99/dev-workflow/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ninhlee99/dev-workflow/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.3.0
 [0.2.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ninhlee99/dev-workflow/releases/tag/v0.1.0

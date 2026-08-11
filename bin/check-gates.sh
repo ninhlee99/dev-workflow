@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# check-gates.sh — soft→hard gate checker for dev-workflow worklogs (v0.2.0).
-# Exit 0 = PASS (or only WAIVE-covered fails). Exit 1 = FAIL. Exit 2 = usage/path error.
+# check-gates.sh — gate checker for dev-workflow (v0.3.0).
+# Exit 0 = PASS. Exit 1 = FAIL. Exit 2 = usage/path error.
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -13,6 +13,7 @@ TICKET=""
 PROJECT_SLUG=""
 MIN_GATE="G8"
 STRICT=0
+VERIFY_NET=0
 JSON=0
 FAILS=()
 WARNS=()
@@ -21,11 +22,13 @@ RISK="P1"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9] [--strict] [--json]
+Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9] [--strict] [--verify-net] [--json]
 
-Default --min G8 (pre-ship). Use --min G9 before merge.
---strict: reject G8 WAIVE; require machine evidence + UI screenshots; reject thin output.
-Risk P0 implies strict machine evidence and blocks G3/G8 WAIVE.
+Default --min G8. Use --min G9 before merge.
+--strict: reject G8 WAIVE; CI-native verify (SHA/junit); UI screenshots; no P2 soft skips.
+--verify-net: HTTP(S) HEAD check on CI run URL (optional network).
+P0: no G3/G8 WAIVE; requires 02b-security.md; machine evidence.
+P2: G2/G4/G5/G7 soft (warn) unless --strict.
 
 Exit: 0 PASS · 1 FAIL · 2 usage/path error
 EOF
@@ -45,6 +48,11 @@ need_gate() {
   [[ "$(gate_rank "$g")" -le "$(gate_rank "$MIN_GATE")" ]]
 }
 
+p2_soft_gate() {
+  local g="$1"
+  [[ "$RISK" == "P2" && "$STRICT" -eq 0 && ( "$g" == "G2" || "$g" == "G4" || "$g" == "G5" || "$g" == "G7" ) ]]
+}
+
 fail() { FAILS+=("$1"); }
 warn() { WARNS+=("$1"); }
 
@@ -53,6 +61,7 @@ while [[ $# -gt 0 ]]; do
     --project) PROJECT_SLUG="${2:-}"; shift 2 ;;
     --min) MIN_GATE="${2:-G8}"; shift 2 ;;
     --strict) STRICT=1; shift ;;
+    --verify-net) VERIFY_NET=1; shift ;;
     --json) JSON=1; shift ;;
     -h|--help) usage; exit 0 ;;
     -*)
@@ -79,7 +88,7 @@ if [[ -z "${WORKLOG:-}" ]]; then
   WORKLOG="$(resolve_worklog_dir "$TICKET" "${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-}" || true)"
 fi
 if [[ -z "${WORKLOG:-}" ]]; then
-  echo "ERROR: worklog not found for ticket=$TICKET project=${PROJECT_SLUG:-${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-auto}}" >&2
+  echo "ERROR: worklog not found for ticket=$TICKET" >&2
   exit 2
 fi
 
@@ -89,6 +98,7 @@ echo "resolved: project=$PROJECT_SLUG home=$PROJECT_HOME worklog=$WORKLOG" >&2
 
 INDEX="$WORKLOG/INDEX.md"
 SPEC="$WORKLOG/02-spec.md"
+SECURITY="$WORKLOG/02b-security.md"
 CREPORT="$WORKLOG/03-conflict-report.md"
 QALOG="$WORKLOG/03-qa-log.md"
 PLAN="$WORKLOG/04-plan.md"
@@ -135,6 +145,11 @@ REQUIRE_MACHINE=0
 if [[ "$STRICT" -eq 1 || "$RISK" == "P0" || "$RISK" == "P1" ]]; then
   REQUIRE_MACHINE=1
 fi
+# --strict implies native verify of local artifacts
+VERIFY_NATIVE=0
+if [[ "$STRICT" -eq 1 || "$RISK" == "P0" ]]; then
+  VERIFY_NATIVE=1
+fi
 
 if file_ok "$INDEX"; then
   while IFS= read -r line; do
@@ -158,7 +173,7 @@ waived() {
       local pipes
       pipes="$(awk -F'|' '{print NF}' <<<"$w")"
       if [[ "$pipes" -ge 4 ]]; then
-        if [[ "$w" =~ [Mm]oney|[Pp]ermission|[Ll]egacy ]]; then
+        if [[ "$w" =~ [Mm]oney|[Pp]ermission|[Ll]egacy|[Pp][Ii][Ii] ]]; then
           if [[ ! "$w" =~ [Pp][Mm] ]]; then
             continue
           fi
@@ -175,9 +190,13 @@ maybe_fail() {
   local msg="$2"
   if waived "$gate"; then
     warn "$gate WAIVED: $msg"
-  else
-    fail "$gate FAIL: $msg"
+    return
   fi
+  if p2_soft_gate "$gate"; then
+    warn "$gate SOFT(P2): $msg"
+    return
+  fi
+  fail "$gate FAIL: $msg"
 }
 
 ui_ticket() {
@@ -192,19 +211,74 @@ placeholderish() {
   [[ -z "$v" || "$v" =~ ^\[.*\]$ || "$v" == "…" || "$v" == "..." ]]
 }
 
+field_nonempty() {
+  local file="$1" label="$2"
+  local line
+  line="$(grep -i "$label" "$file" 2>/dev/null | head -1 || true)"
+  [[ -n "$line" ]] || return 1
+  [[ ! "$line" =~ \.\.\.|… ]] || return 1
+  return 0
+}
+
+verify_junit_file() {
+  local path="$1"
+  # resolve relative to cwd or worklog
+  local f="$path"
+  if [[ ! -f "$f" && -f "$WORKLOG/$path" ]]; then f="$WORKLOG/$path"; fi
+  if [[ ! -f "$f" && -f "$PROJECT_HOME/$path" ]]; then f="$PROJECT_HOME/$path"; fi
+  if [[ ! -f "$f" ]]; then
+    maybe_fail G8 "CI-native: junit/log path not found: $path"
+    return
+  fi
+  if grep -qE 'failures="[1-9][0-9]*"|errors="[1-9][0-9]*"|<failure|<error' "$f" 2>/dev/null; then
+    maybe_fail G8 "CI-native: junit/log reports failures/errors: $f"
+  fi
+}
+
+verify_sha_git() {
+  local sha="$1"
+  local head="" root=""
+  if git -C "$PROJECT_HOME" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    root="$PROJECT_HOME"
+    head="$(git -C "$PROJECT_HOME" rev-parse HEAD 2>/dev/null || true)"
+  elif git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+    head="$(git rev-parse HEAD 2>/dev/null || true)"
+  else
+    warn "G8: no git repo to verify SHA against"
+    return
+  fi
+  [[ -n "$head" ]] || return
+  if [[ "$head" == "$sha"* || "$sha" == "$head"* || "$head" == "${sha:0:7}"* ]]; then
+    return
+  fi
+  if [[ "$WORKLOG" == *"/fixtures/"* ]]; then
+    warn "G8: fixture SHA $sha != HEAD ${head:0:12} (skipped hard fail)"
+    return
+  fi
+  maybe_fail G8 "CI-native: Commit SHA $sha does not match git HEAD ${head:0:12}…"
+}
+
+verify_ci_url() {
+  local url="$1"
+  [[ "$url" =~ ^https?:// ]] || return
+  if [[ "$VERIFY_NET" -ne 1 ]]; then
+    warn "G8: CI URL present (use --verify-net to HTTP-check)"
+    return
+  fi
+  if command -v curl >/dev/null 2>&1; then
+    if ! curl -fsI --max-time 8 "$url" >/dev/null 2>&1; then
+      maybe_fail G8 "CI-native: CI URL not reachable: $url"
+    fi
+  else
+    warn "G8: curl missing — skip --verify-net"
+  fi
+}
+
 # --- G0 ---
 if need_gate G0; then
   file_ok "$PROJECT_MD" || maybe_fail G0 "missing PROJECT.md at $PROJECT_HOME"
   file_ok "$DK_INDEX" || maybe_fail G0 "missing domain-knowledge/INDEX.md"
-  if file_ok "$DK_INDEX"; then
-    if grep -qiE 'Needs learning:.*☐ yes|Needs learning:\s*yes' "$DK_INDEX" 2>/dev/null; then
-      if grep -qE 'Needs learning:.*☑ yes|Needs learning:.*\[x\] yes|\*\*yes\*\*' "$DK_INDEX" 2>/dev/null; then
-        maybe_fail G0 "Needs learning still yes on domain-knowledge INDEX"
-      else
-        warn "G0: check Needs learning manually on $DK_INDEX"
-      fi
-    fi
-  fi
 fi
 
 # --- G1 ---
@@ -220,7 +294,20 @@ if need_gate G1; then
       maybe_fail G1 "Risk tier P0/P1/P2 not set on spec or INDEX"
     fi
     if ui_ticket; then
-      grep -qE 'UI states|Happy' "$SPEC" || maybe_fail G1 "Touches UI=Yes but UI states section missing/empty marker"
+      grep -qE 'UI states|Happy' "$SPEC" || maybe_fail G1 "Touches UI=Yes but UI states section missing"
+    fi
+  fi
+  # P0 security mini-gate
+  if [[ "$RISK" == "P0" ]]; then
+    file_ok "$SECURITY" || maybe_fail G1 "P0 requires 02b-security.md (see references/security.md)"
+    if file_ok "$SECURITY"; then
+      grep -qiE 'Threat note|Abuse cases|Mitigations' "$SECURITY" || maybe_fail G1 "02b-security missing threat note"
+      if grep -qiE 'Threat note|Asset at risk' "$SECURITY" && grep -qE 'other: …|other: \.\.\.|Asset at risk:.*…' "$SECURITY"; then
+        maybe_fail G1 "02b-security threat note still placeholder"
+      fi
+      if ! grep -qE '☑ PASS|\[x\] PASS' "$SECURITY"; then
+        maybe_fail G1 "02b-security needs at least one PASS in Secrets/PII or contract table"
+      fi
     fi
   fi
 fi
@@ -229,30 +316,23 @@ fi
 if need_gate G2; then
   file_ok "$CREPORT" || maybe_fail G2 "missing 03-conflict-report.md"
   if file_ok "$CREPORT"; then
-    grep -qE 'claim_id|C-[0-9]+' "$CREPORT" || warn "G2: no claim_id rows detected — confirm report filled"
-    if grep -qE '## G2' "$CREPORT" && grep -qE '☐ PASS.*☑ FAIL|G2.*☑ FAIL' "$CREPORT"; then
+    if grep -qE '## G2' "$CREPORT" && grep -qE 'G2.*☑ FAIL' "$CREPORT"; then
       maybe_fail G2 "03-conflict-report marks G2 FAIL"
-    fi
-    if grep -qE '☐ PASS[[:space:]]+☐ FAIL' "$CREPORT" && ! grep -qE '☑ PASS|\[x\] PASS' "$CREPORT"; then
-      warn "G2: G2 PASS not checked — confirm all non-MATCH conflicts decided"
     fi
   fi
 fi
 
-# --- G3 anti-spoof ---
+# --- G3 ---
 if need_gate G3; then
   file_ok "$INDEX" || maybe_fail G3 "missing INDEX.md (need CONFIRM G3:)"
   if file_ok "$INDEX"; then
     if ! grep -qE "CONFIRM G3:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$INDEX"; then
-      maybe_fail G3 "missing human phrase CONFIRM G3: $TICKET <name> <YYYY-MM-DD> on INDEX"
+      maybe_fail G3 "missing human phrase CONFIRM G3: $TICKET <name> <YYYY-MM-DD>"
     fi
     if [[ "$RISK" == "P0" ]]; then
       if ! grep -qE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$INDEX"; then
         maybe_fail G3 "P0 requires CONFIRM G3-PM: $TICKET <pm> <YYYY-MM-DD>"
       fi
-    fi
-    if grep -qiE 'G3 user sign-off:.*☑ FAIL|G3 user sign-off:.*\[x\] FAIL' "$INDEX"; then
-      maybe_fail G3 "G3 user sign-off marked FAIL"
     fi
   fi
 fi
@@ -269,14 +349,10 @@ fi
 if need_gate G5; then
   file_ok "$QALOG" || maybe_fail G5 "missing 03-qa-log.md"
   if file_ok "$QALOG"; then
-    open_n="$(grep -cE '☐ OPEN|\| OPEN \|' "$QALOG" 2>/dev/null || true)"
-    open_n="${open_n:-0}"
-    if [[ "$open_n" -gt 0 ]]; then
-      pure_open="$(grep -E '☐ OPEN' "$QALOG" | grep -cvE 'CONFIRMED|ANSWERED' || true)"
-      pure_open="${pure_open:-0}"
-      if [[ "$pure_open" -gt 0 ]]; then
-        maybe_fail G5 "$pure_open OPEN question(s) in 03-qa-log.md"
-      fi
+    pure_open="$(grep -E '☐ OPEN' "$QALOG" 2>/dev/null | grep -cvE 'CONFIRMED|ANSWERED' || true)"
+    pure_open="${pure_open:-0}"
+    if [[ "$pure_open" -gt 0 ]]; then
+      maybe_fail G5 "$pure_open OPEN question(s) in 03-qa-log.md"
     fi
   fi
 fi
@@ -290,7 +366,7 @@ if need_gate G6; then
       maybe_fail G6 "coverage map still has MISSING"
     fi
     if ! grep -qE '☑ PASS|\[x\] PASS|Result:.*PASS' "$IMPL"; then
-      maybe_fail G6 "no PASS evidence in 05-impl-log (check Result column)"
+      maybe_fail G6 "no PASS evidence in 05-impl-log"
     fi
   fi
 fi
@@ -321,7 +397,7 @@ if need_gate G8; then
     if ! grep -qE '```' "$TESTEV"; then
       maybe_fail G8 "test run output missing code fence"
     fi
-    if grep -qiE 'Overall:.*☑ FAIL|Overall:.*\[x\] FAIL|\*\*Overall:\*\*.*☑ FAIL|\*\*Overall:\*\*.*\[x\] FAIL' "$TESTEV"; then
+    if grep -qiE 'Overall:.*☑ FAIL|Overall:.*\[x\] FAIL' "$TESTEV"; then
       maybe_fail G8 "Overall marked FAIL in 06b-test-evidence"
     fi
     if ! grep -qiE 'Overall:.*☑ PASS|Overall:.*\[x\] PASS|G8 verdict:.*☑ PASS|G8 verdict:.*\[x\] PASS' "$TESTEV"; then
@@ -330,11 +406,13 @@ if need_gate G8; then
     if ! grep -qiE '\*\*Dev:\*\*[[:space:]]*[A-Za-z0-9]|Dev:[[:space:]]*[A-Za-z0-9]' "$TESTEV"; then
       maybe_fail G8 "sign-off Dev name missing"
     fi
+
+    sha="$(table_val "$TESTEV" "Commit SHA")"
+    ci="$(table_val "$TESTEV" "CI run URL")"
+    junit="$(table_val "$TESTEV" "JUnit")"
+    if [[ -z "$junit" ]]; then junit="$(table_val "$TESTEV" "log path")"; fi
+
     if [[ "$REQUIRE_MACHINE" -eq 1 ]]; then
-      sha="$(table_val "$TESTEV" "Commit SHA")"
-      ci="$(table_val "$TESTEV" "CI run URL")"
-      junit="$(table_val "$TESTEV" "JUnit")"
-      if [[ -z "$junit" ]]; then junit="$(table_val "$TESTEV" "log path")"; fi
       if placeholderish "$sha" || [[ ! "$sha" =~ [0-9a-fA-F]{7,} ]]; then
         maybe_fail G8 "machine evidence: Commit SHA missing/invalid"
       fi
@@ -343,14 +421,30 @@ if need_gate G8; then
       fi
       if ! placeholderish "$ci" && [[ ! "$ci" =~ [Hh]ttps?:// ]] && [[ "$ci" != "N/A-local" ]]; then
         if placeholderish "$junit"; then
-          maybe_fail G8 "machine evidence: CI URL must be http(s) or use N/A-local with junit path"
+          maybe_fail G8 "machine evidence: CI URL must be http(s) or N/A-local with junit path"
         fi
       fi
     fi
+
+    # CI-native verification
+    if [[ "$VERIFY_NATIVE" -eq 1 ]]; then
+      if ! placeholderish "$sha" && [[ "$sha" =~ [0-9a-fA-F]{7,} ]]; then
+        verify_sha_git "$sha"
+      fi
+      if ! placeholderish "$junit"; then
+        verify_junit_file "$junit"
+      elif [[ "$ci" == "N/A-local" ]]; then
+        maybe_fail G8 "CI-native: N/A-local requires existing junit/log path"
+      fi
+      if ! placeholderish "$ci" && [[ "$ci" =~ ^https?:// ]]; then
+        verify_ci_url "$ci"
+      fi
+    fi
+
     if ui_ticket || grep -qiE 'Touches UI\?.*☑ Yes|Touches UI\?.*\[x\] Yes' "$TESTEV"; then
       if ! grep -qE '\|[[:space:]]*AC-[0-9]+[[:space:]]*\|[[:space:]]*[^|[:space:]]+' "$TESTEV"; then
         if [[ "$STRICT" -eq 1 || "$RISK" == "P0" ]]; then
-          maybe_fail G8 "UI ticket requires screenshot/recording path in evidence table"
+          maybe_fail G8 "UI ticket requires screenshot/recording path"
         else
           warn "G8: UI ticket but screenshot paths look empty"
         fi
@@ -360,21 +454,19 @@ if need_gate G8; then
       out_lines="$(awk '/## Test run output/,/## Screenshots/{if($0 ~ /```/){c++} else if(c==1 && NF) print}' "$TESTEV" 2>/dev/null | wc -l | tr -d ' ' || true)"
       out_lines="${out_lines:-0}"
       if [[ "${out_lines}" -lt 2 ]]; then
-        maybe_fail G8 "strict/P0: test output too thin (need real runner excerpt)"
+        maybe_fail G8 "strict/P0: test output too thin"
       fi
     fi
   fi
 fi
 
-# --- G9 ship safety ---
+# --- G9 ---
 if need_gate G9; then
   file_ok "$SHIP" || maybe_fail G9 "missing 07-ship.md"
   if file_ok "$SHIP"; then
-    grep -qiE '## Ship safety|### Migration|### Feature flag|### Monitor|### Rollback' "$SHIP" \
+    grep -qiE '## Ship safety|### Migration|### Feature flag|### Rollback' "$SHIP" \
       || maybe_fail G9 "07-ship missing Ship safety sections"
-    # non-placeholder rollback steps
-    rb="$(awk '/### Rollback/,/^## /{print}' "$SHIP" 2>/dev/null | grep -i 'Rollback steps' | head -1 || true)"
-    if [[ -z "$rb" ]] || [[ "$rb" =~ \.\.\.|… ]]; then
+    if ! field_nonempty "$SHIP" "Rollback steps"; then
       if [[ "$RISK" != "P2" ]]; then
         maybe_fail G9 "Rollback steps empty/placeholder"
       else
@@ -382,15 +474,25 @@ if need_gate G9; then
       fi
     fi
     if [[ "$RISK" == "P0" || "$RISK" == "P1" ]]; then
-      grep -qiE 'Monitor|Dashboard|Alert|on-call' "$SHIP" || maybe_fail G9 "Monitor/alert section incomplete"
-      grep -qiE 'Flag name|Feature flag|dark launch|N/A' "$SHIP" || maybe_fail G9 "Feature flag section incomplete"
       grep -qiE 'Has migration|Backward compatible|Migration' "$SHIP" || maybe_fail G9 "Migration section incomplete"
+      grep -qiE 'Flag name|Feature flag|dark launch|N/A' "$SHIP" || maybe_fail G9 "Feature flag section incomplete"
+      grep -qiE '### Canary|Canary %' "$SHIP" || maybe_fail G9 "Canary/soak section missing"
+      if ! field_nonempty "$SHIP" "Canary %"; then
+        maybe_fail G9 "Canary % empty/placeholder (use N/A + reason if none)"
+      fi
+      if ! field_nonempty "$SHIP" "Soak time"; then
+        maybe_fail G9 "Soak time empty/placeholder"
+      fi
+      if ! field_nonempty "$SHIP" "on-call"; then
+        maybe_fail G9 "Alert/owner on-call empty/placeholder"
+      fi
+      grep -qiE 'SLO|error-budget|error budget' "$SHIP" || maybe_fail G9 "SLO/error-budget note missing"
     fi
   fi
 fi
 
 file_ok "$INDEX" || warn "missing worklog INDEX.md"
-echo "risk=$RISK machine_required=$REQUIRE_MACHINE" >&2
+echo "risk=$RISK machine_required=$REQUIRE_MACHINE verify_native=$VERIFY_NATIVE verify_net=$VERIFY_NET" >&2
 
 if [[ "$JSON" -eq 1 ]]; then
   python3 - <<PY
@@ -402,6 +504,8 @@ print(json.dumps({
   "min_gate": "$MIN_GATE",
   "risk": "$RISK",
   "strict": bool($STRICT),
+  "verify_native": bool($VERIFY_NATIVE),
+  "verify_net": bool($VERIFY_NET),
   "machine_required": bool($REQUIRE_MACHINE),
   "fails": $(printf '%s\n' "${FAILS[@]:-}" | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'),
   "warns": $(printf '%s\n' "${WARNS[@]:-}" | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'),

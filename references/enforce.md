@@ -1,13 +1,14 @@
 # Enforce
 
-Never claim G6/G7/G8/G9 PASS without real checker run. Exit code drives verdict.
+Never claim G6–G9 PASS without real checker run.
 
 ```bash
-./bin/check-gates.sh <Ticket> [--project <slug>] [--min G8|G9] [--strict] [--json]
+./bin/check-gates.sh <Ticket> [--project <slug>] [--min G8|G9] [--strict] [--verify-net] [--json]
 ```
 
-- Default `--min G8` (pre-ship). Use `--min G9` before merge.
-- `--strict` or Risk P0/P1: require G8 machine evidence (CI URL, commit SHA, junit/xml or log path).
-- `--strict` / P0: reject G8 WAIVE; P0 also rejects G3 WAIVE.
-- G3 requires literal `CONFIRM G3:` line on INDEX (human phrase; AI must not invent).
-- Exit: `0` PASS · `1` FAIL · `2` usage/path error.
+- Default `--min G8`. Merge gate: `--min G9 --strict`.
+- `--strict`: CI-native verify (SHA vs git HEAD, junit file parse); no P2 soft skips; no G8 WAIVE.
+- `--verify-net`: HTTP HEAD on CI URL.
+- P0: `02b-security.md` required; dual CONFIRM; no G3/G8 WAIVE.
+- P2: G2/G4/G5/G7 soft unless `--strict`.
+- Exit: `0` PASS · `1` FAIL · `2` error.

@@ -1,18 +1,18 @@
 ---
 name: ship
 description: >-
-  Fill 07-ship ship-safety (migration/flag/monitor/rollback) and require G9.
-  Does not push/merge unless user asks. Use /dev-workflow:ship.
-argument-hint: "<Ticket ID> Run after test — fill ship safety and run check --min G9"
+  Fill G9 ship safety (migration/flag/canary/soak/on-call/SLO/rollback).
+  Run check --min G9 --strict before merge. Never push unless asked.
+argument-hint: "<Ticket ID> Run after test — fill 07-ship and check --min G9 --strict"
 arguments: [ticket_id]
 disable-model-invocation: true
 ---
 
 # /dev-workflow:ship
 
-1. Require G8 PASS first (`/dev-workflow:check … G8`).
-2. Fill `templates/07-ship.md` — migration, feature flag, monitor, rollback (G9).
-3. Run `/dev-workflow:check <Ticket> [slug] G9` (add `--strict` for CI/P0).
-4. Refuse ship if checker fails.
-5. Never push/merge unless user explicitly asks.
-6. If ticket is in pilot, add row to `pilot-metrics` log.
+1. Require G8 PASS.
+2. Fill `07-ship.md` including canary %, soak, on-call, SLO, rollback.
+3. P0: ensure `02b-security.md` PASS.
+4. Run `/dev-workflow:check <Ticket> [slug] G9` with `--strict`.
+5. If in pilot, append row per `references/pilot.md`.
+6. Never push/merge unless user explicitly asks.
