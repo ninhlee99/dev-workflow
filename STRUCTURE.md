@@ -10,6 +10,8 @@ Annotated layout. **Edit** `references/` and `templates/` only; re-run `bash ins
 dev-workflow/
 ├── bin/
 │   ├── check-gates.sh              # G0–G9 enforcer (PASS/FAIL)
+│   ├── check-workspace.sh          # Workspace layout health (W0–W6)
+│   ├── clean-worklog.sh            # Archive/purge one ticket worklog
 │   ├── pilot-score.sh              # 10-ticket measurable success bar
 │   └── lib/resolve-paths.sh        # Project/workspace/slug resolution
 │
@@ -31,7 +33,10 @@ dev-workflow/
 │   ├── project-root.md             # Path resolution
 │   ├── learning.md / coaching.md
 │   ├── conflict-check.md
-│   └── code-review.md              # Neutral diff review + :fix triage
+│   ├── code-review.md              # Neutral diff review + :fix triage
+│   ├── locale.md                   # Chat/setup in user language
+│   ├── workspace-health.md         # check-workspace.sh rules
+│   └── task-isolation.md           # One worklog per ticket
 │
 ├── templates/                      # Filled per ticket / project
 │   ├── INDEX.md
@@ -59,7 +64,7 @@ dev-workflow/
 ```
 
 **Stages in `install.sh`:**  
-`start learning coaching spec conflict confirm plan build review fix test check ship status`
+`start learning coaching spec conflict confirm plan build review fix test check ship status clean`
 
 ---
 

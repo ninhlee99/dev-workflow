@@ -16,3 +16,4 @@ disable-model-invocation: true
 4. Run `/dev-workflow:check <Ticket> [slug] G9` with `--strict`.
 5. If in pilot, append row per `references/pilot.md`.
 6. Never push/merge unless user explicitly asks.
+7. After G9 PASS, remind: `/dev-workflow:clean <Ticket>` to archive worklog (locale: user language).

@@ -11,6 +11,7 @@
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (see `references/risk.md`)
 - **Lane:** ☐ hard ☐ fast
 - **Pilot:** ☐ yes ☐ no   (if yes, G9 requires row in `pilot/PILOT-*.md`)
+- **Chat locale:** [vi|en|ja|…]   (see `references/locale.md` — chat follows user language)
 
 ## Handoff
 
