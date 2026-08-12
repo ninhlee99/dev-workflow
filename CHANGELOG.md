@@ -13,6 +13,7 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Workspace health:** `bin/check-workspace.sh` + `references/workspace-health.md` (W0–W6).
 - **Task isolation:** `references/task-isolation.md` — one worklog per ticket; build must not bleed.
 - **`/dev-workflow:clean`:** `bin/clean-worklog.sh` archives (or `--purge`) finished ticket worklog only; refuses without G9 unless `--force`.
+- **External workspace default:** project homes now prefer `~/.workspaces/<project-slug>/` (outside product repos), while legacy `<root>/workspaces/<slug>/` remains readable.
 
 ### Changed
 - Docs clarity: `docs/USER-GUIDE.md` as primary guide; README/STRUCTURE/MARKETPLACE/enforce synced to v0.4.

@@ -18,6 +18,20 @@ _dw_slugify() {
   echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//; s/-+/-/g'
 }
 
+_dw_default_workspaces_root() {
+  echo "${HOME}/.workspaces"
+}
+
+_dw_project_home_from_root() {
+  local root="$1"
+  local slug="$2"
+  if [[ -d "$root/workspaces/$slug" || -f "$root/workspaces/$slug/PROJECT.md" ]]; then
+    echo "$root/workspaces/$slug"
+  else
+    echo "$root/$slug"
+  fi
+}
+
 # Plugin install dir (this package), never a customer app path.
 resolve_plugin_dir() {
   if [[ -n "${DEV_WORKFLOW_PLUGIN:-}" && -x "${DEV_WORKFLOW_PLUGIN}/bin/check-gates.sh" ]]; then
@@ -57,11 +71,13 @@ _dw_collect_workspace_roots() {
   local d git_root
 
   [[ -n "${DEV_WORKFLOW_WORKSPACES_ROOT:-}" ]] && roots+=("$DEV_WORKFLOW_WORKSPACES_ROOT")
+  roots+=("$(_dw_default_workspaces_root)")
 
   d="${PWD}"
   local i
   for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
     [[ -d "$d/workspaces" ]] && roots+=("$d")
+    [[ -d "$d/.workspaces" ]] && roots+=("$d/.workspaces")
     [[ -f "$d/.dev-workflow.json" ]] && roots+=("$d")
     [[ -d "$d/tasks/domain-knowledge" ]] && roots+=("$d")
     [[ "$d" == "/" ]] && break
@@ -131,18 +147,22 @@ resolve_project_slug() {
       DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
       return 0
     fi
-    # nearest workspaces/*/PROJECT.md — if exactly one, use it
+    # nearest workspaces/*/PROJECT.md or ~/.workspaces/<slug>/PROJECT.md
     local -a homes=()
     if [[ -d "$root/workspaces" ]]; then
       for f in "$root/workspaces"/*/PROJECT.md; do
         [[ -f "$f" ]] || continue
         homes+=("$(basename "$(dirname "$f")")")
       done
-      if [[ ${#homes[@]} -eq 1 ]]; then
-        DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="${homes[0]}"
-        DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
-        return 0
-      fi
+    fi
+    for f in "$root"/*/PROJECT.md; do
+      [[ -f "$f" ]] || continue
+      homes+=("$(basename "$(dirname "$f")")")
+    done
+    if [[ ${#homes[@]} -eq 1 ]]; then
+      DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="${homes[0]}"
+      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
+      return 0
     fi
   done < <(_dw_collect_workspace_roots)
 
@@ -170,7 +190,7 @@ resolve_workspaces_root() {
 
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
-    if [[ -n "$prefer_slug" && -f "$root/workspaces/$prefer_slug/PROJECT.md" ]]; then
+    if [[ -n "$prefer_slug" && -f "$(_dw_project_home_from_root "$root" "$prefer_slug")/PROJECT.md" ]]; then
       DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
       return 0
     fi
@@ -178,6 +198,11 @@ resolve_workspaces_root() {
 
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
+    if [[ "$root" == "$(_dw_default_workspaces_root)" ]]; then
+      mkdir -p "$root"
+      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
+      return 0
+    fi
     if [[ -d "$root/workspaces" ]]; then
       DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
       return 0
@@ -188,17 +213,9 @@ resolve_workspaces_root() {
     fi
   done < <(_dw_collect_workspace_roots)
 
-  # Default: git parent if inside a single-repo clone; else PWD
-  local git_root
-  if command -v git >/dev/null 2>&1; then
-    git_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-    if [[ -n "$git_root" ]]; then
-      # monorepo: prefer parent of git root when sibling repos likely
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$(dirname "$git_root")" && pwd)"
-      return 0
-    fi
-  fi
-  DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$PWD" && pwd)"
+  # Default: always outside repo under ~/.workspaces
+  mkdir -p "$(_dw_default_workspaces_root)"
+  DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$(_dw_default_workspaces_root)" && pwd)"
   return 0
 }
 
@@ -208,7 +225,7 @@ resolve_project_home() {
   slug="${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-}"
   [[ -n "$slug" ]] || return 1
   resolve_workspaces_root "$slug" || return 1
-  DEV_WORKFLOW_PROJECT_HOME="${DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED}/workspaces/${slug}"
+  DEV_WORKFLOW_PROJECT_HOME="$(_dw_project_home_from_root "$DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED" "$slug")"
   return 0
 }
 
@@ -222,18 +239,18 @@ resolve_worklog_dir() {
   slug="${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-}"
 
   while IFS= read -r root; do
-    [[ -z "$root" || ! -d "$root/workspaces" ]] && continue
+    [[ -z "$root" ]] && continue
     if [[ -n "$slug" ]]; then
-      candidate="$root/workspaces/$slug/worklogs/$ticket"
+      candidate="$(_dw_project_home_from_root "$root" "$slug")/worklogs/$ticket"
       if [[ -d "$candidate" ]]; then
         echo "$(cd "$candidate" && pwd)"
         DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
         DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$slug"
-        DEV_WORKFLOW_PROJECT_HOME="$(cd "$root/workspaces/$slug" && pwd)"
+        DEV_WORKFLOW_PROJECT_HOME="$(cd "$(_dw_project_home_from_root "$root" "$slug")" && pwd)"
         return 0
       fi
     else
-      for candidate in "$root/workspaces"/*/worklogs/"$ticket"; do
+      for candidate in "$root/workspaces"/*/worklogs/"$ticket" "$root"/*/worklogs/"$ticket"; do
         if [[ -d "$candidate" ]]; then
           echo "$(cd "$candidate" && pwd)"
           DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"

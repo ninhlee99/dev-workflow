@@ -1,14 +1,14 @@
 # Workspace health
 
-Verify `workspaces/<project-slug>/` is usable before ticket work.
+Verify `~/.workspaces/<project-slug>/` is usable before ticket work.
 Script: `bin/check-workspace.sh [slug]`.
 
 ## Layout (required)
 
 ```
-<workspaces-root>/
+~/.workspaces/
   [.dev-workflow.json]          # optional marker
-  workspaces/<slug>/
+  <slug>/
     PROJECT.md                  # required
     domain-knowledge/           # required dir
       INDEX.md                  # required for G0

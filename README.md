@@ -132,7 +132,7 @@ More host detail: [MARKETPLACE.md](./MARKETPLACE.md).
 /dev-workflow:status TICKET-123
 ```
 
-Worklogs live at: `workspaces/<project-slug>/worklogs/<Ticket_ID>/`.
+Worklogs live at: `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`.
 
 Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 
@@ -218,7 +218,7 @@ Must be stored in **INDEX.md** and **03b-human-confirm.md** with `Source: user-m
 ## Worklog artifacts
 
 ```
-workspaces/<project-slug>/
+~/.workspaces/<project-slug>/
 ├── PROJECT.md
 ├── domain-knowledge/
 ├── repos/<repo-slug>/
