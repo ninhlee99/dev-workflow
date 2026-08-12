@@ -4,7 +4,7 @@
 - **Created:** [YYYY-MM-DD]
 - **Updated:** [YYYY-MM-DD]
 - **Workspaces root:** `<workspaces-root>`
-- **Project home:** `workspaces/<project-slug>/`
+- **Project home:** `~/.workspaces/<project-slug>/`
 
 ## Brief
 
@@ -20,7 +20,7 @@
 ## Layout
 
 ```
-workspaces/<project-slug>/
+~/.workspaces/<project-slug>/
   PROJECT.md
   domain-knowledge/
   worklogs/

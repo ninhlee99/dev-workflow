@@ -20,7 +20,7 @@ AI must not invent PASS. `bin/check-gates.sh` is the judge.
 
 **Language:** chat + setup follow **your language** (see `references/locale.md`). Gate keywords (`CONFIRM G3:`, PASS/FAIL) stay English.
 
-**Workspaces:** each project under `workspaces/<slug>/`; run `bin/check-workspace.sh` to verify layout.
+**Workspaces:** each project under `~/.workspaces/<slug>/` (outside product repo); run `bin/check-workspace.sh` to verify layout.
 
 **Per ticket:** build/evidence live only in `worklogs/<Ticket_ID>/` — tickets do not share worklogs.
 
@@ -81,7 +81,7 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 ```
 
 Paste a short brief: project name, repos, domains.  
-AI creates `workspaces/<slug>/` and asks when business rules are unclear.  
+AI creates `~/.workspaces/<slug>/` and asks when business rules are unclear.  
 You answer with `/dev-workflow:coaching` when AI is wrong or specs change.
 
 ### 3.2 Start a ticket
@@ -232,7 +232,7 @@ CLI:
 
 ## 5. Worklog files (per ticket)
 
-Created under `workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
+Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 
 | File | Role | Gate |
 |------|------|------|
@@ -280,13 +280,13 @@ WAIVE row format on INDEX:
 
 ## 7. Pilot (prove the workflow works)
 
-1. Copy `templates/pilot-metrics.md` → `workspaces/<slug>/pilot/PILOT-v0.4.md`
+1. Copy `templates/pilot-metrics.md` → `~/.workspaces/<slug>/pilot/PILOT-v0.4.md`
 2. Fill **Scores (machine)** block with baseline numbers  
 3. On pilot tickets set `Pilot: ☑ yes` on INDEX  
 4. After 10 tickets:
 
 ```bash
-./bin/pilot-score.sh workspaces/<slug>/pilot/PILOT-v0.4.md
+./bin/pilot-score.sh ~/.workspaces/<slug>/pilot/PILOT-v0.4.md
 # expect RESULT: PASS
 ```
 
