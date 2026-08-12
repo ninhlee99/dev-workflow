@@ -12,8 +12,9 @@ disable-model-invocation: true
 # /dev-workflow:learning
 
 Self-learn from brief and bootstrap workspace.
-Read `references/project-root.md` and `references/learning.md`.
-Resolve/create `workspaces/<project-slug>/`; print `project=<slug> home=<path>`.
-Explore repos, capture facts, and ask `[LEARNING]` only when business is unclear.
-Promote to `domain-knowledge/` only after answers; update INDEX.
+Read `references/project-root.md`, `references/learning.md`, `references/locale.md`, `references/workspace-health.md`.
+Reply and ask `[LEARNING]` in **user language**.
+Resolve/create `workspaces/<project-slug>/`; print `project=<slug> home=<path> locale=<code>`.
+Explore repos, capture facts; promote to `domain-knowledge/` only after answers; update INDEX.
+After create: run `bin/check-workspace.sh <slug>` — must PASS before later stages.
 Refuse hardcoded paths, invented business, and jumping to later stages.

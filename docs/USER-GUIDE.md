@@ -18,6 +18,14 @@ Forces a **requirement-first** path before code:
 
 AI must not invent PASS. `bin/check-gates.sh` is the judge.
 
+**Language:** chat + setup follow **your language** (see `references/locale.md`). Gate keywords (`CONFIRM G3:`, PASS/FAIL) stay English.
+
+**Workspaces:** each project under `workspaces/<slug>/`; run `bin/check-workspace.sh` to verify layout.
+
+**Per ticket:** build/evidence live only in `worklogs/<Ticket_ID>/` — tickets do not share worklogs.
+
+**After done:** `/dev-workflow:clean TICKET-123` archives that worklog (keeps domain knowledge).
+
 ### Naming (easy to mix up)
 
 | Word | Means | When |
@@ -27,6 +35,7 @@ AI must not invent PASS. `bin/check-gates.sh` is the judge.
 | **fix** (`:fix`) | Triage review findings; fix only justified defects | After review FAIL (P0/P1 OPEN) |
 | **test** (`:test`, G8) | Real test run + SHA/CI/junit | After review (and `:fix` if needed) |
 | **check** (`:check`) | Run `check-gates.sh` | Before ship/merge |
+| **clean** (`:clean`) | Archive/purge finished ticket worklog | After G9 PASS (or `--force`) |
 
 ---
 
@@ -54,7 +63,10 @@ Smoke test:
 
 ```bash
 export DEV_WORKFLOW_WORKSPACES_ROOT=/path/to/dev-workflow/fixtures
-/path/to/dev-workflow/bin/check-gates.sh PASS-G9 --project demo --min G9 --strict
+export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
+"$DEV_WORKFLOW_PLUGIN/bin/check-workspace.sh" demo
+# expect RESULT: PASS
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" PASS-G9 --project demo --min G9 --strict
 # expect RESULT: PASS
 ```
 
@@ -176,6 +188,24 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 Ship artifact `07-ship.md` must cover: migration, feature flag, **canary %**, **soak time**, on-call, SLO, rollback.  
 Canary `N/A` needs a reason ≥ 10 characters.
 
+### 3.8 Clean (free memory after ticket)
+
+```
+/dev-workflow:clean TICKET-123
+```
+
+- Default: **archive** `worklogs/TICKET-123/` → `worklogs/.archive/TICKET-123-<UTC>/`
+- Keeps `domain-knowledge/`, `PROJECT.md`, other tickets
+- Requires G9 PASS unless `--force`
+- Hard delete: `--purge` (confirm in chat first)
+
+CLI:
+
+```bash
+"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug>
+"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
+```
+
 ---
 
 ## 4. Commands cheat sheet
@@ -195,6 +225,7 @@ Canary `N/A` needs a reason ≥ 10 characters.
 | `:test` | Real test run | Ticket ID + machine fields |
 | `:check` | Run checker | Ticket ID; optional slug / G8\|G9 |
 | `:ship` | Pre-merge notes | Ticket ID |
+| `:clean` | Archive/purge ticket worklog | Ticket ID; optional `--force` / `--purge` |
 | `:status` | Where am I? | Optional Ticket ID |
 
 ---

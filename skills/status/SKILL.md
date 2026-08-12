@@ -11,7 +11,8 @@ disable-model-invocation: true
 # /dev-workflow:status
 
 Show concise knowledge and gate progress.
-Read `references/workflow.md` and resolve workspace via `references/project-root.md`.
-Without ticket: report domain freshness and open learning/coaching questions.
-With ticket: report gate state from worklog INDEX and next command.
+Read `references/workflow.md`, `references/project-root.md`, `references/locale.md`, `references/workspace-health.md`.
+Reply in user language.
+Without ticket: report domain freshness + run `bin/check-workspace.sh` summary.
+With ticket: report gate state from **that** worklog INDEX only (`task-isolation.md`); suggest `:clean` if G9 PASS and user wants to free memory.
 No code changes; keep default output short.

@@ -53,6 +53,8 @@ learning → coaching → spec → conflict → confirm → plan
                                             test
                                               ↓
                                     check (--strict) → ship (G9)
+                                              ↓
+                                    clean (archive worklog)
 ```
 
 | Step | Meaning |
@@ -63,7 +65,7 @@ learning → coaching → spec → conflict → confirm → plan
 | confirm | **You** type `CONFIRM G3:…` (see below) |
 | plan / build | TDD plan + implementation + coverage map |
 | review / fix / test | Diff findings + triage/fix + machine evidence (SHA/CI/junit) |
-| check / ship | Programmatic gates; ship safety before merge |
+| check / ship / clean | Programmatic gates; ship safety; archive finished worklog |
 
 ---
 
@@ -124,6 +126,7 @@ More host detail: [MARKETPLACE.md](./MARKETPLACE.md).
 /dev-workflow:test     TICKET-123
 /dev-workflow:check    TICKET-123
 /dev-workflow:ship     TICKET-123
+/dev-workflow:clean    TICKET-123    ← after done; free worklog memory
 
 # Anytime
 /dev-workflow:status TICKET-123
@@ -152,6 +155,7 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:test` | `<Ticket>` | Real tests + SHA/CI/junit (`06b-test-evidence.md`) |
 | `/dev-workflow:check` | `<Ticket> [slug] [G8\|G9]` | Run `check-gates.sh` |
 | `/dev-workflow:ship` | `<Ticket>` | Fill `07-ship.md` (G9); refuse if checker fails |
+| `/dev-workflow:clean` | `<Ticket> [--force] [--purge]` | Archive/purge that ticket worklog only |
 | `/dev-workflow:status` | `[Ticket]` | Gate + knowledge status |
 | `/dev-workflow` | `<Ticket> [URL]` | Alias for `:start` |
 

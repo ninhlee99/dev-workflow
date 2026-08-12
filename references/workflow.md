@@ -4,10 +4,14 @@ Goal: clear requirements before code. Use `workspaces/<project-slug>/` from `pro
 Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
 
 ## Output contract
+- Read `references/locale.md`: **chat/setup in user language**; gate keywords stay English.
 - Reply only the asked scope.
 - Format: verdict → gaps → next command.
 - Keep status short; ask max 3 numbered questions.
-- Use `[LEARNING]` / `[COACHING]`; keep artifact fields in English.
+- Use `[LEARNING]` / `[COACHING]`; artifact **labels** English; notes may follow user language.
+- Workspace: `references/workspace-health.md` + `bin/check-workspace.sh`.
+- Per ticket isolation: `references/task-isolation.md` (no cross-worklog bleed).
+- After ship: optional `:clean <Ticket>` → `bin/clean-worklog.sh` (archive/purge that worklog only).
 
 ## Gates and dispatch
 | Gate | PASS means | FAIL command |
@@ -27,7 +31,7 @@ WAIVE only on INDEX: `Gate/claim | reason | owner | expiry | PM note`.
 P0: no WAIVE G3/G8. `--strict` or P0/P1: machine evidence required. `--strict`: no G8 WAIVE.
 
 ## Stage order
-`:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` → `:status`
+`:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` → `:status` → (`:clean` when ticket done)
 
 If current stage already PASS, jump to next. End `:spec`, end `:plan`, and before close `:build`: print uncovered AC/claim map; any gap = FAIL.
 P2 fast lane may WAIVE G2/G4/G5/G7 with INDEX rows — never silent skip.

@@ -9,15 +9,19 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
-- **Neutral code review:** `references/code-review.md` — diff-first review for 500 / missing / injection / case (`downcase`/`upcase`) defects with concrete fix proposals.
-- **`/dev-workflow:fix`:** triage OPEN findings (`FIX` / `SKIP` / `DEFER`); template `06c-fix-log.md`; skip style/out-of-scope/AC-contradicting suggestions; never skip P0 without PM waiver.
-- Review template `06-review-qa.md`: defect class sweep + structured findings table (`path:line`, Status).
+- **Locale:** `references/locale.md` — chat/setup follow user language; gate keywords stay English.
+- **Workspace health:** `bin/check-workspace.sh` + `references/workspace-health.md` (W0–W6).
+- **Task isolation:** `references/task-isolation.md` — one worklog per ticket; build must not bleed.
+- **`/dev-workflow:clean`:** `bin/clean-worklog.sh` archives (or `--purge`) finished ticket worklog only; refuses without G9 unless `--force`.
 
 ### Changed
 - Docs clarity: `docs/USER-GUIDE.md` as primary guide; README/STRUCTURE/MARKETPLACE/enforce synced to v0.4.
 - Template gate labels fixed (`03-qa-log`→G5, `05-impl-log`→G6, `06-review-qa`→G7).
-- Naming table: confirm (G3) vs review (G7) vs fix (remediation) vs test (G8).
-- Stage order: `… → review → fix? → test → …` (`install.sh` STAGES includes `fix`).
+- Naming table: confirm (G3) vs review (G7) vs fix (remediation) vs test (G8) vs clean (post-ship).
+- Stage order: `… → review → fix? → test → … → clean?` (`install.sh` STAGES includes `fix` + `clean`).
+- **Neutral code review:** `references/code-review.md` — diff-first review for 500 / missing / injection / case defects.
+- **`/dev-workflow:fix`:** triage OPEN findings; template `06c-fix-log.md`.
+- Review template `06-review-qa.md`: defect class sweep + structured findings table.
 
 ---
 
