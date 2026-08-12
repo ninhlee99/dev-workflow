@@ -48,6 +48,8 @@ learning → coaching → spec → conflict → confirm → plan
                                               ↓
                                            review
                                               ↓
+                                    fix (if P0/P1 OPEN)
+                                              ↓
                                             test
                                               ↓
                                     check (--strict) → ship (G9)
@@ -60,7 +62,7 @@ learning → coaching → spec → conflict → confirm → plan
 | conflict | Spec vs running code; decisions recorded |
 | confirm | **You** type `CONFIRM G3:…` (see below) |
 | plan / build | TDD plan + implementation + coverage map |
-| review / test | Human-readable evidence + machine evidence (SHA/CI/junit) |
+| review / fix / test | Diff findings + triage/fix + machine evidence (SHA/CI/junit) |
 | check / ship | Programmatic gates; ship safety before merge |
 
 ---
@@ -118,6 +120,7 @@ More host detail: [MARKETPLACE.md](./MARKETPLACE.md).
 /dev-workflow:plan     TICKET-123
 /dev-workflow:build    TICKET-123
 /dev-workflow:review   TICKET-123
+/dev-workflow:fix     TICKET-123    ← if P0/P1 findings OPEN
 /dev-workflow:test     TICKET-123
 /dev-workflow:check    TICKET-123
 /dev-workflow:ship     TICKET-123
@@ -144,7 +147,8 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:confirm` | `<Ticket>` | Wait for human `CONFIRM G3:`; write INDEX + `03b-human-confirm.md` |
 | `/dev-workflow:plan` | `<Ticket>` | TDD plan mapped to ACs/claims |
 | `/dev-workflow:build` | `<Ticket>` | Implement + coverage map; refuses if prior gates fail |
-| `/dev-workflow:review` | `<Ticket>` | How/By/Date evidence (`06-review-qa.md`) |
+| `/dev-workflow:review` | `<Ticket>` | Neutral diff review + How/By (`06-review-qa.md`) |
+| `/dev-workflow:fix` | `<Ticket>` | Triage findings; fix only justified (`06c-fix-log.md`) |
 | `/dev-workflow:test` | `<Ticket>` | Real tests + SHA/CI/junit (`06b-test-evidence.md`) |
 | `/dev-workflow:check` | `<Ticket> [slug] [G8\|G9]` | Run `check-gates.sh` |
 | `/dev-workflow:ship` | `<Ticket>` | Fill `07-ship.md` (G9); refuse if checker fails |
@@ -164,7 +168,7 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | **G4** | Plan mapped (P2 soft unless `--strict`) | `:plan` |
 | **G5** | No OPEN questions (P2 soft unless `--strict`) | `:conflict` |
 | **G6** | Coverage map + PASS | `:build` |
-| **G7** | Review evidence (P2 soft unless `--strict`) | `:review` |
+| **G7** | Review: no OPEN P0/P1 + evidence (P2 soft unless `--strict`) | `:review` / `:fix` |
 | **G8** | Tests + machine evidence (`--strict` = CI-native) | `:test` |
 | **G9** | Ship safety (canary/soak/on-call/SLO/rollback) | `:ship` |
 
@@ -226,6 +230,7 @@ workspaces/<project-slug>/
     ├── 04-plan.md
     ├── 05-impl-log.md
     ├── 06-review-qa.md
+    ├── 06c-fix-log.md            # after :fix (triage)
     ├── 06b-test-evidence.md
     └── 07-ship.md
 ```

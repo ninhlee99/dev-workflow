@@ -39,7 +39,7 @@ CONFIRM G3: …
 | G4 Plan | ☐ PASS ☐ FAIL ☐ WAIVE | `04-plan.md` | task ↔ AC/claim + regression |
 | G5 No open Qs | ☐ PASS ☐ FAIL ☐ WAIVE | `03-qa-log.md` | OPEN = FAIL |
 | G6 Build+tests | ☐ PASS ☐ FAIL ☐ WAIVE | `05-impl-log.md` | 100% map + tests PASS |
-| G7 Review evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06-review-qa.md` | How/By/Date per AC; UI checklist if touches UI |
+| G7 Review evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06-review-qa.md` (+ `06c-fix-log.md` if findings) | How/By + no OPEN P0/P1; UI if touches UI |
 | G8 Test evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06b-test-evidence.md` | machine evidence + zero failing tests |
 | G9 Ship safety | ☐ PASS ☐ FAIL ☐ WAIVE | `07-ship.md` | migration / flag / monitor / rollback |
 

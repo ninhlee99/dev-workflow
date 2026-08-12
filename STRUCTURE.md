@@ -30,7 +30,8 @@ dev-workflow/
 │   ├── enforce.md                  # Checker flags
 │   ├── project-root.md             # Path resolution
 │   ├── learning.md / coaching.md
-│   └── conflict-check.md
+│   ├── conflict-check.md
+│   └── code-review.md              # Neutral diff review + :fix triage
 │
 ├── templates/                      # Filled per ticket / project
 │   ├── INDEX.md
@@ -38,6 +39,7 @@ dev-workflow/
 │   ├── 02b-security.md             # P0
 │   ├── 03b-human-confirm.md        # G3 anti-forge
 │   ├── 06b-test-evidence.md        # G8
+│   ├── 06c-fix-log.md              # Review finding triage / fixes
 │   ├── pilot-metrics.md
 │   ├── gate-checklist.md / pr-checklist.md
 │   ├── ci/github-actions-dev-workflow.yml
@@ -57,7 +59,7 @@ dev-workflow/
 ```
 
 **Stages in `install.sh`:**  
-`start learning coaching spec conflict confirm plan build review test check ship status`
+`start learning coaching spec conflict confirm plan build review fix test check ship status`
 
 ---
 

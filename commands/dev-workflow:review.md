@@ -1,8 +1,10 @@
 ---
-description: "<Ticket ID> Fill acceptance evidence table after build (How/By/Date per AC)."
+description: "<Ticket ID> Neutral diff review (500/missing/injection/case) + AC evidence."
 argument-hint: "<Ticket ID>"
 arguments: [ticket_id]
 ---
 
-Fill acceptance evidence.
+Review code change and fill acceptance evidence.
 Invoke `skills/review`.
+Read `references/code-review.md`.
+If P0/P1 findings stay OPEN → next `/dev-workflow:fix`.
