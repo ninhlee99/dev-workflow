@@ -13,7 +13,7 @@ Forces a **requirement-first** path before code:
 2. Write testable acceptance criteria (and Risk tier)  
 3. Detect conflicts with current code  
 4. **You** confirm decisions (`CONFIRM G3:…`)  
-5. Plan → build (TDD) → review evidence → run tests with machine proof  
+5. Plan → build (TDD) → **neutral code review** → fix justified findings → run tests with machine proof  
 6. Ship only after safety checklist (G9) and checker PASS  
 
 AI must not invent PASS. `bin/check-gates.sh` is the judge.
@@ -23,8 +23,9 @@ AI must not invent PASS. `bin/check-gates.sh` is the judge.
 | Word | Means | When |
 |------|--------|------|
 | **confirm** (`:confirm`, G3) | Human sign-off on conflict/spec decisions | **Before** plan/build |
-| **review** (`:review`, G7) | Fill How/By/Date evidence after code | **After** build |
-| **test** (`:test`, G8) | Real test run + SHA/CI/junit | After review |
+| **review** (`:review`, G7) | Neutral diff review + How/By evidence | **After** build |
+| **fix** (`:fix`) | Triage review findings; fix only justified defects | After review FAIL (P0/P1 OPEN) |
+| **test** (`:test`, G8) | Real test run + SHA/CI/junit | After review (and `:fix` if needed) |
 | **check** (`:check`) | Run `check-gates.sh` | Before ship/merge |
 
 ---
@@ -135,12 +136,13 @@ Rules:
 - Phrases must appear in **both** `INDEX.md` and `03b-human-confirm.md`  
 - `03b-human-confirm.md` must contain `Source: user-message`
 
-### 3.6 Plan → Build → Review → Test
+### 3.6 Plan → Build → Review → Fix → Test
 
 ```
 /dev-workflow:plan   TICKET-123
 /dev-workflow:build  TICKET-123
 /dev-workflow:review TICKET-123
+/dev-workflow:fix    TICKET-123   # only if P0/P1 findings OPEN
 /dev-workflow:test   TICKET-123
 ```
 
@@ -148,8 +150,12 @@ Rules:
 |-------|----------|--------------|
 | plan | `04-plan.md` | Tasks mapped to AC/claims |
 | build | `05-impl-log.md` | Coverage map, no MISSING, PASS marks |
-| review | `06-review-qa.md` | How/By/Date per AC (+ UI checklist if UI) |
+| review | `06-review-qa.md` | Defect class sweep + findings (`path:line`) + How/By per AC |
+| fix | `06c-fix-log.md` | Triage FIX/SKIP/DEFER; only justified patches |
 | test | `06b-test-evidence.md` | Raw test output + **Commit SHA** + CI URL **or** junit path |
+
+**Review stance:** judge the **diff**, not guessed framework habits. Hunt 500 / missing / injection / case (`downcase`/`upcase`). P0/P1 OPEN → run `:fix` before `:test`.  
+**Fix stance:** SKIP style-only, out-of-scope, or suggestions that contradict AC/system; never SKIP P0 without PM waiver.
 
 ### 3.7 Check + Ship (merge gate)
 
@@ -184,7 +190,8 @@ Canary `N/A` needs a reason ≥ 10 characters.
 | `:confirm` | Before any plan/code | **Your** `CONFIRM G3:…` |
 | `:plan` | After G3 PASS | Ticket ID |
 | `:build` | Implement | Ticket ID |
-| `:review` | Evidence table | Ticket ID |
+| `:review` | Diff review + evidence | Ticket ID |
+| `:fix` | Triage/fix review findings | Ticket ID (after OPEN P0/P1) |
 | `:test` | Real test run | Ticket ID + machine fields |
 | `:check` | Run checker | Ticket ID; optional slug / G8\|G9 |
 | `:ship` | Pre-merge notes | Ticket ID |
@@ -207,7 +214,8 @@ Created under `workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | `03b-human-confirm.md` | Exact human CONFIRM text | G3 |
 | `04-plan.md` | Tasks | G4 |
 | `05-impl-log.md` | Coverage map | G6 |
-| `06-review-qa.md` | How verified | G7 |
+| `06-review-qa.md` | Diff findings + How verified | G7 |
+| `06c-fix-log.md` | Triage / applied fixes | (remediation) |
 | `06b-test-evidence.md` | Tests + SHA/CI/junit | G8 |
 | `07-ship.md` | Ship safety | G9 |
 
@@ -224,7 +232,7 @@ Created under `workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | G4 | Plan mapped | `:plan` |
 | G5 | No OPEN questions | `:conflict` |
 | G6 | Coverage + tests logged PASS | `:build` |
-| G7 | Review evidence filled | `:review` |
+| G7 | Review: no OPEN P0/P1 + evidence filled | `:review` / `:fix` |
 | G8 | Test evidence + machine fields | `:test` |
 | G9 | Ship safety complete | `:ship` |
 

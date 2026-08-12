@@ -11,7 +11,7 @@ Project home: `workspaces/<project-slug>/`. Risk: see `references/risk.md`.
 | G4 Plan | task map (P2 soft unless `--strict`) | `:plan` |
 | G5 Open Qs | no OPEN (P2 soft unless `--strict`) | `:conflict` |
 | G6 Build | coverage + tests | `:build` |
-| G7 Review | evidence (P2 soft unless `--strict`) | `:review` |
+| G7 Review | no OPEN P0/P1 + evidence (P2 soft unless `--strict`) | `:review` / `:fix` |
 | G8 Test | machine evidence; `--strict` = CI-native | `:test` |
 | G9 Ship | canary/soak/on-call/SLO/rollback | `:ship` |
 

@@ -13,5 +13,5 @@ disable-model-invocation: true
 Dispatch from first failing gate.
 Read `references/workflow.md` and `references/project-root.md`.
 Resolve and print `project=<slug> home=<path>`.
-Run in order: learning → coaching → spec → conflict → confirm → plan → build → review → test → check → ship.
+Run in order: learning → coaching → spec → conflict → confirm → plan → build → review → fix (if findings) → test → check → ship.
 Ask user on ambiguity or conflict decisions; never hardcode paths.
