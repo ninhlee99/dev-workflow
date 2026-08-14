@@ -9,7 +9,7 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STAGES=(start learning coaching spec conflict confirm plan build review fix test check ship status clean)
+STAGES=(start learning coaching spec conflict confirm plan build review fix test check ship audit status clean)
 PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"
 # Optional: set DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS to a project .claude/commands dir to sync there.
 
@@ -132,7 +132,7 @@ cat > "$ORCH/SKILL.md" <<'SKILLEOF'
 name: dev-workflow
 description: >-
   Thin pointer. Prefer Cursor commands /dev-workflow and /dev-workflow:<stage>.
-  Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|fix|test|check|ship|status|clean.
+  Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|fix|test|check|ship|audit|status|clean.
   Confirm (not QA). Chat follows user language. Real logic lives in the plugin (see Source below).
 argument-hint: "Use /dev-workflow or /dev-workflow:<stage> with <Ticket ID> (or topic for coaching; brief for learning)."
 disable-model-invocation: true
@@ -144,7 +144,7 @@ disable-model-invocation: true
 
 Source: $DEV_WORKFLOW_PLUGIN or plugin dir linked as ~/.claude/skills/dev-workflow-plugin
 
-Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|fix|test|check|ship|status|clean
+Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|fix|test|check|ship|audit|status|clean
 
 Chat/setup: user language (`references/locale.md`). Per-ticket worklogs only. After ship: `:clean`.
 
