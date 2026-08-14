@@ -23,6 +23,8 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added isolated installer acceptance tests for every host selection and invalid input.
 - Enabled model invocation for all 16 Codex-visible skills and completed the validated Codex interface manifest.
 - Synchronized install, update, verification, and troubleshooting guidance across all user docs.
+- Added a target-aware `uninstall.sh` with exact-path cleanup, Antigravity delegation, modified
+  marketplace preservation, and isolated uninstall acceptance tests.
 
 ### Added
 - **Locale:** `references/locale.md` — chat/setup follow user language; gate keywords stay English.

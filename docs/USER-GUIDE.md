@@ -65,6 +65,10 @@ bash install.sh --all       # all hosts; requires agy
 Choose one command, not every line. Restart/reload the selected host afterward; for Codex, start a
 new task so the installed skills are discovered.
 
+To remove the workflow later, use the matching command (`bash uninstall.sh`, `--cursor`, `--codex`,
+`--agy`, or `--all`). It removes host integration only; the clone and worklogs are preserved. See
+[INSTALL.md](./INSTALL.md#uninstall) for the exact removal contract.
+
 Then in your **product** repo (recommended):
 
 1. Copy `templates/ci/github-actions-dev-workflow.yml` → `.github/workflows/dev-workflow-gates.yml`
