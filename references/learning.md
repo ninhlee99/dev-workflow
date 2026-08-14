@@ -7,6 +7,21 @@ Input brief should include project name, domain, repo map, and learning goal.
 Do:
 1) resolve path via `project-root.md`; print `project=<slug> home=<path>`.
 2) create `workspaces/<slug>/` when missing; seed base files.
+
+## Choosing the slug
+
+Default slug = the real repo/org name (git remote or top-level dir name), slugified — never a
+name invented from the brief's feature description. A brief about "job search keyword bugs"
+does not make the slug `<project>-jobsearch`; the repo is still `daijob5`/`daijob6_api`, so the
+slug is `daijob` (or whatever the actual repo/product is called). One product spanning several
+repos (e.g. `daijob5` + `daijob6_api` + `daijob6_companytools`) shares one slug and one workspace
+— do not split by feature area into separate slugs.
+
+If the user explicitly names a slug ("call it X", "put it under Y"), use exactly what they said —
+explicit user instruction overrides the repo-name default.
+
+If an existing `~/.workspaces/<slug>/PROJECT.md` already lists the repo(s) in play, reuse that
+slug; do not create a second, feature-named workspace for the same repos.
 3) explore repos, write facts only, and tag unclear items as `[LEARNING]`.
 4) promote to `domain-knowledge/` and INDEX only after answers.
 
