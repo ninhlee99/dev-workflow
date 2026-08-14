@@ -10,6 +10,14 @@ Goal: find **real defects in the diff**, not invent bugs from imagined framework
 3. **Neutral reviewer.** Ignore author intent and “looks fine” vibes. Ask: what breaks for user, ops, security, or data if this ships?
 4. **No drive-by style.** Skip renames, preference nits, and speculative refactors unless they hide a P0/P1 defect.
 5. **Task-scoped.** Finding must relate to ticket AC / confirmed claims / touched contracts. Out-of-scope polish → note as `OUT_OF_SCOPE`, do not block G7 alone.
+6. **Follow the call chain in order when a finding needs context beyond the diff.** A changed line
+   rarely explains itself in isolation — before flagging something as a defect, trace it the same
+   direction execution actually runs: entrypoint (route/controller/handler) that reaches the
+   changed code → the changed code itself → what it calls next. Do not open unrelated files "to
+   get a feel for the codebase" or pull in a sibling module that isn't actually on the path from
+   the changed line to where it's invoked or to what it invokes. If the diff is self-contained
+   (the finding is visible from the hunk alone), no extra traversal is needed at all — this rule
+   only applies when you genuinely need surrounding context to judge correctness.
 
 ## Severity
 

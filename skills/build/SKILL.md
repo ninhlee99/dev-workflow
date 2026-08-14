@@ -28,7 +28,18 @@ here, don't wait until claiming G6 PASS to discover G4/G5 never passed:
 Implement only after prior gates pass (through G4 plan / G5 open-Q clear).
 Read `references/task-isolation.md` — log **only** into `worklogs/<Ticket_ID>/` for this ticket.
 Print `project=… ticket=… worklog=… locale=…` at start; refuse empty ticket.
-Use TDD and log AC/claim-to-test mapping in `templates/05-impl-log.md` under **this** worklog.
+
+**Use TDD (required, regardless of what's installed).** Per task in `04-plan.md`: write the
+failing test from that task's test command first, run it and confirm it fails for the stated
+reason (not a setup/syntax error), then implement the minimum to make it pass. This cycle applies
+whether or not any other skill is present in the session — do not skip or water it down on a repo
+that lacks extra tooling. Log AC/claim-to-test mapping in `templates/05-impl-log.md` under **this**
+worklog.
+
+Optional enhancement: if a `tdd` or `test-driven-development` skill is also available in this
+session, invoke it for a more thorough red-green-refactor treatment (refactor-phase discipline,
+project-specific test patterns) on top of the required cycle above — never as a substitute for it,
+and its absence changes nothing about the required steps.
 Fill **Commit SHA** at the top of `05-impl-log.md` with the real commit the PASS claim is made
 against — required for P0/P1/`--strict`, same bar as G8's test evidence. A PASS recorded with no
 SHA, or against a stale one, is not verifiable evidence.

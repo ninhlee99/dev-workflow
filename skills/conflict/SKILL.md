@@ -14,6 +14,17 @@ If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `refere
 before anything else.
 
 Compare spec to running behavior and force decisions.
+
+**Read `Type:` from INDEX.md (or `01-intent.md` if INDEX.md predates this field) before
+investigating anything.** `:spec` already classified this ticket as Bug / New feature / Spec
+change / Requirement change — `references/ba-integrity.md` has a *different* investigation
+strategy for each (route→controller→service tracing is the **Bug** procedure only; it does not
+apply to the other three, see that file's per-type sections). Applying the bug procedure to a
+New feature ticket wastes effort hunting for wrong behavior that doesn't exist; applying the
+feature procedure to a Bug wastes effort surveying architecture instead of tracing the one broken
+path. If `Type:` is missing or was never set, stop and classify it now per `ba-integrity.md`
+before proceeding — do not guess a default.
+
 Read `references/conflict-check.md` (full 5-step MAP→DIFF→CONFIRM→LOG process).
 Write required artifacts: `03-conflict-README.md`, `03-conflict-report.md`, `03-qa-log.md`.
 Classify claims as MATCH/NO/UNCLEAR; request explicit confirm for non-MATCH.

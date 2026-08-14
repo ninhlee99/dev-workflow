@@ -26,6 +26,19 @@ Create implementation plan from confirmed scope only.
 Fill `templates/04-plan.md` for the ticket.
 Each task must map to AC/claim, target repo/path, DoD, and test command.
 
+**Task granularity should match the ticket's `Type:`** (see INDEX.md, set at `:spec`):
+- **Bug** — usually one focused task at the root-cause location found in `:conflict`; resist
+  splitting a single-file fix into multiple tasks just to have more rows.
+- **New feature** — one task per layer touched (migration/model, service/operation, controller,
+  view, tests), following the insertion points identified in `:conflict`'s survey — do not
+  collapse a multi-layer feature into one giant task with no per-layer DoD.
+- **Spec change** — one task for the primary behavior change, plus **one task per affected
+  consumer** found during `:conflict`'s "trace every consumer" step — each consumer's update needs
+  its own DoD/test so a fixed one isn't silently forgotten.
+- **Requirement change** — one task per place the rule was found encoded (`:conflict` should have
+  listed them) — do not bundle "update the rule everywhere" into a single task; each encoding
+  needs its own test proving the new value took effect there specifically.
+
 **Test command must be a real, runnable command** — `bundle exec rspec spec/operations/companies/job_delete_spec.rb`,
 not "add tests for this". `check-gates.sh` G4 only verifies the column isn't blank, not that the
 command is real; that gap is yours to close as the plan's author, not the checker's — a plan task
