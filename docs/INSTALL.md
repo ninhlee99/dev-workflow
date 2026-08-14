@@ -135,17 +135,29 @@ Finally, restart/reload the chosen host (start a new task in Codex) and verify b
 
 ## Update
 
-From the existing clone:
+From the existing clone, run the same target used during installation:
+
+| Target | Command | Extra requirement |
+|---|---|---|
+| Claude Code (default) | `bash update.sh` or `bash update.sh --claude` | None |
+| Cursor only | `bash update.sh --cursor` | None |
+| Codex only | `bash update.sh --codex` | None |
+| Antigravity only | `bash update.sh --agy` | `agy` on `PATH` |
+| Every supported agent | `bash update.sh --all` | `agy` on `PATH` |
+
+`update.sh` requires a clean Git worktree, runs `git pull --ff-only`, then invokes the installer for
+the selected target. It never auto-stashes, resets, merges, or overwrites local changes. Invalid or
+conflicting targets and a missing `agy` dependency are rejected before the pull. If the pull fails,
+host integration is not changed. If source update succeeds but host refresh fails, rerun
+`bash install.sh` with the same target after resolving the reported problem.
+
+The default remains Claude-only. Long forms `--host <name>` and `--agent <name>` are supported.
+
+Verify update behavior without pulling or changing real host configuration:
 
 ```bash
-git pull --ff-only
-bash install.sh --cursor  # replace with --claude, --codex, --agy, or --all
-./tests/regression.sh
-./tests/install.sh
+./tests/update.sh  # expect 6 PASS
 ```
-
-Rerunning the installer refreshes command copies and repairs live skill links. The default remains
-Claude-only, so use the same explicit shorthand—or `--all`—that you intend to update.
 
 ## Uninstall
 
@@ -201,6 +213,8 @@ Worklogs default to `~/.workspaces/<project-slug>/`, outside product source.
 |---|---|
 | Command does not appear | Restart/reload host; start a new Codex task if applicable; rerun the matching install flag |
 | Installed skill cannot read references | Keep the clone at its installed path; rerun installer after moving it |
+| Update rejects a dirty repository | Commit or stash intentional changes yourself, then rerun; the updater never modifies them |
+| `git pull --ff-only` fails | Resolve branch/upstream divergence manually; update deliberately avoids creating a merge commit |
 | Codex plugin missing from picker | Existing `~/.agents/plugins/marketplace.json` was preserved; add the local plugin entry manually |
 | `worklog not found` | Set `DEV_WORKFLOW_WORKSPACES_ROOT`, add `.dev-workflow.json`, or pass `--project` |
 | Permission error | Confirm the current user owns the target host directories under its home directory |

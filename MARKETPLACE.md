@@ -51,6 +51,19 @@ agy plugin install ./hosts/antigravity
 
 After install, read **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)**.
 
+### Update
+
+```bash
+bash update.sh             # Claude only (default)
+bash update.sh --cursor
+bash update.sh --codex
+bash update.sh --agy
+bash update.sh --all
+```
+
+Requires a clean worktree and uses `git pull --ff-only` before refreshing the selected host. Full
+behavior: **[docs/INSTALL.md](./docs/INSTALL.md#update)**.
+
 ### Uninstall
 
 ```bash
@@ -74,6 +87,7 @@ export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
 
 ./tests/regression.sh                                                # expect 10 PASS
 ./tests/install.sh                                                   # expect 14 PASS
+./tests/update.sh                                                    # expect 6 PASS
 ./tests/uninstall.sh                                                 # expect 11 PASS
 ./bin/check-gates.sh FIX-FAIL --project demo --min G1          # expect FAIL
 ./bin/check-gates.sh PASS-G8 --project demo --min G8           # expect PASS
@@ -90,7 +104,7 @@ In the AI host, restart/reload it if required, then confirm `/dev-workflow:statu
 
 1. Bump `"version"` in all `plugin.json` / `marketplace.json` files  
 2. Update `CHANGELOG.md`  
-3. Installer, uninstaller, and smoke commands above
+3. Installer, updater, uninstaller, and smoke commands above
 4. `git tag vX.Y.Z && git push origin main vX.Y.Z`  
 5. Smoke-install on one live host  
 

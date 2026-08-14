@@ -118,6 +118,21 @@ agy plugin install ./hosts/antigravity
 
 More host detail: [MARKETPLACE.md](./MARKETPLACE.md).
 
+### Update
+
+Run from the existing clone with the same target used during installation:
+
+```bash
+bash update.sh             # Claude only (default)
+bash update.sh --cursor    # Cursor only
+bash update.sh --codex     # Codex only
+bash update.sh --agy       # Antigravity only (requires agy)
+bash update.sh --all       # all supported agents (requires agy)
+```
+
+Update refuses a dirty worktree, pulls with `--ff-only`, and refreshes the selected host only. It
+never stashes, resets, or overwrites local repository changes.
+
 ### Uninstall
 
 Use the same target model as installation:

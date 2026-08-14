@@ -25,6 +25,8 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Synchronized install, update, verification, and troubleshooting guidance across all user docs.
 - Added a target-aware `uninstall.sh` with exact-path cleanup, Antigravity delegation, modified
   marketplace preservation, and isolated uninstall acceptance tests.
+- Added a target-aware `update.sh` with clean-worktree protection, fast-forward-only pulls, host
+  refresh, dependency preflight, and isolated update acceptance tests.
 
 ### Added
 - **Locale:** `references/locale.md` — chat/setup follow user language; gate keywords stay English.
