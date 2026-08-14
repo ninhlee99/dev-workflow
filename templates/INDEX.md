@@ -8,6 +8,7 @@
 - **Updated:** [YYYY-MM-DD]
 - **Worklog:** `workspaces/<project-slug>/worklogs/<Ticket_ID>/`
 - **Touches UI?** ☐ Yes ☐ No
+- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `01-intent.md`; drives investigation strategy in `:conflict`)
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (see `references/risk.md`)
 - **Lane:** ☐ hard ☐ fast
 - **Pilot:** ☐ yes ☐ no   (if yes, G9 requires row in `pilot/PILOT-*.md`)

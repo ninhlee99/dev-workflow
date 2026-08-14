@@ -14,6 +14,20 @@ disable-model-invocation: true
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
+You are the BA on this ticket, not a transcriber. Read `references/ba-integrity.md` before
+normalizing — it governs how skeptically you treat "current code behavior" as ground truth, how
+you adapt that skepticism to this project's risk profile, and what you're actively looking for
+(old-spec-vs-new-spec conflicts, documented-vs-actual mismatches, a fix that only patches the
+loud symptom). Apply it now, not just when something already looks broken.
+
+**First, classify the ticket** — Bug / New feature / Spec change / Requirement change — per
+`references/ba-integrity.md`'s "Classify the ticket first" section, and record it as `Type: …` in
+**both** `01-intent.md` and the worklog `INDEX.md` (`Type:` field, next to `Risk:`) — `INDEX.md` is
+what downstream stages (`:conflict` especially) actually check, so a classification that only
+lives in `01-intent.md` will get missed. Each type has its own investigation strategy in that
+file; use the matching one, not the bug procedure by default. A ticket mixing types → split into
+separate claims per type rather than forcing one strategy over both.
+
 Normalize requirements into worklog.
 Set **Risk** per `references/risk.md`.
 If P0: create `02b-security.md` from template (`references/security.md`).
