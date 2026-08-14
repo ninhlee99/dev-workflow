@@ -22,6 +22,7 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Antigravity install now rebuilds, validates, and registers the complete bundle through `agy`.
 - Added isolated installer acceptance tests for every host selection and invalid input.
 - Enabled model invocation for all 16 Codex-visible skills and completed the validated Codex interface manifest.
+- Synchronized install, update, verification, and troubleshooting guidance across all user docs.
 
 ### Added
 - **Locale:** `references/locale.md` — chat/setup follow user language; gate keywords stay English.

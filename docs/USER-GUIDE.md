@@ -55,8 +55,15 @@ for exact paths, updates, isolated smoke testing, and troubleshooting.
 ```bash
 git clone https://github.com/ninhlee99/dev-workflow.git
 cd dev-workflow
-bash install.sh
+bash install.sh             # Claude Code only (default)
+bash install.sh --cursor    # Cursor only
+bash install.sh --codex     # Codex only
+bash install.sh --agy       # Antigravity only; requires agy
+bash install.sh --all       # all hosts; requires agy
 ```
+
+Choose one command, not every line. Restart/reload the selected host afterward; for Codex, start a
+new task so the installed skills are discovered.
 
 Then in your **product** repo (recommended):
 

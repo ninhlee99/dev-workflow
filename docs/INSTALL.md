@@ -7,7 +7,8 @@ ticket usage, continue with [USER-GUIDE.md](./USER-GUIDE.md).
 
 - Git
 - Bash 3.2 or newer
-- One or more supported hosts: Claude Code, Cursor, Codex, Antigravity
+- One or more supported hosts: Claude Code, Cursor, Codex, or Antigravity
+- `agy` on `PATH` only when installing Antigravity or using `--all`
 
 Check Bash before installing:
 
@@ -25,17 +26,20 @@ bash install.sh
 
 With no option, only Claude Code is installed. Select exactly one coding agent or all:
 
-```bash
-bash install.sh --claude                # same as the default
-bash install.sh --cursor
-bash install.sh --codex
-bash install.sh --agy                   # Antigravity
-bash install.sh --all
-```
+| Target | Command | Extra requirement |
+|---|---|---|
+| Claude Code (default) | `bash install.sh` or `bash install.sh --claude` | None |
+| Cursor only | `bash install.sh --cursor` | None |
+| Codex only | `bash install.sh --codex` | None |
+| Antigravity only | `bash install.sh --agy` | `agy` on `PATH` |
+| Every supported agent | `bash install.sh --all` | `agy` on `PATH` |
 
 Long forms `--host <name>` and `--agent <name>` remain supported; `--antigravity` is an alias for
 `--agy`, and `--list-hosts` prints supported values. Conflicting target flags or an unknown host
 exit with status 2 and do not silently fall back to Claude.
+
+`--all` preflights `agy` before installing any host. If `agy` is missing, it exits without a
+partial Claude/Cursor/Codex installation.
 
 The installer uses the clone as the plugin source. Keep or deliberately relocate that directory;
 installed symlinks point back to it.
@@ -74,10 +78,22 @@ The local installer also supports loading the clone directly:
 claude --plugin-dir /absolute/path/to/dev-workflow
 ```
 
-### Cursor and Codex
+### Cursor
 
-Run the matching shorthand flag. Cursor and Codex both receive one live link per workflow stage; rerun the
-installer after moving the clone or changing command files. Restart/reload the host afterward.
+```bash
+bash install.sh --cursor
+```
+
+Restart/reload Cursor, then verify `/dev-workflow:status` appears.
+
+### Codex
+
+```bash
+bash install.sh --codex
+```
+
+Start a new Codex task so it discovers the refreshed skills. Codex and Cursor both receive one live
+link per workflow stage; rerun the installer after moving the clone or changing command files.
 
 ### Antigravity
 
@@ -114,8 +130,8 @@ export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
 ./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md
 ```
 
-Finally, restart/reload the chosen host and verify both `/dev-workflow:status` and
-`/dev-workflow:audit` are available.
+Finally, restart/reload the chosen host (start a new task in Codex) and verify both
+`/dev-workflow:status` and `/dev-workflow:audit` are available.
 
 ## Update
 
@@ -123,13 +139,13 @@ From the existing clone:
 
 ```bash
 git pull --ff-only
-bash install.sh --host <the-agent-you-use>
+bash install.sh --cursor  # replace with --claude, --codex, --agy, or --all
 ./tests/regression.sh
 ./tests/install.sh
 ```
 
 Rerunning the installer refreshes command copies and repairs live skill links. The default remains
-Claude-only, so use the same explicit host—or `all`—that you intend to update.
+Claude-only, so use the same explicit shorthand—or `--all`—that you intend to update.
 
 ## Product workspace setup
 
@@ -149,12 +165,13 @@ Worklogs default to `~/.workspaces/<project-slug>/`, outside product source.
 
 | Problem | Check |
 |---|---|
-| Command does not appear | Restart/reload host; confirm its command path above; rerun `bash install.sh` |
+| Command does not appear | Restart/reload host; start a new Codex task if applicable; rerun the matching install flag |
 | Installed skill cannot read references | Keep the clone at its installed path; rerun installer after moving it |
 | Codex plugin missing from picker | Existing `~/.agents/plugins/marketplace.json` was preserved; add the local plugin entry manually |
 | `worklog not found` | Set `DEV_WORKFLOW_WORKSPACES_ROOT`, add `.dev-workflow.json`, or pass `--project` |
 | Permission error | Confirm the current user owns the target host directories under its home directory |
-| Antigravity content stale | Run `bash hosts/antigravity/rebuild.sh` before `agy plugin install` |
+| `agy CLI not found` | Install/configure `agy`, or choose a non-Antigravity target instead of `--agy`/`--all` |
+| Antigravity content stale | Rerun `bash install.sh --agy`; it rebuilds and validates before installing |
 
 The installer has no destructive uninstall command. To remove it, inspect the exact host paths in
 the table above and remove only entries named `dev-workflow`; do not delete an entire host commands,

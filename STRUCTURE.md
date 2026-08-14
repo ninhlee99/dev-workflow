@@ -1,7 +1,8 @@
 # Structure — dev-workflow v0.4
 
 Annotated layout. Edit the owning source (`skills/`, `references/`, `templates/`, `commands/`, or
-`bin/`) and re-run `bash install.sh` when host-installed copies/links must be refreshed.
+`bin/`) and rerun `bash install.sh` with the original target flag when host-installed copies/links
+must be refreshed.
 
 ---
 

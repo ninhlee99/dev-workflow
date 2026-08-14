@@ -75,8 +75,9 @@ start → learning (only if knowledge missing) / coaching (only if contradicted)
 ### Prerequisites
 
 - Bash 3.2+
-- One of: Claude Code, Cursor, Codex, Antigravity  
-- Git  
+- One of: Claude Code, Cursor, Codex, Antigravity
+- Git
+- `agy` only for `--agy` or `--all`
 
 ### Clone and choose a coding agent
 
@@ -95,6 +96,9 @@ their skill directories link to this clone, so skill content does not become a s
 It writes host integration files under `~/.claude`, `~/.cursor`, `~/.codex`, and optionally
 `~/.agents`; it does not edit product source. See the complete install/update/verification guide:
 [docs/INSTALL.md](./docs/INSTALL.md).
+
+Choose one target flag. Conflicting flags are rejected, and `--all` checks for `agy` before making
+any host changes.
 
 ### Claude Code
 

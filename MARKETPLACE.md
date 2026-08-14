@@ -39,6 +39,7 @@ bash install.sh --all
 Installs only the selected agent. Cursor/Codex get all live per-stage skill links; Antigravity is
 rebuilt, validated, and registered through `agy`. Existing
 `~/.agents/plugins/marketplace.json` is preserved rather than overwritten.
+`--agy` and `--all` require `agy` on `PATH`; `--all` fails before changing any host when it is absent.
 
 ### Antigravity
 
@@ -75,7 +76,7 @@ In the AI host, restart/reload it if required, then confirm `/dev-workflow:statu
 
 1. Bump `"version"` in all `plugin.json` / `marketplace.json` files  
 2. Update `CHANGELOG.md`  
-3. `bash install.sh` + smoke commands above  
+3. `./tests/install.sh` + smoke commands above
 4. `git tag vX.Y.Z && git push origin main vX.Y.Z`  
 5. Smoke-install on one live host  
 

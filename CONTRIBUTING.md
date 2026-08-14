@@ -7,7 +7,8 @@ Thank you for improving this plugin. This document explains how to contribute ch
 ## Prerequisites
 
 - Bash 3.2+
-- One of: Claude Code, Cursor, Codex, or Antigravity (for smoke-testing)
+- One of: Claude Code, Cursor, Codex, or Antigravity (for live smoke-testing)
+- `agy` only for live Antigravity installation; `tests/install.sh` supplies an isolated fake
 - Git
 
 ---
