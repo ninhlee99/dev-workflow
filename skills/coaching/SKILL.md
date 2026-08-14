@@ -10,6 +10,9 @@ disable-model-invocation: true
 
 # /dev-workflow:coaching
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Use when user corrects or changes business rules.
 Read `references/project-root.md` and `references/coaching.md`.
 Resolve workspace, diff current knowledge vs new guidance, and ask `[COACHING]` for unclear points.

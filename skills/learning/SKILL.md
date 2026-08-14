@@ -13,6 +13,9 @@ disable-model-invocation: true
 
 Self-learn from brief and bootstrap workspace.
 Read `references/project-root.md`, `references/learning.md`, `references/locale.md`, `references/workspace-health.md`.
+If this is the first `/dev-workflow:*` command in this workspace (`domain-knowledge/INDEX.md`
+missing or its `Chat locale` field unset), ask `[LOCALE]` per `references/locale.md` **before**
+anything else — before creating the workspace, before the `[LEARNING]` business questions below.
 Reply and ask `[LEARNING]` in **user language**.
 Resolve/create `workspaces/<project-slug>/`; print `project=<slug> home=<path> locale=<code>`.
 Explore repos, capture facts; promote to `domain-knowledge/` only after answers; update INDEX.

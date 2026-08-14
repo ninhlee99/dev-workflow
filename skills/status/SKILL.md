@@ -10,6 +10,9 @@ disable-model-invocation: true
 
 # /dev-workflow:status
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Show concise knowledge and gate progress.
 Read `references/workflow.md`, `references/project-root.md`, `references/locale.md`, `references/workspace-health.md`.
 Reply in user language.

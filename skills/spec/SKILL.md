@@ -11,6 +11,9 @@ disable-model-invocation: true
 
 # /dev-workflow:spec
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Normalize requirements into worklog.
 Set **Risk** per `references/risk.md`.
 If P0: create `02b-security.md` from template (`references/security.md`).

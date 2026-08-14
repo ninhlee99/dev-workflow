@@ -15,6 +15,8 @@ disable-model-invocation: true
 A Senior dev handed a ticket checks the spec is confirmed before opening an editor — do the same
 here, don't wait until claiming G6 PASS to discover G4/G5 never passed:
 
+0. If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per
+   `references/locale.md` before anything else.
 1. Run `/dev-workflow:check <Ticket> [slug] G5` — if it FAILs, stop. There is nothing to build:
    either the plan doesn't exist (G4) or a conflict claim is still unconfirmed (G2/G5). Route the
    user to `:plan` or `:conflict`/`:confirm`, do not start coding "to make progress" while scope

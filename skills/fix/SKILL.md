@@ -10,6 +10,9 @@ disable-model-invocation: true
 
 # /dev-workflow:fix
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Remediate code-review findings without cargo-cult patching.
 
 ## When

@@ -12,7 +12,9 @@ disable-model-invocation: true
 
 Dispatch from first failing gate.
 Read `references/workflow.md`, `references/project-root.md`, `references/locale.md`, `references/task-isolation.md`.
-Detect user language; reply in that language for the whole ticket.
+If this is the first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per
+`references/locale.md` before anything else — do not guess from message language. Otherwise read
+the already-set `Chat locale` from `domain-knowledge/INDEX.md` and use it silently.
 Resolve and print `project=<slug> home=<path> ticket=<id> worklog=<path> locale=<code>`.
 Run `bin/check-workspace.sh` once; FAIL → fix layout (or `:learning`) before gates.
 Ensure worklog is **only** `worklogs/<Ticket_ID>/` — never mix another ticket.

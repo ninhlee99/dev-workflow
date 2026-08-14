@@ -10,6 +10,9 @@ disable-model-invocation: true
 
 # /dev-workflow:clean
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Free memory after a finished ticket by removing **that ticket’s worklog only**.
 
 ## Rules

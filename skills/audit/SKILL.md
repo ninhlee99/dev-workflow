@@ -13,6 +13,9 @@ disable-model-invocation: true
 
 # /dev-workflow:audit
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Verify the worklog's own claims agree with each other — not a second code review, not a second
 conflict check. Both of those must already have structurally passed.
 

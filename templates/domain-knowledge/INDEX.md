@@ -3,6 +3,7 @@
 - **Project:** [Name]
 - **Slug:** `[project-slug]`
 - **Project home:** `workspaces/<project-slug>/`
+- **Chat locale:** [vi|en|ja|…]   (asked once on first command in this workspace — see `references/locale.md`)
 - **Updated:** [YYYY-MM-DD]
 - **Needs learning:** ☐ no  ☐ yes
 - **Needs coaching:** ☐ no  ☐ yes — topics: …

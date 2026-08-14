@@ -10,6 +10,9 @@ disable-model-invocation: true
 
 # /dev-workflow:ship
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 1. Require G8 PASS.
 2. Fill `07-ship.md` including canary %, soak, on-call, SLO, rollback.
 3. P0: ensure `02b-security.md` PASS.

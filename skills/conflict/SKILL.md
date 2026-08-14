@@ -10,6 +10,9 @@ disable-model-invocation: true
 
 # /dev-workflow:conflict
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Compare spec to running behavior and force decisions.
 Read `references/conflict-check.md` (full 5-step MAP→DIFF→CONFIRM→LOG process).
 Write required artifacts: `03-conflict-README.md`, `03-conflict-report.md`, `03-qa-log.md`.

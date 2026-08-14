@@ -331,6 +331,15 @@ if need_gate G0; then
     if [[ "$present_ticked" -eq 0 && "$dk_lines" -gt 8 ]]; then
       maybe_fail G0 "domain-knowledge/INDEX Present/Coverage table has no area marked done (all ☐)"
     fi
+    # references/locale.md: the first /dev-workflow:* command in a workspace
+    # must ask the user's preferred chat language once and store it here —
+    # not re-derive it by guessing from message text on every turn. Soft
+    # warn (not hard fail): this field is additive to worklogs created
+    # before locale-ask existed, and a missing value degrades to English
+    # fallback per locale.md rather than blocking the pipeline.
+    if ! grep -qE 'Chat locale:\*{0,2}[[:space:]]*(vi|en|ja|[a-z]{2})\b' "$DK_INDEX" 2>/dev/null; then
+      warn "G0: domain-knowledge/INDEX Chat locale not set — should have been asked on first /dev-workflow:* command (see references/locale.md)"
+    fi
     # DoD line 5 of the template: "Last learning or Last coaching within 90
     # days if touching that domain". A ticked Present area from a session 2
     # years ago is not current knowledge — check the more recent of the two

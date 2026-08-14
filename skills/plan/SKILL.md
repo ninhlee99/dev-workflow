@@ -12,6 +12,9 @@ disable-model-invocation: true
 
 ## Precondition
 
+If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+before anything else.
+
 Run `/dev-workflow:check <Ticket> [slug] G3` first. If it FAILs, stop — scope isn't confirmed yet
 (no `CONFIRM G3:` phrase, or a conflict claim still open). Planning against unconfirmed scope
 produces tasks that get thrown away the moment `:confirm` lands on a different decision — route
