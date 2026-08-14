@@ -1,7 +1,7 @@
 {
   "name": "dev-workflow",
   "version": "0.4.0",
-  "description": "Clear spec & requirements before coding. Multi-project workspaces. Enforce via check-gates.",
+  "description": "Evidence-backed delivery with typed requirements, TDD, G0-G9 structural gates, and C1-C8 semantic audit.",
   "author": {
     "name": "Ninh Lee",
     "email": "levanninh2101@gmail.com"

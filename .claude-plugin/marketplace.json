@@ -5,14 +5,14 @@
     "email": "levanninh2101@gmail.com"
   },
   "metadata": {
-    "description": "Marketplace for clear-spec delivery workflow (learning, conflict, TDD gates, check-gates enforce).",
+    "description": "Marketplace for evidence-backed delivery with typed requirements, TDD gates, and semantic audit.",
     "version": "0.4.0"
   },
   "plugins": [
     {
       "name": "dev-workflow",
       "source": "./",
-      "description": "Clear spec & requirements before coding. Multi-project workspaces. Stages: learning|coaching|spec|conflict|plan|build|confirm|check|ship. Enforce via check-gates.",
+      "description": "Typed requirements, type-specific conflict analysis, TDD, G0-G9 gates, and C1-C8 semantic audit.",
       "version": "0.4.0",
       "author": {
         "name": "Ninh Lee",

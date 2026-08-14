@@ -1,5 +1,8 @@
 # Marketplace & install — v0.4
 
+For prerequisites, files changed, update steps, and troubleshooting, use
+**[docs/INSTALL.md](./docs/INSTALL.md)**. This page is the short host command reference.
+
 ## Hosts
 
 | Host | Manifests | Install |
@@ -29,7 +32,9 @@ cd dev-workflow
 bash install.sh
 ```
 
-Deploys colon commands to `~/.cursor/commands/` and `~/.claude/commands/`, symlinks skills, builds Antigravity bundle.
+Deploys colon commands to `~/.cursor/commands/` and `~/.claude/commands/`, installs Codex stage
+skills, links shared assets, and rebuilds the Antigravity bundle. Existing
+`~/.agents/plugins/marketplace.json` is preserved rather than overwritten.
 
 ### Antigravity
 
@@ -48,13 +53,15 @@ After install, read **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)**.
 chmod +x bin/check-gates.sh bin/pilot-score.sh
 export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
 
+./tests/regression.sh                                                # expect 10 PASS
 ./bin/check-gates.sh FIX-FAIL --project demo --min G1          # expect FAIL
 ./bin/check-gates.sh PASS-G8 --project demo --min G8           # expect PASS
 ./bin/check-gates.sh PASS-G9 --project demo --min G9 --strict  # expect PASS
 ./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md  # expect PASS
 ```
 
-In the AI host, confirm `/dev-workflow:status` appears.
+In the AI host, restart/reload it if required, then confirm `/dev-workflow:status` and
+`/dev-workflow:audit` appear.
 
 ---
 

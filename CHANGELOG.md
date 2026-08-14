@@ -8,6 +8,12 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Documentation
+
+- Added `docs/INSTALL.md` with host paths, isolated install verification, update steps, and troubleshooting.
+- Synced README, USER-GUIDE, MARKETPLACE, STRUCTURE, CONTRIBUTING, and host manifests with Type,
+  provenance, RED→GREEN evidence, command ledger, G0–G9, and C1–C8 AUDIT behavior.
+
 ### Added
 - **Locale:** `references/locale.md` — chat/setup follow user language; gate keywords stay English.
 - **Workspace health:** `bin/check-workspace.sh` + `references/workspace-health.md` (W0–W6).

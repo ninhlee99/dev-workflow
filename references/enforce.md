@@ -17,6 +17,14 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 
 Exit: `0` PASS · `1` FAIL · `2` path/usage error.
 
+For P0/P1, G9 is only the structural floor. After `:audit` and human `AUDIT CONFIRM:`, run the
+final check:
+
+```bash
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" <Ticket> \
+  --project <slug> --min AUDIT --strict
+```
+
 ## G3 anti-forge
 
 PASS only if:

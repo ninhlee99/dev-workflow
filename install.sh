@@ -5,7 +5,7 @@
 # Cursor slash policy (lean palette):
 #   - Commands ONLY colon names from plugin/commands/ → ~/.cursor/commands/ and ~/.claude/commands/
 #   - Skills: ONE thin pointer at ~/.cursor/skills/dev-workflow/SKILL.md
-# Edit root templates/references only; re-run install for symlinks/commands.
+# Edit owning root sources; re-run install to refresh copied skills/commands and host links.
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -202,6 +202,7 @@ echo "    Codex:   .agents/plugins/marketplace.json → Plugins Directory"
 echo "    Docs:    MARKETPLACE.md"
 echo ""
 echo "==> Done"
-echo "    Edit root templates/references only; re-run install to refresh symlinks/commands."
+echo "    Edit owning root sources; re-run install to refresh copied skills/commands and links."
 echo "    Cursor slash: ~/.cursor/commands/dev-workflow.md + dev-workflow:*.md (+ one ~/.cursor/skills/dev-workflow pointer)."
 echo "    Claude slash: ~/.claude/commands/ (same colon set from plugin/commands/)."
+echo "    Install/update/verify guide: $PLUGIN_DIR/docs/INSTALL.md"

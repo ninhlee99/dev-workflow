@@ -1,7 +1,7 @@
 {
   "name": "dev-workflow",
   "version": "0.4.0",
-  "description": "Clear spec & requirements before coding. Multi-project workspaces. Learning, conflict-check, TDD evidence gates, /dev-workflow:check enforce.",
+  "description": "Evidence-backed delivery with typed requirements, type-specific conflict analysis, TDD, G0-G9 gates, and C1-C8 semantic audit.",
   "author": {
     "name": "Ninh Lee",
     "email": "levanninh2101@gmail.com"
