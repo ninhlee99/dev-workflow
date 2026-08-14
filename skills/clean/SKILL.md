@@ -5,7 +5,7 @@ description: >-
   Never deletes domain-knowledge or other tickets. Use /dev-workflow:clean.
 argument-hint: "<Ticket ID> [--force] [--purge] — archive worklog after ship; --force if G9 incomplete; --purge hard-delete"
 arguments: [ticket_id, flags]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:clean

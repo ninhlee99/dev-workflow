@@ -5,7 +5,7 @@ description: >-
   Use /dev-workflow:build. Refuses production code if gates fail.
 argument-hint: "<Ticket ID> Run only after plan pass — implement with TDD and log claim↔test mapping in the worklog"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:build

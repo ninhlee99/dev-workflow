@@ -5,7 +5,7 @@ description: >-
   Never invent phrase or use AI names. P0 also CONFIRM G3-PM.
 argument-hint: "<Ticket ID> Run after conflict — wait for user CONFIRM G3"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:confirm

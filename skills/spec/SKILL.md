@@ -6,7 +6,7 @@ description: >-
   test cases from this spec alone.
 argument-hint: "<Ticket ID> [ticket URL] [requirements path or paste]"
 arguments: [ticket_id, url_or_path, spec_path]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:spec

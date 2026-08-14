@@ -1,208 +1,222 @@
 #!/usr/bin/env bash
-# Install dev-workflow for Claude Code, Cursor, and Codex.
-#
-# Source of truth = this plugin ROOT (references/, templates/, commands/, skills/*/SKILL.md).
-# Cursor slash policy (lean palette):
-#   - Commands ONLY colon names from plugin/commands/ → ~/.cursor/commands/ and ~/.claude/commands/
-#   - Skills: ONE thin pointer at ~/.cursor/skills/dev-workflow/SKILL.md
-# Edit owning root sources; re-run install to refresh copied skills/commands and host links.
+# Install dev-workflow for one coding agent, or all supported agents.
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STAGES=(start learning coaching spec conflict confirm plan build review fix test check ship audit status clean)
+TARGET_HOST="claude"
+TARGET_EXPLICIT=0
 PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"
-# Optional: set DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS to a project .claude/commands dir to sync there.
+
+usage() {
+  cat <<'EOF'
+Usage: bash install.sh [--claude|--cursor|--codex|--agy|--all]
+       bash install.sh [--host|--agent] claude|cursor|codex|antigravity|all
+
+Default: claude
+
+Options:
+  --claude               Install only for Claude Code
+  --cursor               Install only for Cursor
+  --codex                Install only for Codex
+  --agy, --antigravity   Install only for Antigravity
+  --all                  Install for every supported coding agent
+  --host, --agent <name>  Install only that coding agent, or all
+  --list-hosts            Print supported coding agents
+  -h, --help              Show this help
+
+Examples:
+  bash install.sh                         # Claude only
+  bash install.sh --cursor                # Cursor only
+  bash install.sh --codex                 # Codex only
+  bash install.sh --agy                   # Antigravity only
+  bash install.sh --all                   # Every supported agent
+EOF
+}
+
+select_target() {
+  local requested="$1"
+  if [[ "$TARGET_EXPLICIT" -eq 1 && "$TARGET_HOST" != "$requested" ]]; then
+    echo "ERROR: conflicting install targets '$TARGET_HOST' and '$requested'; choose exactly one target" >&2
+    usage >&2
+    exit 2
+  fi
+  TARGET_HOST="$requested"
+  TARGET_EXPLICIT=1
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --host|--agent)
+      [[ $# -ge 2 ]] || { echo "ERROR: $1 requires a host" >&2; usage >&2; exit 2; }
+      select_target "$2"
+      shift 2
+      ;;
+    --claude) select_target claude; shift ;;
+    --cursor) select_target cursor; shift ;;
+    --codex) select_target codex; shift ;;
+    --agy|--antigravity) select_target antigravity; shift ;;
+    --all) select_target all; shift ;;
+    --list-hosts)
+      echo "claude cursor codex antigravity all"
+      exit 0
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    claude|cursor|codex|antigravity|all)
+      select_target "$1"
+      shift
+      ;;
+    *)
+      echo "ERROR: unsupported host '$1'" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+case "$TARGET_HOST" in
+  claude|cursor|codex|antigravity|all) ;;
+  *) echo "ERROR: unsupported host '$TARGET_HOST'" >&2; usage >&2; exit 2 ;;
+esac
 
 echo "==> Plugin: $PLUGIN_DIR (v0.4.0)"
+echo "==> Target: $TARGET_HOST"
 
-# Remove obsolete qa stage if present
-if [[ -d "$PLUGIN_DIR/skills/qa" ]]; then
-  rm -rf "$PLUGIN_DIR/skills/qa"
-  echo "  [plugin] removed skills/qa"
+if [[ "$TARGET_HOST" == "antigravity" || "$TARGET_HOST" == "all" ]]; then
+  command -v agy >/dev/null 2>&1 || {
+    echo "ERROR: agy CLI not found; no host was installed" >&2
+    exit 1
+  }
 fi
 
-# Symlink shared assets into each plugin skill dir (not cp -R).
-# ./references and ./templates resolve when skill cwd = skills/$s.
-# Ensure CLI scripts are executable
-for _bin in check-gates.sh check-workspace.sh clean-worklog.sh pilot-score.sh; do
-  if [[ -f "$PLUGIN_DIR/bin/$_bin" ]]; then
-    chmod +x "$PLUGIN_DIR/bin/$_bin"
-    echo "  [plugin] chmod +x bin/$_bin"
-  fi
-done
-
-echo "==> Symlink references+templates into plugin skills/*"
-for s in "${STAGES[@]}"; do
-  local_dest="$PLUGIN_DIR/skills/$s"
-  [[ -d "$local_dest" ]] || continue
-  rm -rf "$local_dest/references" "$local_dest/templates"
-  ln -sfn ../../references "$local_dest/references"
-  ln -sfn ../../templates "$local_dest/templates"
-  echo "  [plugin] $local_dest/{references,templates} -> symlink"
-done
-
-install_copied_skills() {
-  local dest_root="$1"
-  local label="$2"
-  mkdir -p "$dest_root"
-  for s in "${STAGES[@]}"; do
-    local src="$PLUGIN_DIR/skills/$s"
-    local dest="$dest_root/dev-workflow-$s"
-    if [[ ! -f "$src/SKILL.md" ]]; then
-      echo "WARN: missing $src/SKILL.md — skip $s" >&2
-      continue
+prepare_source() {
+  local s local_dest
+  for _bin in check-gates.sh check-workspace.sh clean-worklog.sh pilot-score.sh; do
+    if [[ -f "$PLUGIN_DIR/bin/$_bin" ]]; then
+      chmod +x "$PLUGIN_DIR/bin/$_bin"
     fi
-    mkdir -p "$dest"
-    cp "$src/SKILL.md" "$dest/SKILL.md"
-    rm -rf "$dest/references" "$dest/templates"
-    ln -sfn "$PLUGIN_DIR/references" "$dest/references"
-    ln -sfn "$PLUGIN_DIR/templates" "$dest/templates"
-    echo "  [$label] $dest (SKILL + symlink assets)"
+  done
+
+  for s in "${STAGES[@]}"; do
+    local_dest="$PLUGIN_DIR/skills/$s"
+    [[ -d "$local_dest" ]] || { echo "ERROR: missing skill directory $local_dest" >&2; exit 1; }
+    [[ -f "$local_dest/SKILL.md" ]] || { echo "ERROR: missing $local_dest/SKILL.md" >&2; exit 1; }
+    rm -rf "$local_dest/references" "$local_dest/templates"
+    ln -sfn ../../references "$local_dest/references"
+    ln -sfn ../../templates "$local_dest/templates"
   done
 }
 
+install_stage_links() {
+  local dest_root="$1" label="$2" s src dest
+  mkdir -p "$dest_root"
+  for s in "${STAGES[@]}"; do
+    src="$PLUGIN_DIR/skills/$s"
+    dest="$dest_root/dev-workflow-$s"
+    rm -rf "$dest"
+    ln -sfn "$src" "$dest"
+    echo "  [$label] dev-workflow-$s -> $src"
+  done
+  rm -rf "$dest_root/dev-workflow-qa"
+}
+
 install_colon_commands() {
-  local dest="$1"
-  local label="$2"
+  local dest="$1" label="$2" src f
   mkdir -p "$dest"
-  local src
   shopt -s nullglob
   for src in "$PLUGIN_DIR"/commands/dev-workflow.md "$PLUGIN_DIR"/commands/dev-workflow:*.md; do
     [[ -f "$src" ]] || continue
     cp "$src" "$dest/$(basename "$src")"
     echo "  [$label] $(basename "$src")"
   done
-  # Remove hyphen command variants (inflate slash palette)
   for f in "$dest"/dev-workflow-*.md; do
     [[ -e "$f" ]] || continue
     rm -f "$f"
-    echo "  [$label] removed hyphen $(basename "$f")"
   done
+  shopt -u nullglob
 }
 
-# --- Claude Code -------------------------------------------------------------
-echo ""
-echo "==> Claude Code"
-echo "    Prefer plugin load:"
-echo "      claude --plugin-dir \"$PLUGIN_DIR\""
-echo "    Then /reload-plugins and call /dev-workflow:start …"
-mkdir -p "${HOME}/.claude/skills" "${HOME}/.claude/plugins" "${HOME}/.claude/commands"
-ln -sfn "$PLUGIN_DIR" "${HOME}/.claude/skills/dev-workflow-plugin"
-ln -sfn "$PLUGIN_DIR" "${HOME}/.claude/plugins/dev-workflow"
-echo "    Linked:"
-echo "      ~/.claude/skills/dev-workflow-plugin -> $PLUGIN_DIR"
-echo "      ~/.claude/plugins/dev-workflow -> $PLUGIN_DIR"
-echo "    Optional: export DEV_WORKFLOW_PLUGIN=\"$PLUGIN_DIR\""
-
-echo "    Claude commands (colon) from plugin/commands/"
-install_colon_commands "${HOME}/.claude/commands" "claude-cmd"
-
-# Optional project .claude/commands sync
-if [[ -n "$PROJECT_CLAUDE_CMDS" ]]; then
-  mkdir -p "$PROJECT_CLAUDE_CMDS"
-  install_colon_commands "$PROJECT_CLAUDE_CMDS" "project-claude-cmd"
-fi
-
-# --- Cursor ------------------------------------------------------------------
-echo ""
-echo "==> Cursor (lean: ~/.cursor/commands colon set + one pointer skill)"
-CURSOR_CMDS="${HOME}/.cursor/commands"
-CURSOR_SKILLS="${HOME}/.cursor/skills"
-mkdir -p "$CURSOR_CMDS" "$CURSOR_SKILLS"
-
-install_colon_commands "$CURSOR_CMDS" "cursor-cmd"
-
-# Do NOT install into project .cursor/commands (duplicates inflate palette)
-
-# Remove leftover per-stage Cursor skills (including obsolete qa)
-for s in "${STAGES[@]}" qa; do
-  d="$CURSOR_SKILLS/dev-workflow-$s"
-  if [[ -e "$d" ]]; then
-    rm -rf "$d"
-    echo "  [cursor-skill] removed $d"
+install_claude() {
+  echo "==> Claude Code"
+  mkdir -p "$HOME/.claude/skills" "$HOME/.claude/plugins" "$HOME/.claude/commands"
+  ln -sfn "$PLUGIN_DIR" "$HOME/.claude/skills/dev-workflow-plugin"
+  ln -sfn "$PLUGIN_DIR" "$HOME/.claude/plugins/dev-workflow"
+  install_colon_commands "$HOME/.claude/commands" "claude-command"
+  if [[ -n "$PROJECT_CLAUDE_CMDS" ]]; then
+    install_colon_commands "$PROJECT_CLAUDE_CMDS" "project-claude-command"
   fi
-done
+  echo "  Reload plugins, then run /dev-workflow:status"
+}
 
-# Thin pointer skill only (env-based source; includes learning; no QA wording)
-ORCH="$CURSOR_SKILLS/dev-workflow"
-mkdir -p "$ORCH"
-rm -rf "$ORCH/references" "$ORCH/templates"
-cat > "$ORCH/SKILL.md" <<'SKILLEOF'
----
-name: dev-workflow
-description: >-
-  Thin pointer. Prefer Cursor commands /dev-workflow and /dev-workflow:<stage>.
-  Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|fix|test|check|ship|audit|status|clean.
-  Confirm (not QA). Chat follows user language. Real logic lives in the plugin (see Source below).
-argument-hint: "Use /dev-workflow or /dev-workflow:<stage> with <Ticket ID> (or topic for coaching; brief for learning)."
-disable-model-invocation: true
----
+install_cursor() {
+  echo "==> Cursor"
+  mkdir -p "$HOME/.cursor/commands" "$HOME/.cursor/skills"
+  install_colon_commands "$HOME/.cursor/commands" "cursor-command"
+  rm -rf "$HOME/.cursor/skills/dev-workflow"
+  install_stage_links "$HOME/.cursor/skills" "cursor-skill"
+  echo "  Restart/reload Cursor, then run /dev-workflow:status"
+}
 
-# Dev Workflow — Cursor pointer
-
-**Do not treat this skill as the implementation.** Slash commands under `~/.cursor/commands/` are the Cursor entrypoints.
-
-Source: $DEV_WORKFLOW_PLUGIN or plugin dir linked as ~/.claude/skills/dev-workflow-plugin
-
-Stages: start|learning|coaching|spec|conflict|confirm|plan|build|review|fix|test|check|ship|audit|status|clean
-
-Chat/setup: user language (`references/locale.md`). Per-ticket worklogs only. After ship: `:clean`.
-
-When a stage command runs, follow `skills/<stage>/` and shared `references/` + `templates/` in that plugin.
-SKILLEOF
-echo "  [cursor] thin pointer -> $ORCH/SKILL.md"
-
-# --- Codex -------------------------------------------------------------------
-echo ""
-echo "==> Codex (per-stage SKILL + symlink assets to plugin root)"
-install_copied_skills "${HOME}/.codex/skills" "codex"
-
-# Codex plugin copy for Plugins Directory / personal marketplace
-CODEX_PLUGIN="${HOME}/.codex/plugins/dev-workflow"
-mkdir -p "${HOME}/.codex/plugins" "${HOME}/.agents/plugins"
-rm -rf "$CODEX_PLUGIN"
-ln -sfn "$PLUGIN_DIR" "$CODEX_PLUGIN"
-if [[ ! -f "${HOME}/.agents/plugins/marketplace.json" ]]; then
-  cat > "${HOME}/.agents/plugins/marketplace.json" <<'EOF'
+install_codex_marketplace_seed() {
+  local marketplace_root="$HOME/.agents/plugins"
+  local marketplace="$marketplace_root/marketplace.json"
+  mkdir -p "$marketplace_root/plugins"
+  ln -sfn "$PLUGIN_DIR" "$marketplace_root/plugins/dev-workflow"
+  if [[ ! -f "$marketplace" ]]; then
+    cat >"$marketplace" <<'EOF'
 {
-  "name": "personal-dev-workflow",
-  "interface": { "displayName": "Personal Dev Workflow" },
+  "name": "personal",
+  "interface": { "displayName": "Personal" },
   "plugins": [
     {
       "name": "dev-workflow",
-      "source": { "source": "local", "path": "./.codex/plugins/dev-workflow" },
+      "source": { "source": "local", "path": "./plugins/dev-workflow" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
-      "category": "Productivity",
-      "interface": { "displayName": "Dev Workflow" }
+      "category": "Productivity"
     }
   ]
 }
 EOF
-  # path relative to marketplace root (~) — Codex resolves from home when marketplace in ~/.agents
-  # Prefer absolute symlink target; rewrite with home-relative if needed by user
-  echo "  [codex] wrote ~/.agents/plugins/marketplace.json (edit source.path if picker misses plugin)"
-else
-  echo "  [codex] ~/.agents/plugins/marketplace.json exists — leave as-is (see MARKETPLACE.md)"
-fi
-echo "  [codex] plugin link -> $CODEX_PLUGIN"
+    echo "  [codex] created personal marketplace seed"
+  else
+    echo "  [codex] preserved existing personal marketplace"
+  fi
+}
 
-# --- Antigravity -------------------------------------------------------------
-echo ""
-echo "==> Antigravity host bundle"
-if [[ -f "$PLUGIN_DIR/hosts/antigravity/rebuild.sh" ]]; then
+install_codex() {
+  echo "==> Codex"
+  mkdir -p "$HOME/.codex/skills" "$HOME/.codex/plugins"
+  install_stage_links "$HOME/.codex/skills" "codex-skill"
+  ln -sfn "$PLUGIN_DIR" "$HOME/.codex/plugins/dev-workflow"
+  install_codex_marketplace_seed
+  echo "  Start a new Codex task so the refreshed skills are discovered"
+}
+
+install_antigravity() {
+  echo "==> Antigravity"
   bash "$PLUGIN_DIR/hosts/antigravity/rebuild.sh"
-  echo "    Install with: agy plugin install \"$PLUGIN_DIR/hosts/antigravity\""
-fi
+  agy plugin validate "$PLUGIN_DIR/hosts/antigravity"
+  agy plugin install "$PLUGIN_DIR/hosts/antigravity"
+  echo "  Restart/reload Antigravity, then run /dev-workflow:status"
+}
 
-echo ""
-echo "==> Marketplace manifests present"
-echo "    Claude:  .claude-plugin/marketplace.json  → /plugin marketplace add \"$PLUGIN_DIR\""
-echo "    Cursor:  .cursor-plugin/plugin.json       → Customize / marketplace publish"
-echo "    Codex:   .agents/plugins/marketplace.json → Plugins Directory"
-echo "    Docs:    MARKETPLACE.md"
-echo ""
-echo "==> Done"
-echo "    Edit owning root sources; re-run install to refresh copied skills/commands and links."
-echo "    Cursor slash: ~/.cursor/commands/dev-workflow.md + dev-workflow:*.md (+ one ~/.cursor/skills/dev-workflow pointer)."
-echo "    Claude slash: ~/.claude/commands/ (same colon set from plugin/commands/)."
-echo "    Install/update/verify guide: $PLUGIN_DIR/docs/INSTALL.md"
+prepare_source
+
+case "$TARGET_HOST" in
+  claude) install_claude ;;
+  cursor) install_cursor ;;
+  codex) install_codex ;;
+  antigravity) install_antigravity ;;
+  all)
+    install_claude
+    install_cursor
+    install_codex
+    install_antigravity
+    ;;
+esac
+
+echo "==> Done: $TARGET_HOST"
+echo "    Full guide: $PLUGIN_DIR/docs/INSTALL.md"

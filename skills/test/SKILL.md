@@ -5,7 +5,7 @@ description: >-
   SHA vs git HEAD and junit file contents.
 argument-hint: "<Ticket ID> Run after review — fill 06b-test-evidence.md"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:test

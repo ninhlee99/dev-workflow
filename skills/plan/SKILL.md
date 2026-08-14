@@ -5,7 +5,7 @@ description: >-
   Use /dev-workflow:plan only after conflict claims are fully confirmed.
 argument-hint: "<Ticket ID> Run only after spec and conflict pass — write a TDD-ready implementation plan into the worklog"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:plan

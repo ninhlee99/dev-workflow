@@ -5,7 +5,7 @@ description: >-
   Stops for human confirm on conflicts before plan.
 argument-hint: "<Ticket ID> [ticket URL] [spec path or paste] — start full pipeline from first failing gate"
 arguments: [ticket_id, url_or_path, extra]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:start

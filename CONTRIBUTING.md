@@ -7,7 +7,8 @@ Thank you for improving this plugin. This document explains how to contribute ch
 ## Prerequisites
 
 - Bash 3.2+
-- One of: Claude Code, Cursor, Codex, or Antigravity (for smoke-testing)
+- One of: Claude Code, Cursor, Codex, or Antigravity (for live smoke-testing)
+- `agy` only for live Antigravity installation; `tests/install.sh` supplies an isolated fake
 - Git
 
 ---
@@ -27,10 +28,10 @@ See [STRUCTURE.md](./STRUCTURE.md) for a full annotated layout. The key principl
 ```bash
 git clone git@github.com:ninhlee99/dev-workflow.git
 cd dev-workflow
-bash install.sh       # wire up symlinks + deploy commands to host AI tools
+bash install.sh --claude  # choose one host; use --all only when intended
 ```
 
-Edit files, then re-run `bash install.sh` to refresh symlinks and commands.
+Edit files, then rerun the installer for the specific host being tested.
 
 ---
 
@@ -43,7 +44,7 @@ Edit files, then re-run `bash install.sh` to refresh symlinks and commands.
 5. Document the gate (if any) in `references/workflow.md` and `bin/check-gates.sh`.
 6. Update `references/stage-contract.md`, user docs, and command tooltip.
 7. Add positive and negative behavior to `tests/regression.sh`.
-8. Run `bash install.sh` in an isolated HOME and smoke-test.
+8. Run `tests/install.sh` (isolated HOME + fake `agy`) and smoke-test.
 
 ---
 
@@ -105,6 +106,7 @@ Scope: stage name or component (e.g. `spec`, `check-gates`, `install`).
 
 - [ ] `bash install.sh` runs without errors
 - [ ] `tests/regression.sh` exits 0
+- [ ] `tests/install.sh` exits 0
 - [ ] `bin/check-gates.sh FIX-FAIL --project demo --min G1` exits 1
 - [ ] `bin/check-gates.sh PASS-G8 --project demo --min G8` exits 0
 - [ ] `bin/check-gates.sh PASS-G9 --project demo --min G9 --strict` exits 0

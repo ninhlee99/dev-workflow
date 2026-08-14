@@ -5,7 +5,7 @@ description: >-
   out-of-scope, or suggestions that contradict AC/system. Log in 06c-fix-log.md.
 argument-hint: "<Ticket ID> After review FAIL — triage OPEN findings; fix only FIX decisions"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:fix

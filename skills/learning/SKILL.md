@@ -6,7 +6,7 @@ description: >-
   Changed specs → :coaching.
 argument-hint: "[project brief or path] — AI self-learns; auto-creates workspaces/<project-slug>/; asks only when business unclear"
 arguments: [brief]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:learning

@@ -5,7 +5,7 @@ description: >-
   Q&A confirms. Resume by passing confirm text after Ticket_ID.
 argument-hint: "<Ticket ID> [claim decision text when answering] — find conflicts with existing business; record decisions in the worklog"
 arguments: [ticket_id, confirm_text]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:conflict
