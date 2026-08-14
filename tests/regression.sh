@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CHECK="$ROOT/bin/check-gates.sh"
+FIXTURES="$ROOT/fixtures"
+PASS=0
+FAIL=0
+
+ok() { printf 'PASS: %s\n' "$1"; PASS=$((PASS + 1)); }
+bad() { printf 'FAIL: %s\n' "$1"; FAIL=$((FAIL + 1)); }
+
+assert_success() {
+  local name="$1"; shift
+  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err; then ok "$name"; else bad "$name"; fi
+}
+
+assert_failure() {
+  local name="$1"; shift
+  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err; then bad "$name"; else ok "$name"; fi
+}
+
+assert_failure_output() {
+  local name="$1" pattern="$2"; shift 2
+  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err; then
+    bad "$name"
+  elif grep -qE "$pattern" /tmp/dev-workflow-test.out /tmp/dev-workflow-test.err; then
+    ok "$name"
+  else
+    bad "$name"
+  fi
+}
+
+assert_output() {
+  local name="$1" pattern="$2"; shift 2
+  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err &&
+     grep -qE "$pattern" /tmp/dev-workflow-test.out; then
+    ok "$name"
+  else
+    bad "$name"
+  fi
+}
+
+export DEV_WORKFLOW_WORKSPACES_ROOT="$FIXTURES"
+
+assert_output "--json emits valid JSON on PASS" '"ok": true' \
+  "$CHECK" PASS-G8 --project demo --min G8 --json
+
+assert_failure "--json preserves nonzero exit on FAIL" \
+  "$CHECK" FAIL-G8-failing --project demo --min G8 --json
+
+tmp_root="$(mktemp -d)"
+trap 'rm -rf "$tmp_root"' EXIT
+mkdir -p "$tmp_root/workspaces/demo/worklogs"
+cp -R "$FIXTURES/workspaces/demo/PROJECT.md" "$tmp_root/workspaces/demo/"
+cp -R "$FIXTURES/workspaces/demo/domain-knowledge" "$tmp_root/workspaces/demo/"
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING"
+sed -i.bak '/Type:/d' "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING/INDEX.md"
+rm -f "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING/INDEX.md.bak"
+export DEV_WORKFLOW_WORKSPACES_ROOT="$tmp_root/workspaces"
+
+assert_failure "G1 rejects a worklog with no ticket Type" \
+  "$CHECK" TYPE-MISSING --project demo --min G1
+
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/PROVENANCE-MISSING"
+find "$tmp_root/workspaces/demo/worklogs/PROVENANCE-MISSING" -type f -name '*.md' -exec \
+  sed -i.bak 's/PASS-G9/PROVENANCE-MISSING/g' {} \;
+find "$tmp_root/workspaces/demo/worklogs/PROVENANCE-MISSING" -name '*.bak' -delete
+sed -i.bak '/^## Requirement provenance$/d' \
+  "$tmp_root/workspaces/demo/worklogs/PROVENANCE-MISSING/02-spec.md"
+rm -f "$tmp_root/workspaces/demo/worklogs/PROVENANCE-MISSING/02-spec.md.bak"
+
+assert_failure_output "G1 rejects requirements without a provenance section" \
+  'G1 FAIL:.*Requirement provenance' \
+  "$CHECK" PROVENANCE-MISSING --project demo --min G1
+
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/DISCOVERY-MISSING"
+find "$tmp_root/workspaces/demo/worklogs/DISCOVERY-MISSING" -type f -name '*.md' -exec \
+  sed -i.bak 's/PASS-G9/DISCOVERY-MISSING/g' {} \;
+find "$tmp_root/workspaces/demo/worklogs/DISCOVERY-MISSING" -name '*.bak' -delete
+sed -i.bak 's/Command discovery proof/Unverified note/' \
+  "$tmp_root/workspaces/demo/worklogs/DISCOVERY-MISSING/04-plan.md"
+rm -f "$tmp_root/workspaces/demo/worklogs/DISCOVERY-MISSING/04-plan.md.bak"
+
+assert_failure_output "G4 rejects a plan without command discovery proof" \
+  'G4 FAIL:.*Command discovery' \
+  "$CHECK" DISCOVERY-MISSING --project demo --min G4
+
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING"
+find "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING" -type f -name '*.md' -exec \
+  sed -i.bak 's/PASS-G9/LEDGER-MISSING/g' {} \;
+find "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING" -name '*.bak' -delete
+sed -i.bak 's/^## Executed-command ledger$/## Commands omitted/' \
+  "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING/06b-test-evidence.md"
+rm -f "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING/06b-test-evidence.md.bak"
+
+assert_failure_output "G8 rejects test evidence without an executed-command ledger" \
+  'G8 FAIL:.*executed-command ledger' \
+  "$CHECK" LEDGER-MISSING --project demo --min G8
+
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/AUDIT-BYPASS"
+find "$tmp_root/workspaces/demo/worklogs/AUDIT-BYPASS" -type f -name '*.md' -exec \
+  sed -i.bak 's/PASS-G9/AUDIT-BYPASS/g' {} \;
+find "$tmp_root/workspaces/demo/worklogs/AUDIT-BYPASS" -name '*.bak' -delete
+cat >"$tmp_root/workspaces/demo/worklogs/AUDIT-BYPASS/08-semantic-audit.md" <<'EOF'
+# 08 Semantic audit
+### C1 — Conflict claim Proposal ↔ Decision
+☑ INCOHERENT
+## Routing
+| C1 | :conflict | decision does not answer proposal |
+AUDIT CONFIRM: AUDIT-BYPASS Human 2026-08-14
+☑ PASS
+EOF
+
+assert_failure_output "AUDIT rejects INCOHERENT even when routing and PASS are present" \
+  'AUDIT FAIL:.*INCOHERENT' \
+  "$CHECK" AUDIT-BYPASS --project demo --min AUDIT
+
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/AUDIT-NO-EVIDENCE"
+find "$tmp_root/workspaces/demo/worklogs/AUDIT-NO-EVIDENCE" -type f -name '*.md' -exec \
+  sed -i.bak 's/PASS-G9/AUDIT-NO-EVIDENCE/g' {} \;
+find "$tmp_root/workspaces/demo/worklogs/AUDIT-NO-EVIDENCE" -name '*.bak' -delete
+{
+  echo '# 08 Semantic audit'
+  for pair in 1 2 3 4 5 6 7 8; do
+    echo "### C$pair — pair"
+    echo '☑ COHERENT'
+    echo '**REASON:** superficially filled reason'
+  done
+  echo 'AUDIT CONFIRM: AUDIT-NO-EVIDENCE Human 2026-08-14'
+  echo '☑ PASS'
+} >"$tmp_root/workspaces/demo/worklogs/AUDIT-NO-EVIDENCE/08-semantic-audit.md"
+
+assert_failure_output "AUDIT rejects verdicts without two quoted evidence strings" \
+  'AUDIT FAIL:.*quoted evidence' \
+  "$CHECK" AUDIT-NO-EVIDENCE --project demo --min AUDIT
+
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS"
+find "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS" -type f -name '*.md' -exec \
+  sed -i.bak 's/PASS-G9/AUDIT-PASS/g' {} \;
+find "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS" -name '*.bak' -delete
+{
+  echo '# 08 Semantic audit'
+  for pair in 1 2 3 4 5 6 7 8; do
+    echo "### C$pair — pair"
+    echo 'SIDE A: "specific source evidence A"'
+    echo 'SIDE B: "specific source evidence B"'
+    echo '☑ COHERENT'
+    echo '**REASON:** both quoted sides agree on the stated behavior'
+  done
+  echo 'AUDIT CONFIRM: AUDIT-PASS Human 2026-08-14'
+  echo '☑ PASS'
+} >"$tmp_root/workspaces/demo/worklogs/AUDIT-PASS/08-semantic-audit.md"
+
+assert_success "AUDIT accepts eight resolved evidence-backed pairs with human sign-off" \
+  "$CHECK" AUDIT-PASS --project demo --min AUDIT
+
+if grep -q 'case.*Bug\|Bug)' "$ROOT/references/conflict-check.md" &&
+   grep -q 'New feature' "$ROOT/references/conflict-check.md" &&
+   grep -q 'Spec change' "$ROOT/references/conflict-check.md" &&
+   grep -q 'Requirement change' "$ROOT/references/conflict-check.md"; then
+  ok "conflict-check dispatches all four ticket types"
+else
+  bad "conflict-check dispatches all four ticket types"
+fi
+
+printf 'RESULT: %s passed, %s failed\n' "$PASS" "$FAIL"
+[[ "$FAIL" -eq 0 ]]

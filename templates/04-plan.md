@@ -13,10 +13,10 @@ Task is ☐ Done only when:
 
 ## Tasks
 
-| # | Task | AC / claim | Repo | DoD / test command | Status |
-|---|---|---|---|---|---|
-| 1 | | AC-01 / C-01 | | `…` | ☐ |
-| 2 | | | | | ☐ |
+| # | Task | AC / claim | Repo | DoD / test command | Command discovery proof | Status |
+|---|---|---|---|---|---|---|
+| 1 | | AC-01 / C-01 | | `…` | runner/path checked: … | ☐ |
+| 2 | | | | | | ☐ |
 
 ## Regression matrix (touched modules)
 

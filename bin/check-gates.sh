@@ -376,6 +376,32 @@ fi
 if need_gate G1; then
   file_ok "$SPEC" || maybe_fail G1 "missing 02-spec.md"
   if file_ok "$SPEC"; then
+    extract_ticket_type() {
+      local src="$1"
+      awk '
+        /Type:/ {
+          if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*Bug/) print "Bug"
+          if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*New feature/) print "New feature"
+          if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*Spec change/) print "Spec change"
+          if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*Requirement change/) print "Requirement change"
+        }
+      ' "$src" 2>/dev/null
+    }
+    index_types="$(extract_ticket_type "$INDEX")"
+    spec_types="$(extract_ticket_type "$SPEC")"
+    index_type_count="$(printf '%s\n' "$index_types" | grep -cE '.' || true)"
+    spec_type_count="$(printf '%s\n' "$spec_types" | grep -cE '.' || true)"
+    [[ "$index_type_count" -eq 1 ]] || maybe_fail G1 "INDEX must select exactly one ticket Type"
+    [[ "$spec_type_count" -eq 1 ]] || maybe_fail G1 "02-spec must select exactly one ticket Type"
+    if [[ "$index_type_count" -eq 1 && "$spec_type_count" -eq 1 && "$index_types" != "$spec_types" ]]; then
+      maybe_fail G1 "ticket Type mismatch: INDEX=$index_types 02-spec=$spec_types"
+    fi
+    if [[ "$REQUIRE_MACHINE" -eq 1 ]]; then
+      grep -qiE '^##[[:space:]]+Requirement provenance' "$SPEC" || \
+        maybe_fail G1 "02-spec missing Requirement provenance"
+      grep -qE '\|[[:space:]]*(AC|NEG|PERM|EDGE)-[0-9]+[[:space:]]*\|[[:space:]]*(OBSERVED|DOCUMENTED|INFERRED|UNVERIFIED|CONFLICTING)' "$SPEC" || \
+        maybe_fail G1 "02-spec has no requirement row with a truth label and provenance"
+    fi
     # Old check accepted "Given" appearing anywhere in the file (even inside
     # unrelated prose) as proof the AC section exists. Require the actual
     # heading — both the fixture's minimal schema and the full template use
@@ -604,6 +630,12 @@ if need_gate G4; then
     if [[ -n "$plan_gaps" && "$plan_gap_count" -gt 0 ]]; then
       maybe_fail G4 "$plan_gap_count plan task row(s) missing AC/claim id or DoD/test command"
     fi
+    if [[ "$REQUIRE_MACHINE" -eq 1 ]]; then
+      grep -qiE '\|[^|]*(Command discovery|Discovery proof)[^|]*\|' "$PLAN" || \
+        maybe_fail G4 "04-plan missing Command discovery proof column"
+      grep -qE '\|[[:space:]]*[0-9]+[[:space:]]*\|.*\|[[:space:]]*[^|]*(checked|dry-run|--list|existing command)[^|]*\|' "$PLAN" || \
+        maybe_fail G4 "04-plan has no verified command discovery proof"
+    fi
   fi
 fi
 
@@ -672,6 +704,11 @@ if need_gate G6; then
     fi
     if ! grep -qE '☑ PASS|\[x\] PASS|Result:.*PASS' "$IMPL"; then
       maybe_fail G6 "no PASS evidence in 05-impl-log"
+    fi
+    if [[ "$REQUIRE_MACHINE" -eq 1 ]]; then
+      grep -qiE 'RED command' "$IMPL" || maybe_fail G6 "05-impl-log missing RED command evidence"
+      grep -qiE 'Why RED proves' "$IMPL" || maybe_fail G6 "05-impl-log missing explanation of the RED failure"
+      grep -qiE 'GREEN (command|result)' "$IMPL" || maybe_fail G6 "05-impl-log missing GREEN evidence"
     fi
     # A row can claim Result=PASS while leaving the Test path column blank —
     # that is an unverifiable claim (which test? never actually run?), not
@@ -903,6 +940,14 @@ if need_gate G8; then
           maybe_fail G8 "machine evidence: CI URL must be http(s) or N/A-local with junit path"
         fi
       fi
+      grep -qiE '^##[[:space:]]+Executed-command ledger' "$TESTEV" || \
+        maybe_fail G8 "06b-test-evidence missing executed-command ledger"
+      grep -qE '^\|[^|]+\|[^|]+\|[^|]+\|[[:space:]]*0[[:space:]]*\|[^|]+\|[^|]+\|' "$TESTEV" || \
+        maybe_fail G8 "executed-command ledger has no successful concrete command row"
+      grep -qiE '^##[[:space:]]+Assertion evidence' "$TESTEV" || \
+        maybe_fail G8 "06b-test-evidence missing assertion evidence"
+      grep -qE '^\|[[:space:]]*(AC|NEG|PERM|EDGE)-[0-9]+[[:space:]]*\|[[:space:]]*[^|[:space:]]+' "$TESTEV" || \
+        maybe_fail G8 "assertion evidence has no concrete requirement mapping"
     fi
 
     # CI-native verification
@@ -1027,15 +1072,36 @@ fi
 if need_gate AUDIT; then
   file_ok "$AUDIT" || maybe_fail AUDIT "missing 08-semantic-audit.md — run /dev-workflow:audit"
   if file_ok "$AUDIT"; then
-    unverdicted="$(grep -cE '☐ COHERENT ☐ INCOHERENT ☐ N/A' "$AUDIT" 2>/dev/null || true)"
+    for pair in 1 2 3 4 5 6 7 8; do
+      if ! grep -qE "^#{2,3}[[:space:]]+C${pair}([[:space:]]|[[:punct:]])" "$AUDIT"; then
+        maybe_fail AUDIT "missing required coherence pair C$pair"
+        continue
+      fi
+      pair_block="$(awk -v start="C$pair" -v next_pair="C$((pair + 1))" '
+        $0 ~ ("^#{2,3}[[:space:]]+" start "([[:space:]]|[[:punct:]])") { in_pair=1 }
+        $0 ~ ("^#{2,3}[[:space:]]+" next_pair "([[:space:]]|[[:punct:]])") { in_pair=0 }
+        in_pair { print }
+      ' "$AUDIT")"
+      if ! printf '%s\n' "$pair_block" | grep -qE '☑ COHERENT|\[x\] COHERENT|\[X\] COHERENT|☑ N/A|\[x\] N/A|\[X\] N/A'; then
+        maybe_fail AUDIT "C$pair has no resolved COHERENT/N/A verdict"
+      fi
+      quote_count="$(printf '%s\n' "$pair_block" | grep -oE '"[^"]{3,}"' | wc -l | tr -d ' ' || true)"
+      if [[ "${quote_count:-0}" -lt 2 ]]; then
+        maybe_fail AUDIT "C$pair requires two verbatim quoted evidence strings"
+      fi
+      if ! printf '%s\n' "$pair_block" | grep -qiE 'REASON:\*{0,2}[[:space:]]*.{8,}'; then
+        maybe_fail AUDIT "C$pair requires a non-placeholder REASON"
+      fi
+    done
+    unverdicted="$(grep -cE '☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A|☐ COHERENT ☐ INCOHERENT ☐ N/A' "$AUDIT" 2>/dev/null || true)"
     unverdicted="${unverdicted:-0}"
     if [[ "$unverdicted" -gt 0 ]]; then
       maybe_fail AUDIT "$unverdicted coherence pair(s) left with no verdict ticked"
     fi
-    if grep -qE '☑ INCOHERENT|\[x\] INCOHERENT' "$AUDIT" 2>/dev/null; then
-      grep -qiE '## Routing' "$AUDIT" && grep -qE '\|[[:space:]]*:[a-z]+' "$AUDIT" \
-        || maybe_fail AUDIT "INCOHERENT pair(s) present but Routing table empty"
-    fi
+    grep -qE '☑ INCOHERENT|\[[xX]\] INCOHERENT' "$AUDIT" 2>/dev/null && \
+      maybe_fail AUDIT "INCOHERENT pair(s) remain; routing does not permit PASS"
+    grep -qE '☑ UNCLEAR|\[[xX]\] UNCLEAR' "$AUDIT" 2>/dev/null && \
+      maybe_fail AUDIT "UNCLEAR pair(s) remain; human decision must resolve them before PASS"
     audit_confirm_ok() {
       grep -qE "AUDIT CONFIRM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$AUDIT"
     }
@@ -1068,7 +1134,7 @@ print(json.dumps({
   "machine_required": bool($REQUIRE_MACHINE),
   "fails": $(printf '%s\n' "${FAILS[@]:-}" | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'),
   "warns": $(printf '%s\n' "${WARNS[@]:-}" | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'),
-  "ok": $([[ ${#FAILS[@]} -eq 0 ]] && echo true || echo false),
+  "ok": $([[ ${#FAILS[@]} -eq 0 ]] && echo True || echo False),
 }, indent=2))
 PY
 else
@@ -1087,4 +1153,7 @@ else
   echo "RESULT: PASS"
 fi
 
+if [[ ${#FAILS[@]} -gt 0 ]]; then
+  exit 1
+fi
 exit 0

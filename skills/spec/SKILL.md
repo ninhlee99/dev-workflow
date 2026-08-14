@@ -11,6 +11,8 @@ disable-model-invocation: true
 
 # /dev-workflow:spec
 
+Apply `references/skill-quality.md` and the authoritative `references/stage-contract.md`.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -28,7 +30,9 @@ lives in `01-intent.md` will get missed. Each type has its own investigation str
 file; use the matching one, not the bug procedure by default. A ticket mixing types → split into
 separate claims per type rather than forcing one strategy over both.
 
-Normalize requirements into worklog.
+Normalize requirements into worklog. Attach a source/truth label to each decision-driving
+requirement. Reporter wording is `DOCUMENTED`, not independently verified, unless corroborated;
+analyst inference remains `INFERRED`.
 Set **Risk** per `references/risk.md`.
 If P0: create `02b-security.md` from template (`references/security.md`).
 Fill Scenario AC + NEG/PERM/EDGE (+ UI if needed).
@@ -44,3 +48,5 @@ description). Screen not designed yet → mark the row `☐ TBD — confirm befo
 never leave it silently blank.
 
 Empty knowledge → `:learning`; wrong/changed → `:coaching`.
+Before PASS, verify exactly one Type per claim, exactly one Risk, every requirement has a source or
+explicit `UNVERIFIED`, and every UI oracle is observable without asking the implementer.

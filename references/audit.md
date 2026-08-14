@@ -20,7 +20,7 @@ parts agree with each other and with the spec — after every gate has already s
 
 - After `check-gates.sh <Ticket> --min G9 --strict` exits 0
 - Before `:ship` is treated as final / before merge
-- Risk P0 always; P1 recommended; P2 optional (skip is acceptable, note why)
+- Risk P0/P1 required; P2 optional (skip is acceptable only with a recorded reason)
 
 **Do NOT use** as a substitute for `:review` (code defects) or `:conflict` (spec vs code) — this
 stage assumes both already passed and only checks the worklog's internal story holds together.
@@ -82,7 +82,7 @@ REASON: Reverting the app commit does not undo a completed NOT NULL backfill mig
 
 ### Step 4: LOG
 
-Write `08-semantic-audit.md` (template in `templates/08-semantic-audit.md`) with all 7 pairs (C1–C7),
+Write `08-semantic-audit.md` (template in `templates/08-semantic-audit.md`) with all 8 pairs (C1–C8),
 even the ones that are trivially COHERENT (e.g. C5/C6 when there's no migration/flag at all — mark
 `N/A` explicitly, do not omit the row).
 
@@ -92,7 +92,7 @@ even the ones that are trivially COHERENT (e.g. C5/C6 when there's no migration/
   C3/C4 → `:build`/`:review`; C5/C6/C7 → `:ship`; C8 → `:fix`) — do not patch the audit file
   itself to make it pass
 - Any `UNCLEAR` → ask the user directly, same anti-guess rule as `:conflict` Step 5
-- When all 7 pairs are `COHERENT` or explicitly `N/A` with reason, the audit is AI-complete, not
+- When all 8 pairs are `COHERENT` or explicitly `N/A` with reason, the audit is AI-complete, not
   final — an AI's own verdict on its own audit has the same blind-spot risk this stage exists to
   catch, one level up. Require the same anti-forge human sign-off `:confirm` (G3) uses: ask for
   `AUDIT CONFIRM: <Ticket> <name> <YYYY-MM-DD>`, forbid AI/tool names (AI, ChatGPT, Claude,

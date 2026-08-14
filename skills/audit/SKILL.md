@@ -1,7 +1,7 @@
 ---
 name: audit
 description: >-
-  Semantic coherence audit after check-gates.sh --min G9 --strict PASS.
+  Eight-pair semantic coherence audit after check-gates.sh --min G9 --strict PASS.
   Cross-checks worklog artifacts against each other (Decision vs Proposal,
   Rollback vs Migration, etc) — catches content that is structurally valid
   but logically wrong, which regex/awk gates cannot see. Use before treating
@@ -12,6 +12,8 @@ disable-model-invocation: true
 ---
 
 # /dev-workflow:audit
+
+Apply `references/skill-quality.md`; a missing, UNCLEAR, or INCOHERENT pair can never PASS.
 
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
@@ -26,9 +28,10 @@ and ask the user to run it first if unclear.
 
 ## Steps
 
-1. Read `references/audit.md` in full — 7 coherence pairs (C1–C7), verdict rules, anti-patterns.
+1. Read `references/audit.md` in full — 8 coherence pairs (C1–C8), verdict rules, anti-patterns.
 2. Load `02-spec.md` through `07-ship.md` for the ticket.
-3. For each pair, quote both sides verbatim before judging. No quote → no verdict.
+3. For each pair, quote both sides verbatim before judging. No quote → no verdict. For C2–C4,
+   inspect the named assertion/result; topical filename similarity is insufficient.
 4. Fill `templates/08-semantic-audit.md` → worklog `08-semantic-audit.md`.
 5. Any `INCOHERENT` → print routing table (which stage owns the fix) and stop; do not silently
    patch the audit file to make it pass.
@@ -36,7 +39,8 @@ and ask the user to run it first if unclear.
 7. When every pair is `COHERENT` or explicit `N/A` with reason, the audit is **AI-complete**, not
    final — ask the human sign-off: `AUDIT CONFIRM: <Ticket> <name> <YYYY-MM-DD>`, same anti-forge
    naming rule as G3 (no AI/tool names). Write it to `08-semantic-audit.md` Sign-off section.
-8. Only after human sign-off is recorded → Result PASS, ship is final.
+8. Only after human sign-off is recorded, run `check-gates.sh <Ticket> --min AUDIT --strict`; exit 0
+   is required before Result PASS or a ship-final claim.
 
 ## Why human sign-off is required here specifically
 

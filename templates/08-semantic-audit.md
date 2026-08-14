@@ -14,45 +14,55 @@ both sides** — a verdict without both quotes is not evidence.
 
 | claim_id | Proposal (quoted) | Decision (quoted) | Verdict | Reason |
 |---|---|---|---|---|
-| C-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ N/A | |
+| C-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A | |
+
+- **REASON:** …
 
 ### C2 — Plan task AC/claim ↔ DoD/test command
 
 | Task # | AC/claim | DoD/test command (quoted) | Verdict | Reason |
 |---|---|---|---|---|
-| 1 | | | ☐ COHERENT ☐ INCOHERENT ☐ N/A | |
+| 1 | | | ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A | |
+
+- **REASON:** …
 
 ### C3 — Impl-log Coverage PASS ↔ AC text
 
 | AC | Test path (quoted) | AC text (quoted) | Verdict | Reason |
 |---|---|---|---|---|
-| AC-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ N/A | |
+| AC-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A | |
+
+- **REASON:** …
 
 ### C4 — Review "How verified" ↔ AC Given/When/Then
 
 | AC | How verified (quoted) | Given/When/Then (quoted) | Verdict | Reason |
 |---|---|---|---|---|
-| AC-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ N/A | |
+| AC-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A | |
+
+- **REASON:** …
 
 ### C5 — Ship Migration ↔ Rollback
 
-- **Migration says (quoted):** …
-- **Rollback says (quoted):** …
-- **Verdict:** ☐ COHERENT ☐ INCOHERENT ☐ N/A (no migration)
-- **Reason:** …
+- **Migration says (quoted):** "…"
+- **Rollback says (quoted):** "…"
+- **Verdict:** ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A (no migration)
+- **REASON:** …
 
 ### C6 — Ship Feature flag ↔ Rollout plan
 
-- **Flag says (quoted):** …
-- **Rollout plan says (quoted):** …
-- **Verdict:** ☐ COHERENT ☐ INCOHERENT ☐ N/A (no flag)
-- **Reason:** …
+- **Flag says (quoted):** "…"
+- **Rollout plan says (quoted):** "…"
+- **Verdict:** ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A (no flag)
+- **REASON:** …
 
 ### C7 — Conflict side-effects ↔ Review Side effects checklist
 
 | Side effect (from conflict report) | Review Side effects status | Verdict | Reason |
 |---|---|---|---|
-| | | ☐ COHERENT ☐ INCOHERENT ☐ N/A | |
+| | | ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A | |
+
+- **REASON:** …
 
 ### C8 — Fix-log Decision ↔ Review finding Class/Location
 
@@ -61,7 +71,9 @@ not that the Decision actually addresses what the finding described. Check that 
 
 | Finding ID | Finding Class/Location (quoted) | Fix-log Decision + "Changes applied" (quoted) | Verdict | Reason |
 |---|---|---|---|---|
-| R-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ N/A (no findings triaged) | |
+| R-01 | | | ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A (no findings triaged) | |
+
+- **REASON:** …
 
 ## Summary
 

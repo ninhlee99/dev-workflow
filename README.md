@@ -35,14 +35,15 @@ Without a gated process, AI coding often:
 - Ships UI/logic bugs  
 - Marks “done” without evidence  
 
-This plugin blocks advance until artifacts and gates pass (G0–G9), with Risk lanes (P0/P1/P2) and optional pilot scoring.
+This plugin blocks advance until structural gates G0–G9 and the required semantic AUDIT pass, with
+Risk lanes (P0/P1/P2), evidence provenance, and optional pilot scoring.
 
 ---
 
 ## Flow
 
 ```
-learning → coaching → spec → conflict → confirm → plan
+start → learning (only if knowledge missing) / coaching (only if contradicted) → spec → conflict → confirm → plan
                                               ↓
                                             build
                                               ↓
@@ -52,7 +53,7 @@ learning → coaching → spec → conflict → confirm → plan
                                               ↓
                                             test
                                               ↓
-                                    check (--strict) → ship (G9)
+                                    check (--strict) → ship (G9) → audit (C1–C8 + human sign-off)
                                               ↓
                                     clean (archive worklog)
 ```
@@ -61,7 +62,7 @@ learning → coaching → spec → conflict → confirm → plan
 |------|---------|
 | learning / coaching | AI learns domain; you correct mistakes |
 | spec | Testable ACs + **Risk P0/P1/P2** (+ `02b-security.md` if P0) |
-| conflict | Spec vs running code; decisions recorded |
+| conflict | Type-specific spec/intent vs running behavior; decisions recorded |
 | confirm | **You** type `CONFIRM G3:…` (see below) |
 | plan / build | TDD plan + implementation + coverage map |
 | review / fix / test | Diff findings + triage/fix + machine evidence (SHA/CI/junit) |
@@ -175,6 +176,7 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | **G7** | Review: no OPEN P0/P1 + evidence (P2 soft unless `--strict`) | `:review` / `:fix` |
 | **G8** | Tests + machine evidence (`--strict` = CI-native) | `:test` |
 | **G9** | Ship safety (canary/soak/on-call/SLO/rollback) | `:ship` |
+| **AUDIT** | Eight evidence-backed coherence pairs + human sign-off; no UNCLEAR/INCOHERENT | `:audit` |
 
 | Risk | Lane | Notes |
 |------|------|-------|
@@ -182,7 +184,9 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | **P1** | Hard | Default product change — full G0–G9 |
 | **P2** | Fast | Chore — G2/G4/G5/G7 soft unless `--strict` |
 
-Details: [references/risk.md](./references/risk.md).
+Details: [references/risk.md](./references/risk.md). The authoritative stage interface is
+[references/stage-contract.md](./references/stage-contract.md); every skill follows the evidence and
+truthfulness bar in [references/skill-quality.md](./references/skill-quality.md).
 
 ### WAIVE
 

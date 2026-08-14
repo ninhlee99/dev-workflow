@@ -1,6 +1,7 @@
 # 02 Spec: FAIL-G8-missing
 
 - **Touches UI?** ☐ No
+- **Type:** ☑ Bug ☐ New feature ☐ Spec change ☐ Requirement change
 - **Risk:** ☐ P0 ☑ P1 ☐ P2
 - **Date:** 2026-08-11
 

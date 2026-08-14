@@ -2,6 +2,7 @@
 
 - **Project slug:** `demo`
 - **Touches UI?** ☐ No
+- **Type:** ☑ Bug ☐ New feature ☐ Spec change ☐ Requirement change
 - **Risk:** ☐ P0 ☑ P1 ☐ P2
 - **Lane:** ☑ hard ☐ fast
 - **Updated:** 2026-08-11

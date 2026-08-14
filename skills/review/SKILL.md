@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:review
 
+Apply `references/skill-quality.md`; independence means re-deriving conclusions from the diff and contracts.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -46,3 +48,10 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
 - Guessing bugs without opening the changed code
 - Style-only blockers
 - “LGTM” with empty finding table and empty class checklist
+
+## 9/10 controls
+
+Expand `other` when applicable: concurrency/idempotency, transaction/atomicity,
+compatibility/migration, cache/event invalidation, retry, privacy/observability, and resource bounds.
+Re-check changed public contracts and side effects. Uncertain runtime behavior is `UNCLEAR`, not a
+finding, until a local definition or runtime path proves it.

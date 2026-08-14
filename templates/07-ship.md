@@ -5,6 +5,8 @@
 - **Ticket:** [ID]
 - **Risk:** ☐ P0 ☐ P1 ☐ P2
 - **Commit SHA:** [sha]
+- **Deployment profile:** ☐ web/service ☐ worker ☐ library/package ☐ mobile/desktop ☐ docs/config ☐ custom: …
+- **Rollout / rollback authority:** [human role/name]
 - **Checker:** `check-gates.sh --min G9 --strict` exit 0 ☐
 
 ## Pre-merge
@@ -35,6 +37,7 @@
 - **Canary %:** … (or N/A + reason)
 - **Soak time before 100%:** … (e.g. 30m / 24h)
 - **Abort criteria:** …
+- **Observable abort signal:** …
 
 ### Monitor / alert / SLO
 

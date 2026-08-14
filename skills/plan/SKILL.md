@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:plan
 
+Apply `references/skill-quality.md`; this stage owns an executable traceability plan, not plausible prose.
+
 ## Precondition
 
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
@@ -47,3 +49,9 @@ concrete to run.
 
 Print uncovered AC/claim gaps; gaps block next stage.
 Do not enter build here and do not invent tasks beyond confirmed decisions.
+
+## 9/10 controls
+
+Resolve every test path/repo and perform a non-destructive runner discovery check (`--list`, dry-run,
+or an existing neighboring command). If that cannot be checked, label it `UNVERIFIED`, name the
+missing dependency, and keep G4 FAIL.

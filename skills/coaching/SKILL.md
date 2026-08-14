@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:coaching
 
+Apply `references/skill-quality.md`; this stage owns a confirmed knowledge delta and its impact list.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -17,6 +19,9 @@ Use when user corrects or changes business rules.
 Read `references/project-root.md` and `references/coaching.md`.
 Resolve workspace, diff current knowledge vs new guidance, and ask `[COACHING]` for unclear points.
 Write `domain-knowledge/` and `changelog.md` only after explicit confirm.
+Before confirmation, search direct consumers of the old rule (active specs/worklogs, tests, config,
+copy) and present location, old assumption, follow-up, and owner. Never silently edit active ticket
+decisions; route them back to `:spec`/`:conflict`.
 If knowledge is empty, route to `:learning`.
 
 ## Diff, don't overwrite

@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:conflict
 
+Apply `references/skill-quality.md` and the type dispatch in `references/stage-contract.md`.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -44,4 +46,6 @@ A claim that can't be turned into a one-sentence, file:line-checkable statement 
 itself the ambiguity to surface — don't force-fit it into MATCH just to move on.
 
 Any OPEN/UNCLEAR keeps G2/G5 FAIL and blocks `:confirm`/`:plan`/`:build`.
-Never guess claim decisions.
+Never guess claim decisions. Before PASS, print the claim inventory by Type, evidence/truth label,
+uncovered consumer/encoding search, and unresolved items. Code alone may be `OBSERVED` but cannot
+become MATCH without an intent source or explicit project-baseline decision.

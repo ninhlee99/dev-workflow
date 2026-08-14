@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:clean
 
+Apply `references/skill-quality.md`; resolve and print the exact canonical target before mutation.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -43,3 +45,5 @@ Free memory after a finished ticket by removing **that ticket’s worklog only**
 ## Output
 
 Print script RESULT + what was kept. Chat in user language.
+For purge, confirmation must repeat ticket and canonical path. After either operation verify the
+active path is gone and print destination/recoverability plus a receipt; never imply purge recovery.

@@ -23,6 +23,18 @@ Finished in 0.12 seconds
 3 examples, 0 failures
 ```
 
+## Executed-command ledger
+
+| Command | Repo / cwd | Started / ended | Exit | Artifact | Covered IDs | Supersedes |
+|---|---|---|---|---|---|---|
+| `rspec test_ac01` | api | 2026-08-11T10:00Z / 2026-08-11T10:01Z | 0 | raw output above | AC-01 | N/A |
+
+## Assertion evidence
+
+| ID | Test path:line / assertion | Failure proved before fix | Passing result after fix |
+|---|---|---|---|
+| AC-01 | test_ac01:1 `expect(success)` | missing success result | assertion passed |
+
 ## Screenshots / recordings
 
 | AC / scenario | File / URL | Notes |

@@ -25,6 +25,20 @@ Paste raw output (or representative excerpt) from test runner here.
 # paste test runner output here
 ```
 
+## Executed-command ledger
+
+One row per distinct command in `04-plan.md` and PASS command in `05-impl-log.md`.
+
+| Command | Repo / cwd | Started / ended | Exit | Artifact | Covered IDs | Supersedes |
+|---|---|---|---|---|---|---|
+| | | | | | | N/A |
+
+## Assertion evidence
+
+| ID | Test path:line / assertion | Failure proved before fix | Passing result after fix |
+|---|---|---|---|
+| AC-01 | | | |
+
 ## Screenshots / recordings
 
 List paths or embed inline for any UI-touching AC. Leave N/A if no UI.

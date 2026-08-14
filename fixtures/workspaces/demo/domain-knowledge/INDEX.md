@@ -4,6 +4,7 @@
 - **Slug:** `demo`
 - **Needs learning:** no
 - **Needs coaching:** no
+- **Chat locale:** en
 
 ## Coverage
 

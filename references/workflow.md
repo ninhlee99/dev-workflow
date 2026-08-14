@@ -37,7 +37,12 @@ it — that needs a reader, not a regex. `:audit` is the required semantic layer
 structural PASS is necessary but not sufficient for ship to be final. See `references/audit.md`.
 
 ## Stage order
-`:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` → `:audit` → `:status` → (`:clean` when ticket done)
+
+`:start` dispatches the first applicable owner. Use `:learning` only when knowledge is missing and
+`:coaching` only when existing knowledge is contradicted/changed; they are not unconditional serial
+steps. Delivery then follows `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` →
+(`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` → `:audit` → `:status` →
+(`:clean` when ticket done). `references/stage-contract.md` is authoritative.
 
 If current stage already PASS, jump to next. End `:spec`, end `:plan`, and before close `:build`: print uncovered AC/claim map; any gap = FAIL.
 P2 fast lane may WAIVE G2/G4/G5/G7 with INDEX rows — never silent skip.
