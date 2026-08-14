@@ -43,8 +43,11 @@ CONFIRM G3: …
 | G7 Review evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06-review-qa.md` (+ `06c-fix-log.md` if findings) | How/By + no OPEN P0/P1; UI if touches UI |
 | G8 Test evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06b-test-evidence.md` | machine evidence + zero failing tests |
 | G9 Ship safety | ☐ PASS ☐ FAIL ☐ WAIVE | `07-ship.md` | migration / flag / monitor / rollback |
+| Semantic audit | ☐ PASS ☐ FAIL ☐ N/A (P2) | `08-semantic-audit.md` | coherence check post-G9; see `references/audit.md` |
 
-**Build only when G0–G3 PASS (P2: waived gates documented).** Ship when G8+G9 PASS.
+**Build only when G0–G3 PASS (P2: waived gates documented).** G9 structural PASS is required before
+`:ship` is treated as final, but not sufficient by itself — Semantic audit must also PASS (P0/P1
+required; P2 may mark N/A with a one-line reason).
 
 ## Touched repos (from PROJECT.md — do not hardcode)
 

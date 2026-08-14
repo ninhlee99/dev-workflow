@@ -32,6 +32,8 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
 ## Result rules
 
 - Any P0/P1 finding still `OPEN` → Result **FAIL** → next `/dev-workflow:fix <Ticket>`
+  (`check-gates.sh` G7 verifies this by reading Sev/Status columns directly — do not rely on
+  self-discipline alone, the checker will catch a P0 left OPEN under a hand-written PASS line)
 - Missing How/By on any AC row, or empty UI checklist when UI=Yes → **FAIL**
 - Never invent PASS; never ship from this stage alone
 - P2-only findings may proceed to `:test` if evidence complete (list P2 as follow-ups)

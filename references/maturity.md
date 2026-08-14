@@ -12,6 +12,7 @@ How v0.4.0 maps each expert criterion to concrete controls.
 | Programmatic enforce | ≥8 | `check-gates.sh` + fixtures + **required** GH Actions template |
 | Measurable proof | ≥8 | `pilot-score.sh` success bar; pilot mode on INDEX; sample + CI hook |
 | Adoption / timebox | ≥8 | Stage timeboxes in `risk.md`; P2 fast lane real soft skips |
+| Semantic coherence (post-structural) | ≥8 | `:audit` cross-checks Decision↔Proposal, Rollback↔Migration, etc — catches content that is structurally valid but logically wrong, which `check-gates.sh` regex cannot see |
 
 ## Org binding (required for score to hold)
 

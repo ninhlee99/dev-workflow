@@ -61,10 +61,7 @@ fi
 stray=0
 shopt -s nullglob
 for f in "${HOME_P}"/0*.md "${HOME_P}"/INDEX.md \
-         "${HOME_P}/worklogs"/0*.md "${HOME_P}/worklogs"/INDEX.md \
-         "${HOME_P}/worklogs"/02*.md "${HOME_P}/worklogs"/03*.md \
-         "${HOME_P}/worklogs"/04*.md "${HOME_P}/worklogs"/05*.md \
-         "${HOME_P}/worklogs"/06*.md "${HOME_P}/worklogs"/07*.md; do
+         "${HOME_P}/worklogs"/0*.md "${HOME_P}/worklogs"/INDEX.md; do
   if [[ -f "$f" ]]; then
     echo "       stray: ${f#"${HOME_P}/"}"
     stray=1
