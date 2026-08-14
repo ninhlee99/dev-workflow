@@ -118,6 +118,21 @@ agy plugin install ./hosts/antigravity
 
 More host detail: [MARKETPLACE.md](./MARKETPLACE.md).
 
+### Uninstall
+
+Use the same target model as installation:
+
+```bash
+bash uninstall.sh             # Claude only (default)
+bash uninstall.sh --cursor    # Cursor only
+bash uninstall.sh --codex     # Codex only
+bash uninstall.sh --agy       # Antigravity only (requires agy)
+bash uninstall.sh --all       # all supported agents (requires agy)
+```
+
+Uninstall removes only dev-workflow-owned host entries. It preserves the repository clone,
+worklogs, unrelated host configuration, and any modified Codex marketplace file.
+
 ---
 
 ## Quick start

@@ -45,6 +45,7 @@ Edit files, then rerun the installer for the specific host being tested.
 6. Update `references/stage-contract.md`, user docs, and command tooltip.
 7. Add positive and negative behavior to `tests/regression.sh`.
 8. Run `tests/install.sh` (isolated HOME + fake `agy`) and smoke-test.
+9. If install paths or ownership change, update and run `tests/uninstall.sh`.
 
 ---
 
@@ -107,6 +108,7 @@ Scope: stage name or component (e.g. `spec`, `check-gates`, `install`).
 - [ ] `bash install.sh` runs without errors
 - [ ] `tests/regression.sh` exits 0
 - [ ] `tests/install.sh` exits 0
+- [ ] `tests/uninstall.sh` exits 0
 - [ ] `bin/check-gates.sh FIX-FAIL --project demo --min G1` exits 1
 - [ ] `bin/check-gates.sh PASS-G8 --project demo --min G8` exits 0
 - [ ] `bin/check-gates.sh PASS-G9 --project demo --min G9 --strict` exits 0
