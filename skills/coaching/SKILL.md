@@ -5,7 +5,7 @@ description: >-
   Updates domain-knowledge + changelog. Bootstrap empty system → :learning.
 argument-hint: "<topic or ticket?> User teaches new/changed business or corrects AI misunderstanding"
 arguments: [topic]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:coaching

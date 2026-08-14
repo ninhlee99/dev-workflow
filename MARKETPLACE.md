@@ -8,9 +8,9 @@ For prerequisites, files changed, update steps, and troubleshooting, use
 | Host | Manifests | Install |
 |------|-----------|---------|
 | Claude Code | `.claude-plugin/{plugin,marketplace}.json` | `/plugin marketplace add …` then install |
-| Cursor | `.cursor-plugin/*` + `plugin.json` | `bash install.sh` |
-| Codex | `.codex-plugin/plugin.json` | `bash install.sh` |
-| Antigravity | `hosts/antigravity/plugin.json` | `rebuild.sh` then `agy plugin install` |
+| Cursor | `.cursor-plugin/*` + `plugin.json` | `bash install.sh --cursor` |
+| Codex | `.codex-plugin/plugin.json` | `bash install.sh --codex` |
+| Antigravity | `hosts/antigravity/plugin.json` | `bash install.sh --agy` |
 
 ---
 
@@ -24,22 +24,27 @@ For prerequisites, files changed, update steps, and troubleshooting, use
 /reload-plugins
 ```
 
-### Cursor / Codex / local
+### Local installer
 
 ```bash
 git clone https://github.com/ninhlee99/dev-workflow.git
 cd dev-workflow
-bash install.sh
+bash install.sh                         # Claude only (default)
+bash install.sh --cursor
+bash install.sh --codex
+bash install.sh --agy
+bash install.sh --all
 ```
 
-Deploys colon commands to `~/.cursor/commands/` and `~/.claude/commands/`, installs Codex stage
-skills, links shared assets, and rebuilds the Antigravity bundle. Existing
+Installs only the selected agent. Cursor/Codex get all live per-stage skill links; Antigravity is
+rebuilt, validated, and registered through `agy`. Existing
 `~/.agents/plugins/marketplace.json` is preserved rather than overwritten.
 
 ### Antigravity
 
 ```bash
 bash hosts/antigravity/rebuild.sh
+agy plugin validate ./hosts/antigravity
 agy plugin install ./hosts/antigravity
 ```
 
@@ -54,6 +59,7 @@ chmod +x bin/check-gates.sh bin/pilot-score.sh
 export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
 
 ./tests/regression.sh                                                # expect 10 PASS
+./tests/install.sh                                                   # expect 14 PASS
 ./bin/check-gates.sh FIX-FAIL --project demo --min G1          # expect FAIL
 ./bin/check-gates.sh PASS-G8 --project demo --min G8           # expect PASS
 ./bin/check-gates.sh PASS-G9 --project demo --min G9 --strict  # expect PASS

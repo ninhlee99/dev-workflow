@@ -70,6 +70,10 @@ dev-workflow/
 **Stages in `install.sh`:**  
 `start learning coaching spec conflict confirm plan build review fix test check ship audit status clean`
 
+**Host selection:** default `claude`; shorthand `--claude|--cursor|--codex|--agy|--all` (long-form
+`--host`/`--agent` is also supported). Cursor and
+Codex receive live per-stage links; Antigravity is rebuilt, validated, and installed through `agy`.
+
 ---
 
 ## Worklog artifacts ↔ gates

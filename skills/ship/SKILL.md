@@ -5,7 +5,7 @@ description: >-
   Run check --min G9 --strict before merge. Never push unless asked.
 argument-hint: "<Ticket ID> Run after test — fill 07-ship and check --min G9 --strict"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:ship

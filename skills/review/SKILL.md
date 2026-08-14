@@ -5,7 +5,7 @@ description: >-
   then fill AC How/By evidence. Use /dev-workflow:fix when P0/P1 stay OPEN.
 argument-hint: "<Ticket ID> After build — review diff + fill 06-review-qa.md evidence"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:review

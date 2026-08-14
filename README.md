@@ -78,15 +78,20 @@ start → learning (only if knowledge missing) / coaching (only if contradicted)
 - One of: Claude Code, Cursor, Codex, Antigravity  
 - Git  
 
-### Cursor / Codex / local (common)
+### Clone and choose a coding agent
 
 ```bash
 git clone https://github.com/ninhlee99/dev-workflow.git
 cd dev-workflow
-bash install.sh
+bash install.sh                         # default: Claude only
+bash install.sh --cursor                # Cursor only
+bash install.sh --codex                 # Codex only
+bash install.sh --agy                   # Antigravity only (requires agy)
+bash install.sh --all                   # all supported agents
 ```
 
-`install.sh` deploys slash commands, skill symlinks, and host bundles.
+`install.sh` installs only the selected host. Cursor and Codex receive all 16 live stage skills;
+their skill directories link to this clone, so skill content does not become a stale copy.
 It writes host integration files under `~/.claude`, `~/.cursor`, `~/.codex`, and optionally
 `~/.agents`; it does not edit product source. See the complete install/update/verification guide:
 [docs/INSTALL.md](./docs/INSTALL.md).
@@ -99,10 +104,11 @@ It writes host integration files under `~/.claude`, `~/.cursor`, `~/.codex`, and
 /reload-plugins
 ```
 
-### Antigravity
+### Antigravity manual equivalent
 
 ```bash
 bash hosts/antigravity/rebuild.sh
+agy plugin validate ./hosts/antigravity
 agy plugin install ./hosts/antigravity
 ```
 

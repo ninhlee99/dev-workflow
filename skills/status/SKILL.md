@@ -5,7 +5,7 @@ description: >-
   worklog gates; suggest next /dev-workflow:* command.
 argument-hint: "<Ticket ID?> Leave empty for domain-knowledge only; with ticket also show gate progress and next subcommand"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:status

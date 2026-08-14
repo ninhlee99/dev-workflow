@@ -14,6 +14,15 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Synced README, USER-GUIDE, MARKETPLACE, STRUCTURE, CONTRIBUTING, and host manifests with Type,
   provenance, RED→GREEN evidence, command ledger, G0–G9, and C1–C8 AUDIT behavior.
 
+### Installer
+
+- Added `--claude`, `--cursor`, `--codex`, `--agy`, and `--all` shorthand flags; long-form
+  `--host`/`--agent` remains supported and the default is Claude only.
+- Cursor and Codex now install all 16 stage skills as live links instead of stale copies/thin pointers.
+- Antigravity install now rebuilds, validates, and registers the complete bundle through `agy`.
+- Added isolated installer acceptance tests for every host selection and invalid input.
+- Enabled model invocation for all 16 Codex-visible skills and completed the validated Codex interface manifest.
+
 ### Added
 - **Locale:** `references/locale.md` — chat/setup follow user language; gate keywords stay English.
 - **Workspace health:** `bin/check-workspace.sh` + `references/workspace-health.md` (W0–W6).

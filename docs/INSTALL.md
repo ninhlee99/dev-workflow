@@ -23,6 +23,20 @@ cd dev-workflow
 bash install.sh
 ```
 
+With no option, only Claude Code is installed. Select exactly one coding agent or all:
+
+```bash
+bash install.sh --claude                # same as the default
+bash install.sh --cursor
+bash install.sh --codex
+bash install.sh --agy                   # Antigravity
+bash install.sh --all
+```
+
+Long forms `--host <name>` and `--agent <name>` remain supported; `--antigravity` is an alias for
+`--agy`, and `--list-hosts` prints supported values. Conflicting target flags or an unknown host
+exit with status 2 and do not silently fall back to Claude.
+
 The installer uses the clone as the plugin source. Keep or deliberately relocate that directory;
 installed symlinks point back to it.
 
@@ -33,12 +47,13 @@ It does not modify product source. Depending on the host, it creates or refreshe
 | Host | Paths |
 |---|---|
 | Claude Code | `~/.claude/commands/dev-workflow*.md`, `~/.claude/plugins/dev-workflow`, `~/.claude/skills/dev-workflow-plugin` |
-| Cursor | `~/.cursor/commands/dev-workflow*.md`, `~/.cursor/skills/dev-workflow/SKILL.md` |
-| Codex | `~/.codex/skills/dev-workflow-*`, `~/.codex/plugins/dev-workflow` |
+| Cursor | `~/.cursor/commands/dev-workflow*.md`, all `~/.cursor/skills/dev-workflow-*` stage links |
+| Codex | all `~/.codex/skills/dev-workflow-*` stage links, `~/.codex/plugins/dev-workflow` |
 | Codex marketplace | Creates `~/.agents/plugins/marketplace.json` only when that file does not already exist |
-| Antigravity | Rebuilds `hosts/antigravity/`; installation is completed separately with `agy` |
+| Antigravity | Rebuilds and validates `hosts/antigravity/`, then runs `agy plugin install` |
 
-Shared `references/` and `templates/` remain in the clone and are linked into installed skills.
+All 16 stage skills are installed for Cursor/Codex, not a thin pointer. Shared `references/` and
+`templates/` remain in the clone and are linked into every stage.
 Existing unrelated commands, skills, plugins, and an existing Codex marketplace file are preserved.
 
 ## Host-specific alternatives
@@ -61,15 +76,17 @@ claude --plugin-dir /absolute/path/to/dev-workflow
 
 ### Cursor and Codex
 
-Run `bash install.sh`, then restart or reload the host if commands are not refreshed immediately.
-Cursor receives one pointer skill plus colon commands; Codex receives one skill per workflow stage.
+Run the matching shorthand flag. Cursor and Codex both receive one live link per workflow stage; rerun the
+installer after moving the clone or changing command files. Restart/reload the host afterward.
 
 ### Antigravity
 
 ```bash
-bash hosts/antigravity/rebuild.sh
-agy plugin install ./hosts/antigravity
+bash install.sh --agy
 ```
+
+This requires `agy` on `PATH`. The installer stops if it is absent and validates the bundle before
+registration.
 
 ## Verify without changing your real host configuration
 
@@ -77,17 +94,18 @@ The install script respects `HOME`, so it can be smoke-tested in an isolated tem
 
 ```bash
 install_test_home="$(mktemp -d)"
-HOME="$install_test_home" bash install.sh
+HOME="$install_test_home" bash install.sh --cursor
 find "$install_test_home" -maxdepth 4 -name 'dev-workflow*' -print
 ```
 
-The temporary directory can be removed after inspection. This test still rebuilds the repository's
-Antigravity bundle because that bundle is a repository artifact.
+The temporary directory can be removed after inspection. Cursor/Codex/Claude isolated tests do not
+touch another host. Use `tests/install.sh` to exercise Antigravity with a fake `agy` registry.
 
 Run repository validation:
 
 ```bash
 ./tests/regression.sh
+./tests/install.sh
 
 export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
 ./bin/check-gates.sh FIX-FAIL --project demo --min G1          # expect FAIL
@@ -105,12 +123,13 @@ From the existing clone:
 
 ```bash
 git pull --ff-only
-bash install.sh
+bash install.sh --host <the-agent-you-use>
 ./tests/regression.sh
+./tests/install.sh
 ```
 
-Rerunning the installer refreshes generated command copies and skill files. It is necessary after
-updates because not every installed host surface is a live symlink.
+Rerunning the installer refreshes command copies and repairs live skill links. The default remains
+Claude-only, so use the same explicit host—or `all`—that you intend to update.
 
 ## Product workspace setup
 

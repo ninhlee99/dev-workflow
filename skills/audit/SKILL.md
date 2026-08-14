@@ -8,7 +8,7 @@ description: >-
   ship as final.
 argument-hint: "<Ticket ID> Run after check --min G9 --strict PASS — cross-check worklog coherence before ship is final"
 arguments: [ticket_id]
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /dev-workflow:audit
