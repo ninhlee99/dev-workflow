@@ -64,6 +64,7 @@ dev-workflow/
 ├── .claude-plugin/ .cursor-plugin/ .codex-plugin/
 ├── plugin.json
 ├── install.sh
+├── update.sh
 ├── uninstall.sh
 ├── README.md MARKETPLACE.md CONTRIBUTING.md CHANGELOG.md
 └── LICENSE
@@ -75,6 +76,7 @@ dev-workflow/
 **Host selection:** default `claude`; shorthand `--claude|--cursor|--codex|--agy|--all` (long-form
 `--host`/`--agent` is also supported). Cursor and
 Codex receive live per-stage links; Antigravity is rebuilt, validated, and installed through `agy`.
+`update.sh` requires a clean worktree, fast-forwards source, then refreshes the selected target.
 `uninstall.sh` mirrors these targets and removes only dev-workflow-owned host entries; it preserves
 the repository clone, worklogs, unrelated files, and modified Codex marketplace configuration.
 

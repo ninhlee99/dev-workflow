@@ -69,6 +69,10 @@ To remove the workflow later, use the matching command (`bash uninstall.sh`, `--
 `--agy`, or `--all`). It removes host integration only; the clone and worklogs are preserved. See
 [INSTALL.md](./INSTALL.md#uninstall) for the exact removal contract.
 
+To update, run `bash update.sh` with the same target flag. The updater requires a clean worktree,
+fast-forwards the clone, and refreshes that agent without touching local repository changes. See
+[INSTALL.md](./INSTALL.md#update) for failure handling and verification.
+
 Then in your **product** repo (recommended):
 
 1. Copy `templates/ci/github-actions-dev-workflow.yml` → `.github/workflows/dev-workflow-gates.yml`
