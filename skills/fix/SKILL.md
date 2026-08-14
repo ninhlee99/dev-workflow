@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:fix
 
+Apply `references/skill-quality.md`; every triage decision needs current evidence and an accountable owner.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -68,3 +70,9 @@ will still fail G7, not silently pass.
 - `06c-fix-log.md` triage complete for every former OPEN finding
 - Remaining OPEN P0/P1 = 0 (or WAIVE documented)
 - Next: `/dev-workflow:review <Ticket>` to refresh evidence, then `:test`
+
+## 9/10 controls
+
+For P0/P1 FIX, first add or identify a reproduction that fails for the stated mechanism and log
+RED→GREEN. If executable reproduction is impossible, document why and require equivalent proof.
+SKIP/DEFER requires evidence, owner, expiry/follow-up id, and impact; otherwise it remains OPEN.

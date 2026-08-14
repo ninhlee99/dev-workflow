@@ -7,15 +7,27 @@ itself against an independent source before calling it `MATCH`.
 
 Steps:
 1) read `02-spec.md` + domain knowledge; note Risk P0/P1/P2.
-2) for each AC/NEG/PERM/EDGE, map running code (`file:line`) and classify `MATCH`, `NO`, or
-   `UNCLEAR`. Locate that code by walking the real execution path in order — route → controller
-   action → service/operation → model — per `references/ba-integrity.md`'s "Investigate the real
-   execution path" section; do not jump straight to a model/helper that looks relevant before
-   confirming the controller action actually reaches it. Before writing `MATCH`: ask what
-   independent source (UI copy, written spec, PM/ domain expert, prior contract — see
-   `references/ba-integrity.md`) confirms this is the *intended* behavior, not just the *current*
-   one. No independent source and it's a non-trivial behavior claim → classify `UNCLEAR —
-   code-as-baseline only`, not `MATCH`.
+2) read the checked `Type:` from INDEX. Mixed tickets dispatch each claim separately. A missing,
+   unchecked, or multiply-checked Type is a G1 defect: stop and route to `:spec`.
+
+   Use exactly the matching strategy from `references/stage-contract.md` and
+   `references/ba-integrity.md`:
+
+   - `Bug)` reproduce the reported input/output, find the real entrypoint, then walk only the
+     confirmed execution chain hop by hop to the mechanism. Check a sibling path only when the same
+     mechanism is evidenced.
+   - `New feature)` read one closest analog end-to-end, confirm concrete insertion points and
+     existing constraints/contracts; do not hunt for nonexistent wrong behavior.
+   - `Spec change)` state documented before/after, then search every consumer of the specific
+     behavior and surface assumptions of the old contract.
+   - `Requirement change)` state exact old/new rule, search every encoding across code, config,
+     UI copy, docs, and relevant repos, then require a named authority for the change.
+
+   For each AC/NEG/PERM/EDGE, record the required evidence (`file:line`, exact copy/spec quote, or
+   runtime result), truth label, source, date, and confidence before classifying `MATCH`, `NO`, or
+   `UNCLEAR`. Before `MATCH`, identify an independent intent source. No independent source for a
+   non-trivial behavior claim means `UNCLEAR — code-as-baseline only`, unless the authorized project
+   norm explicitly selected code as baseline and that decision is quoted.
 3) write all claims to `03-conflict-report.md` with source AC, proposal, decision, owner, date.
    Include claims nobody asked about if you found a real documented-vs-actual mismatch or an
    old-spec-vs-new-spec conflict while doing step 2 — do not limit claims to what the reporter

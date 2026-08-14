@@ -1,18 +1,19 @@
-# Maturity rubric (all criteria ≥ 8)
+# Maturity rubric (no dimension below 9)
 
-How v0.4.0 maps each expert criterion to concrete controls.
+Scores are not self-awarded. A 9 requires the named deterministic check or inspectable evidence;
+one weak dimension cannot be hidden by averaging. Apply `references/skill-quality.md` to every stage.
 
-| Criterion | Target | Controls that keep score ≥ 8 |
+| Criterion | Target | Required evidence for 9 |
 |---|---|---|
-| Spec / conflict / confirm | ≥8 | G1 AC+Risk; G2 claims; G3 `CONFIRM` in INDEX **and** `03b-human-confirm.md`; ban AI names |
-| Risk lanes | ≥8 | P0/P1/P2 in checker; P2 soft; P0 dual confirm + security |
-| Evidence authenticity | ≥8 | SHA↔git; junit parse; `--strict` ⇒ `--verify-net` for http CI URL |
-| Security (P0) | ≥8 | `02b-security.md` required + PASS row |
-| Ship / prod safety | ≥8 | G9 canary/soak/on-call/SLO; dashboard URL or concrete query; rollback |
-| Programmatic enforce | ≥8 | `check-gates.sh` + fixtures + **required** GH Actions template |
-| Measurable proof | ≥8 | `pilot-score.sh` success bar; pilot mode on INDEX; sample + CI hook |
-| Adoption / timebox | ≥8 | Stage timeboxes in `risk.md`; P2 fast lane real soft skips |
-| Semantic coherence (post-structural) | ≥8 | `:audit` cross-checks Decision↔Proposal, Rollback↔Migration, etc — catches content that is structurally valid but logically wrong, which `check-gates.sh` regex cannot see |
+| Spec / conflict / confirm | ≥9 | Type+Risk enforced; provenance labels; type-specific strategy; exact claim decisions; anti-forge confirm |
+| Risk lanes | ≥9 | P0/P1/P2 in checker; explicit P2 waivers; P0 dual authority + security |
+| Evidence authenticity | ≥9 | RED→GREEN record; command ledger; assertion evidence; SHA↔git; parsed JUnit; reachable CI under strict |
+| Security (P0) | ≥9 | threat/abuse/PII/contract evidence; named owner; no silent waiver |
+| Ship / prod safety | ≥9 | deployment profile; migration-aware rollback; abort signal; rollout/rollback authority |
+| Programmatic enforce | ≥9 | `check-gates.sh` + regression tests + positive/negative fixtures + required CI check |
+| Measurable proof | ≥9 | `pilot-score.sh` success bar plus recorded warnings/escapes and representative risk mix |
+| Adoption / token discipline | ≥9 | stage contract, relevance budget, one-owner dispatch, P2 profile-based N/A |
+| Semantic coherence | ≥9 | C1–C8 present; two quotes + reason each; no UNCLEAR/INCOHERENT; human sign-off; AUDIT checker PASS |
 
 ## Org binding (required for score to hold)
 

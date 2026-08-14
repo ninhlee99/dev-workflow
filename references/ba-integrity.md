@@ -122,20 +122,39 @@ half-investigates both.
 
 Being thorough about *what* to check (above) is not license to be undisciplined about *how* you
 check it. Before reading or searching any file, first establish the actual execution path for the
-reported behavior, and walk it **in order, top to bottom** — do not start in the middle:
+reported behavior, and walk it **in order, top to bottom, hop by hop** — do not start in the
+middle, and do not assume the hop count or layer names in advance.
 
-1. **Route** — find the actual route entry for the URL/action in the ticket (`config/routes.rb`
-   or equivalent). Do not assume a controller/action name from convention alone if the route file
-   is available to check.
-2. **Controller action** — open that exact action. Read what it actually calls (method names,
-   object it builds), not what a similarly-named action elsewhere does.
-3. **Service / operation / form object** the controller calls — follow the real call, one hop at a
-   time. Do not jump straight to a model or helper that "probably" has the logic before confirming
-   the controller action actually reaches it.
-4. **Model / query-building code** the service delegates to — this is usually where business logic
-   or the actual bug lives, but it's only in scope once steps 1–3 confirm the controller path
-   leads here.
-5. **View / serializer** only if the reported symptom is about rendering/display, not data/logic.
+**Step 0 — find the real entrypoint, don't assume its shape.** The ticket gives you a URL, screen,
+or action. Before anything else, confirm *what actually serves it* in this codebase/workspace — the
+shape depends on this project's actual architecture, not on a template, so check rather than guess
+from habit. Concretely, rule out (or confirm) each of these before picking a starting file:
+
+- **Cross-service / cross-repo:** in a multi-repo or microservice workspace, the page/URL the
+  reporter used may be *rendered* by one service but *backed* by a call to another. Check the
+  calling side's actual network request / API client (not just its own route file) for the real
+  endpoint before searching for business logic in the repo the URL superficially "belongs to."
+  Searching only the front-facing repo and finding nothing is a signal to check what it calls, not
+  a dead end.
+- **No separate layer:** a simple/monolith route may go straight from route → handler → data
+  access with no separate service/operation layer — don't insert a step that doesn't exist just
+  because a template or another part of the codebase has one.
+- **Shared library / vendored package:** the method or class the entrypoint calls may be defined in
+  a shared gem, internal package, or vendored dependency rather than the calling repo's own source
+  tree. If a called method isn't defined anywhere in the repo you're searching, check the project's
+  shared/vendored dependencies before concluding the method doesn't exist.
+- **Dynamic dispatch:** the real logic may not be reachable by grepping the exact method/scope name
+  you expect — it may be built from a parameter name at runtime (metaprogramming, reflection,
+  `send`/`eval`-style dispatch), live in a mixin/concern/trait included elsewhere, or be generated
+  by a query-builder/ORM layer. A zero-result grep for the expected name means confirm what
+  actually executes at runtime next, not that the logic doesn't exist.
+
+**Then walk the confirmed chain, one real hop at a time**, using whatever layers *this* architecture
+actually has (examples, not a fixed checklist): route/entry → controller/handler action (read what
+it actually calls, not what a similarly-named action elsewhere does) → any service/operation/form
+object it delegates to, followed one hop at a time, never skipped to → the model/query-building
+code where the logic or bug usually lives, in scope only once the hops above confirm the call
+reaches it → view/serializer, only if the symptom is about rendering/display, not data/logic.
 
 Stop descending the moment you've located the code that produces the reported symptom and can
 quote it with file:line. Going further down (e.g. into a shared library three layers deep) is only
@@ -144,6 +163,11 @@ detour. If a hypothesis points at a layer you haven't reached yet in this order 
 library-level cause suspected before the controller/service path has been confirmed as the real
 trigger), finish walking the path first — a genuine hunch about the bottom layer is still only
 confirmed once you've shown the top layers actually call into it, not skipped to it.
+
+If a hop dead-ends (method not found in the repo you're in, grep returns nothing where you expected
+a definition), treat that as a signal to widen the *search location* (another repo, a shared gem,
+a dynamically-dispatched method name) — not license to widen the *investigation* into unrelated
+hypotheses. Keep the hypothesis narrow; only the place you're looking for its confirmation changes.
 
 Do not:
 - Grep/read files that merely look related by name or topic without first confirming they sit on
@@ -161,12 +185,6 @@ rigor, stop and record it as `UNCLEAR — needs runtime/DB verification` (see th
 rule above) rather than expanding the search into unrelated code on the theory that "something
 else might explain it." An honest "unresolved, here's what I checked" is worth more than a wide,
 unfocused sweep that burns time and still doesn't land on the answer.
-
-This was learned the hard way on DJ-4748's second investigation pass: five parallel hypotheses
-were dispatched (fallback/broadening logic, pagination/count-query divergence, field-scope
-mismatch, bind-key collision, cache) when only one — bind-key generation — had any code-level
-signal pointing to it, and that one could have been checked by reading a single already-located
-function directly instead of spawning an agent at all.
 
 ### New feature — survey the insertion point, don't hunt for a bug that isn't there
 

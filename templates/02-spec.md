@@ -4,6 +4,7 @@
 - **Date:** [YYYY-MM-DD]
 - **Confirmed by:** [name]
 - **Touches UI?** ☐ Yes ☐ No
+- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (required — see `references/risk.md`)
 - **Touched repos:** ☐ (list from PROJECT.md)
 
@@ -12,6 +13,12 @@ If the full spec lives elsewhere (e.g. `tasks/specs/Feature.md`), link it — do
 ## Out of scope
 
 - …
+
+## Requirement provenance
+
+| ID / claim | Truth label | Source + exact quote/location | Verified date | Confidence | Owner if unresolved |
+|---|---|---|---|---|---|
+| AC-01 | DOCUMENTED / OBSERVED / INFERRED / UNVERIFIED / CONFLICTING | | | high / medium / low | |
 
 ## Scenario AC (required — G1 FAIL if missing)
 

@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:build
 
+Apply `references/skill-quality.md`; this stage owns scoped RED→GREEN evidence at the smallest responsible seam.
+
 ## Precondition (check before writing a single line of production code)
 
 A Senior dev handed a ticket checks the spec is confirmed before opening an editor — do the same
@@ -48,3 +50,9 @@ Run `/dev-workflow:check <Ticket> [slug] G6` before any G6 PASS claim.
 Coverage gaps, failing tests, or missing/stale Commit SHA keep build FAIL.
 Never invent PASS; refuse coding when prerequisite gates fail.
 Chat in user language (`references/locale.md`).
+
+## 9/10 controls
+
+For every task record the RED command/failure, why it proves missing behavior, GREEN command/result,
+and files changed. Existing-green tests do not prove TDD. New scope or a contradicted confirmed claim
+routes upstream; never edit AC to fit code.

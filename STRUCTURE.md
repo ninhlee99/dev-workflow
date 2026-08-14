@@ -9,7 +9,7 @@ Annotated layout. **Edit** `references/` and `templates/` only; re-run `bash ins
 ```
 dev-workflow/
 ├── bin/
-│   ├── check-gates.sh              # G0–G9 enforcer (PASS/FAIL)
+│   ├── check-gates.sh              # G0–G9 + AUDIT structural enforcer
 │   ├── check-workspace.sh          # Workspace layout health (W0–W6)
 │   ├── clean-worklog.sh            # Archive/purge one ticket worklog
 │   ├── pilot-score.sh              # 10-ticket measurable success bar
@@ -25,6 +25,8 @@ dev-workflow/
 │
 ├── references/                     # Shared rules (load on demand)
 │   ├── workflow.md                 # Gate table + stage order
+│   ├── stage-contract.md           # Authoritative stage inputs/outputs/routing
+│   ├── skill-quality.md            # Evidence, truth labels, 9/10 quality contract
 │   ├── risk.md                     # P0/P1/P2 + timeboxes
 │   ├── security.md                 # P0 02b-security
 │   ├── pilot.md                    # Pilot ops
@@ -64,7 +66,7 @@ dev-workflow/
 ```
 
 **Stages in `install.sh`:**  
-`start learning coaching spec conflict confirm plan build review fix test check ship status clean`
+`start learning coaching spec conflict confirm plan build review fix test check ship audit status clean`
 
 ---
 
@@ -82,12 +84,13 @@ dev-workflow/
 | `06-review-qa.md` | G7 |
 | `06b-test-evidence.md` | G8 |
 | `07-ship.md` | G9 |
+| `08-semantic-audit.md` | AUDIT |
 
 ---
 
 ## Design principles
 
-1. **Single source of truth** — root `references/` + `templates/` only.  
+1. **Single source of truth** — `stage-contract.md`, root `references/`, and `templates/`; drift is regression-tested.
 2. **Load on demand** — skills list only needed refs (token discipline).  
 3. **Neutral paths** — no hardcoded customer repos; resolve via env/marker/git.  
 4. **Programmatic truth** — `check-gates.sh` / `pilot-score.sh`, not AI self-claim.

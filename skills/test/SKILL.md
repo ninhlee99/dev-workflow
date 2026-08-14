@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:test
 
+Apply `references/skill-quality.md`; filenames and logs count only when tied to executed assertions.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -32,3 +34,10 @@ non-strict and fails `--strict` — that gap is the whole point of running `--st
 instead of trusting the non-strict pass from earlier in the loop.
 
 Run non-strict while iterating; always run `--min G9 --strict` as the actual pre-merge gate.
+
+## 9/10 controls
+
+Add an executed-command ledger for every distinct command in `04-plan.md` and every PASS command in
+`05-impl-log.md`: command, cwd, start/end, exit code, artifact, and covered IDs. Missing commands fail
+G8 unless a confirmed supersession names the replacement. Require assertion-level evidence per AC;
+suite totals alone do not prove intended behavior.

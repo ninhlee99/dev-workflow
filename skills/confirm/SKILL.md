@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:confirm
 
+Apply `references/skill-quality.md`; this stage records decisions but never manufactures or reinterprets them.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -19,3 +21,5 @@ before anything else.
 4. Write phrases to **both** `INDEX.md` and `03b-human-confirm.md` (Source: user-message).
 5. Forbidden names: AI, ChatGPT, Claude, Copilot, Cursor, Assistant, Bot.
 6. Only then G3 PASS → `:plan`.
+7. Every confirmed NO/UNCLEAR claim must show the exact selected decision, owner role, and source
+   message—not a blanket phrase. Unknown authority for a Requirement change keeps G3 FAIL.

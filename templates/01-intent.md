@@ -3,6 +3,7 @@
 - **Ticket:** [url]
 - **Date:** [YYYY-MM-DD]
 - **Confirmed by:** [name]
+- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change
 
 ## Goal (1–2 sentences)
 
@@ -21,6 +22,12 @@
 ## Confirmed assumptions
 
 1. ...
+
+## Requirement provenance
+
+| Claim / requirement | Truth label | Source + exact quote/location | Verified date | Confidence | Decision owner |
+|---|---|---|---|---|---|
+| | OBSERVED / DOCUMENTED / INFERRED / UNVERIFIED / CONFLICTING | | | high / medium / low | |
 
 ## Out of scope
 

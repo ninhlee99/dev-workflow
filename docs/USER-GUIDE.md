@@ -206,7 +206,7 @@ Canary `N/A` needs a reason ≥ 10 characters (and must not be a repeated placeh
 ```
 
 G9 structural PASS only proves fields are filled and not placeholders — it does not prove the
-content is logically consistent. `:audit` cross-checks 7 coherence pairs (Decision vs Proposal,
+content is logically consistent. `:audit` cross-checks 8 coherence pairs (Decision vs Proposal,
 Rollback vs Migration, test paths vs the AC they claim to cover, …) with quoted evidence from both
 sides, then requires a real human sign-off:
 

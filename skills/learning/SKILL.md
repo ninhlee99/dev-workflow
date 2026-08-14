@@ -11,6 +11,8 @@ disable-model-invocation: true
 
 # /dev-workflow:learning
 
+Apply `references/skill-quality.md`; this stage owns provenance-backed knowledge, not confident-looking summaries.
+
 Self-learn from brief and bootstrap workspace.
 Read `references/project-root.md`, `references/learning.md`, `references/locale.md`, `references/workspace-health.md`.
 If this is the first `/dev-workflow:*` command in this workspace (`domain-knowledge/INDEX.md`
@@ -19,6 +21,8 @@ anything else — before creating the workspace, before the `[LEARNING]` busines
 Reply and ask `[LEARNING]` in **user language**.
 Resolve/create `workspaces/<project-slug>/`; print `project=<slug> home=<path> locale=<code>`.
 Explore repos, capture facts; promote to `domain-knowledge/` only after answers; update INDEX.
+For every promoted material fact, record truth label, `path:line`/source, verified date, and confidence.
+List areas deliberately not explored; do not imply project-wide completeness from a targeted pass.
 After create: run `bin/check-workspace.sh <slug>` — must PASS before later stages.
 
 Read `references/learning.md` fully before exploring — it defines the "captured enough" DoD bar

@@ -10,6 +10,8 @@ disable-model-invocation: true
 
 # /dev-workflow:status
 
+Apply `references/skill-quality.md`; status is read-only and separates structural, semantic, and human-final state.
+
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
@@ -22,3 +24,5 @@ marker-slug consistency) + run its summary directly, do not re-derive by hand.
 With ticket: report gate state from **that** worklog INDEX only (`task-isolation.md`); suggest
 `:clean` if G9 PASS and user wants to free memory — `:clean` only needs G9, not `:audit`.
 No code changes; keep default output short.
+Report G9 structural, AUDIT semantic, and human sign-off separately. Run the checker when possible;
+never infer PASS from a checkbox alone. Include uncertainty and exactly one next command.
