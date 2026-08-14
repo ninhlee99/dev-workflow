@@ -14,9 +14,14 @@ Forces a **requirement-first** path before code:
 3. Detect conflicts with current code  
 4. **You** confirm decisions (`CONFIRM G3:…`)  
 5. Plan → build (TDD) → **neutral code review** → fix justified findings → run tests with machine proof  
-6. Ship only after safety checklist (G9) and checker PASS  
+6. Ship safety checklist (G9) and checker PASS  
+7. **Semantic audit** (`:audit`) — G9 PASS means every field is filled and not a placeholder; it
+   does not mean the content is logically consistent (Rollback actually undoes Migration, Decision
+   actually answers Proposal). `:audit` is the required human-confirmed layer on top before ship
+   is treated as final.
 
-AI must not invent PASS. `bin/check-gates.sh` is the judge.
+AI must not invent PASS. `bin/check-gates.sh` is the judge for structure; `:audit` + your sign-off
+is the judge for meaning — neither substitutes for the other.
 
 **Language:** chat + setup follow **your language** (see `references/locale.md`). Gate keywords (`CONFIRM G3:`, PASS/FAIL) stay English.
 
@@ -35,7 +40,8 @@ AI must not invent PASS. `bin/check-gates.sh` is the judge.
 | **fix** (`:fix`) | Triage review findings; fix only justified defects | After review FAIL (P0/P1 OPEN) |
 | **test** (`:test`, G8) | Real test run + SHA/CI/junit | After review (and `:fix` if needed) |
 | **check** (`:check`) | Run `check-gates.sh` | Before ship/merge |
-| **clean** (`:clean`) | Archive/purge finished ticket worklog | After G9 PASS (or `--force`) |
+| **audit** (`:audit`) | Semantic coherence cross-check + human sign-off | After G9 PASS, before ship is final |
+| **clean** (`:clean`) | Archive/purge finished ticket worklog | After `:audit` PASS (or `--force`) |
 
 ---
 
@@ -105,6 +111,11 @@ Must produce `02-spec.md` with:
 - NEG / PERM / EDGE as needed
 - UI states if Touches UI = Yes
 - If **P0**: also fill `02b-security.md`
+- If Touches UI = Yes: fill the **QA handoff — testable oracle** table (real field/button
+  labels + machine-checkable oracle per AC/NEG/PERM/EDGE row). This plugin does not run QA
+  itself; this table is so whoever tests next (human or an external tool) can design test cases
+  from the spec alone, without asking the dev what a field is called or what "success" means on
+  screen. Screen not designed yet → mark the row `TBD`, don't leave it blank.
 
 **How to choose Risk**
 
@@ -186,7 +197,29 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 `--strict` turns on CI-native checks (SHA vs git HEAD, junit parse) and implies `--verify-net`.
 
 Ship artifact `07-ship.md` must cover: migration, feature flag, **canary %**, **soak time**, on-call, SLO, rollback.  
-Canary `N/A` needs a reason ≥ 10 characters.
+Canary `N/A` needs a reason ≥ 10 characters (and must not be a repeated placeholder like "abc abc abc").
+
+### 3.7.5 Audit (semantic coherence, before ship is final)
+
+```
+/dev-workflow:audit TICKET-123
+```
+
+G9 structural PASS only proves fields are filled and not placeholders — it does not prove the
+content is logically consistent. `:audit` cross-checks 7 coherence pairs (Decision vs Proposal,
+Rollback vs Migration, test paths vs the AC they claim to cover, …) with quoted evidence from both
+sides, then requires a real human sign-off:
+
+```
+AUDIT CONFIRM: TICKET-123 <your name> <YYYY-MM-DD>
+```
+
+Same anti-forge rule as `CONFIRM G3:` — AI/tool names are rejected. An AI's own verdict on its own
+audit is not enough; that is exactly the blind spot this stage exists to catch, one level up.
+
+```bash
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
+```
 
 ### 3.8 Clean (free memory after ticket)
 
@@ -196,7 +229,9 @@ Canary `N/A` needs a reason ≥ 10 characters.
 
 - Default: **archive** `worklogs/TICKET-123/` → `worklogs/.archive/TICKET-123-<UTC>/`
 - Keeps `domain-knowledge/`, `PROJECT.md`, other tickets
-- Requires G9 PASS unless `--force`
+- Requires G9 PASS unless `--force` (`clean-worklog.sh` checks `--min G9`, the mandatory floor for
+  every risk tier — `:audit` is required before ship is *final* on P0/P1 but is not itself a
+  `:clean` precondition, since P2 tickets may legitimately skip audit)
 - Hard delete: `--purge` (confirm in chat first)
 
 CLI:
@@ -223,8 +258,9 @@ CLI:
 | `:review` | Diff review + evidence | Ticket ID |
 | `:fix` | Triage/fix review findings | Ticket ID (after OPEN P0/P1) |
 | `:test` | Real test run | Ticket ID + machine fields |
-| `:check` | Run checker | Ticket ID; optional slug / G8\|G9 |
+| `:check` | Run checker | Ticket ID; optional slug / G8\|G9\|AUDIT |
 | `:ship` | Pre-merge notes | Ticket ID |
+| `:audit` | Semantic coherence + human sign-off | Ticket ID (after G9 PASS) |
 | `:clean` | Archive/purge ticket worklog | Ticket ID; optional `--force` / `--purge` |
 | `:status` | Where am I? | Optional Ticket ID |
 
@@ -249,10 +285,11 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | `06c-fix-log.md` | Triage / applied fixes | (remediation) |
 | `06b-test-evidence.md` | Tests + SHA/CI/junit | G8 |
 | `07-ship.md` | Ship safety | G9 |
+| `08-semantic-audit.md` | Coherence pairs + human `AUDIT CONFIRM:` sign-off | AUDIT |
 
 ---
 
-## 6. Gates (G0–G9) in one table
+## 6. Gates (G0–G9 + AUDIT) in one table
 
 | Gate | PASS means | If FAIL run |
 |------|------------|-------------|
@@ -266,6 +303,7 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | G7 | Review: no OPEN P0/P1 + evidence filled | `:review` / `:fix` |
 | G8 | Test evidence + machine fields | `:test` |
 | G9 | Ship safety complete | `:ship` |
+| AUDIT | Structure PASS (G0–G9) is necessary but not sufficient — this checks the worklog's own claims agree with each other (Rollback vs Migration, Decision vs Proposal, …) and requires a real human `AUDIT CONFIRM:` sign-off, not just an AI verdict | `:audit` |
 
 **P2 fast lane:** G2/G4/G5/G7 are soft (warn) unless `--strict`.  
 **P0:** no WAIVE on G3/G8; dual confirm; security file required.

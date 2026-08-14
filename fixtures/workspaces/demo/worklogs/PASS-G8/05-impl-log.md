@@ -1,5 +1,9 @@
 # 05 Impl log
 
+| Field | Value |
+|---|---|
+| Commit SHA | abcdef1234567890 |
+
 ## Coverage map
 
 | AC | Test | Result |

@@ -17,7 +17,7 @@ Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
 | Gate | PASS means | FAIL command |
 |---|---|---|
 | G0 | domain knowledge matches ticket scope | empty → `:learning`; wrong/changed → `:coaching` |
-| G1 | AC + Risk set; **P0 also `02b-security.md`** | `:spec` |
+| G1 | AC + Risk set; **P0 also `02b-security.md`**; **Touches UI also QA handoff oracle table** | `:spec` |
 | G2 | each non-MATCH has decision, owner, date (P2 soft unless `--strict`) | `:conflict` |
 | G3 | human `CONFIRM G3:` on INDEX **and** `03b-human-confirm.md` (no AI names; P0 + PM) | `:confirm` |
 | G4 | tasks map to AC/claims (P2 soft unless `--strict`) | `:plan` |
@@ -26,12 +26,18 @@ Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
 | G7 | AC evidence How/By + no OPEN P0/P1 review findings (P2 soft unless `--strict`) | `:review` (then `:fix` if findings) |
 | G8 | test evidence + machine fields; `--strict`/P0 = CI-native verify | `:test` |
 | G9 | ship safety + canary/soak/on-call/SLO + rollback | `:ship` |
+| — | semantic audit: worklog claims agree with each other (post-structural, not encoded in check-gates.sh) | `:audit` |
 
 WAIVE only on INDEX: `Gate/claim | reason | owner | expiry | PM note`.  
 P0: no WAIVE G3/G8. `--strict` or P0/P1: machine evidence required. `--strict`: no G8 WAIVE.
 
+`check-gates.sh` verifies structure only (field present, not a repeated placeholder, SHA matches
+HEAD). It cannot verify a Rollback plan actually undoes the Migration described two sections above
+it — that needs a reader, not a regex. `:audit` is the required semantic layer on top; G9
+structural PASS is necessary but not sufficient for ship to be final. See `references/audit.md`.
+
 ## Stage order
-`:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` → `:status` → (`:clean` when ticket done)
+`:learning` → `:coaching` → `:start` → `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` → `:audit` → `:status` → (`:clean` when ticket done)
 
 If current stage already PASS, jump to next. End `:spec`, end `:plan`, and before close `:build`: print uncovered AC/claim map; any gap = FAIL.
 P2 fast lane may WAIVE G2/G4/G5/G7 with INDEX rows — never silent skip.

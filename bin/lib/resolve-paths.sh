@@ -32,6 +32,55 @@ _dw_project_home_from_root() {
   fi
 }
 
+# Multiple projects under one workspaces root is the normal case (one
+# domain repo → one dev-workflow project). PROJECT.md's own "Repos" table
+# already declares which real repo path(s) belong to that project — use it
+# to answer "which project owns the repo I'm standing in right now" instead
+# of making the caller type --project every time more than one project
+# exists. Returns the owning slug on stdout when exactly one PROJECT.md's
+# Repos table contains a path that is the cwd or an ancestor of it (so it
+# still matches from a subdirectory of the repo, not just the repo root).
+_dw_match_project_by_cwd_repo() {
+  local root="$1" cwd="$2"
+  local -a matches=()
+  local pf slug repo_path real_repo_path real_cwd
+  real_cwd="$(cd "$cwd" 2>/dev/null && pwd || echo "$cwd")"
+  for pf in "$root"/*/PROJECT.md "$root/workspaces"/*/PROJECT.md; do
+    [[ -f "$pf" ]] || continue
+    slug="$(basename "$(dirname "$pf")")"
+    while IFS= read -r repo_path; do
+      [[ -z "$repo_path" ]] && continue
+      real_repo_path="$(cd "$repo_path" 2>/dev/null && pwd || echo "")"
+      [[ -z "$real_repo_path" ]] && continue
+      if [[ "$real_cwd" == "$real_repo_path" || "$real_cwd" == "$real_repo_path"/* ]]; then
+        matches+=("$slug")
+        break
+      fi
+    done < <(awk -F'|' '
+      /^\|/ && $0 !~ /^\|[[:space:]]*-+[[:space:]]*\|/ && $0 !~ /^\|[[:space:]]*Repo slug/ {
+        p = $3
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", p)
+        gsub(/`/, "", p)
+        if (p != "") print p
+      }
+    ' "$pf" 2>/dev/null)
+  done
+  # dedupe (a project could list the same repo path twice)
+  local -a uniq=()
+  local m seen
+  for m in "${matches[@]:-}"; do
+    [[ -z "$m" ]] && continue
+    seen=0
+    for s in "${uniq[@]:-}"; do [[ "$s" == "$m" ]] && { seen=1; break; }; done
+    [[ $seen -eq 0 ]] && uniq+=("$m")
+  done
+  if [[ ${#uniq[@]} -eq 1 ]]; then
+    echo "${uniq[0]}"
+    return 0
+  fi
+  return 1
+}
+
 # Plugin install dir (this package), never a customer app path.
 resolve_plugin_dir() {
   if [[ -n "${DEV_WORKFLOW_PLUGIN:-}" && -x "${DEV_WORKFLOW_PLUGIN}/bin/check-gates.sh" ]]; then
@@ -141,6 +190,19 @@ resolve_project_slug() {
   local root line slug f
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
+    # Strongest signal first: does any PROJECT.md's own Repos table declare
+    # the repo we're standing in right now? Multiple projects under one
+    # workspaces root is the normal case (one domain repo per project), so
+    # this must be tried before falling back to "there happens to be only
+    # one project total" — that fallback is wrong the moment a second
+    # project exists, even though the caller is unambiguously standing in
+    # a specific repo the whole time.
+    slug="$(_dw_match_project_by_cwd_repo "$root" "$PWD" || true)"
+    if [[ -n "${slug:-}" ]]; then
+      DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
+      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
+      return 0
+    fi
     slug="$(_dw_slug_from_marker "$root" || true)"
     if [[ -n "${slug:-}" ]]; then
       DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
@@ -163,6 +225,19 @@ resolve_project_slug() {
       DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="${homes[0]}"
       DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
       return 0
+    fi
+    # More than one project under this root and no explicit --project hint:
+    # silently falling through to a lower-priority root here would let the
+    # script pick an unrelated project's slug with zero warning (verified:
+    # a workspaces root with proj-a/ and proj-b/ both present caused this to
+    # fall through to an entirely different root and return that root's
+    # unrelated single project). Ambiguity at the *highest-priority* root is
+    # not something a lower-priority root should silently resolve for the
+    # caller — stop here and force an explicit --project instead of guessing
+    # which of several real projects the caller meant.
+    if [[ ${#homes[@]} -gt 1 ]]; then
+      echo "ERROR: ambiguous project — multiple PROJECT.md found under $root: ${homes[*]}. Pass --project <slug>." >&2
+      return 1
     fi
   done < <(_dw_collect_workspace_roots)
 

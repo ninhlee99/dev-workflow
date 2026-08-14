@@ -15,7 +15,10 @@ Remediate code-review findings without cargo-cult patching.
 ## When
 
 After `:review` left P0/P1 findings `OPEN` (or human asked to clear review comments).
-Not a gate by itself — clears blockers so G7/G8 can PASS.
+Not a gate by itself — clears blockers so G7/G8 can PASS. `check-gates.sh` G7 verifies both that
+no P0/P1 stays `OPEN` **and** that `06c-fix-log.md` exists with a matching row for every finding
+you moved off `OPEN` — flipping a Status cell to `FIXED` without actually filling the fix-log
+will still fail G7, not silently pass.
 
 ## Steps
 

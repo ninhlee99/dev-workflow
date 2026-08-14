@@ -30,6 +30,9 @@ Still need AC, `CONFIRM G3:` (+ `03b-human-confirm.md`), tests/machine evidence,
 | plan | ≤ 2 h |
 | build | per estimate |
 | review + fix? + test + ship + clean? | ≤ 0.5 day after build green |
+| audit (semantic, post-G9) | ≤ 30 min — P0/P1 required, P2 optional |
 | P2 full path | ≤ 2 h wall-clock target |
 
-If over timebox → escalate Risk or split ticket — do not skip G3/G8/G9.
+If over timebox → escalate Risk or split ticket — do not skip G3/G8/G9. Do not skip `:audit` on
+P0/P1 to save the 30 min — that is exactly the timebox this table exists to protect against being
+cut first under deadline pressure.

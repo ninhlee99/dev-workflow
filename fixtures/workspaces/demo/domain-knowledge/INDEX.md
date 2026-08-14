@@ -9,4 +9,4 @@
 
 | Area | File | Status |
 |---|---|---|
-| Business overview | `business.md` | ☐ |
+| Business overview | `business.md` | ☑ |

@@ -23,8 +23,11 @@ Free memory after a finished ticket by removing **that ticket’s worklog only**
 ```
 
 4. Default = **archive** → `worklogs/.archive/<Ticket>-<UTC>/` (active worklog gone; recoverable).
+   Timestamp is real UTC (`date -u`), so re-archiving the same ticket twice never collides.
 5. `--purge` = hard delete archive skip — ask user confirm in chat first.
-6. `--force` = allow when G9 checker not PASS (user accepts risk).
+6. `--force` = allow when `--min G9` checker not PASS (user accepts risk). Note: this checks G9
+   specifically, not `:audit` — a P0/P1 ticket that shipped without `:audit` sign-off can still
+   be cleaned without `--force`; `:audit` is a ship-finality gate, not a clean precondition.
 7. **Never** clean `domain-knowledge/`, `PROJECT.md`, `repos/`, or other tickets.
 8. After PASS: tell user next is new ticket via `:start` / `:status`; optional `rm -rf worklogs/.archive` for disk.
 
