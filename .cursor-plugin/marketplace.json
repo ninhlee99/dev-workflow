@@ -11,7 +11,7 @@
     {
       "name": "dev-workflow",
       "source": "./",
-      "description": "Clear spec & requirements before coding with gated delivery stages and check-gates enforce.",
+      "description": "Typed requirements, evidence provenance, TDD, G0-G9 gates, and C1-C8 semantic audit.",
       "version": "0.4.0",
       "skills": "./skills",
       "commands": "./commands"

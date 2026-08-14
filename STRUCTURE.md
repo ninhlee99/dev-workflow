@@ -1,6 +1,7 @@
 # Structure — dev-workflow v0.4
 
-Annotated layout. **Edit** `references/` and `templates/` only; re-run `bash install.sh` to refresh skill symlinks.
+Annotated layout. Edit the owning source (`skills/`, `references/`, `templates/`, `commands/`, or
+`bin/`) and re-run `bash install.sh` when host-installed copies/links must be refreshed.
 
 ---
 
@@ -54,6 +55,7 @@ dev-workflow/
 │   └── workspaces/_project|/_repo/
 │
 ├── docs/
+│   ├── INSTALL.md                  # Install/update/verify by host
 │   └── USER-GUIDE.md               # Day-to-day usage (start here for humans)
 │
 ├── fixtures/workspaces/demo/       # Checker smoke data + sample pilot

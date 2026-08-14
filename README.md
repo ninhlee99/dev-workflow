@@ -66,7 +66,7 @@ start → learning (only if knowledge missing) / coaching (only if contradicted)
 | confirm | **You** type `CONFIRM G3:…` (see below) |
 | plan / build | TDD plan + implementation + coverage map |
 | review / fix / test | Diff findings + triage/fix + machine evidence (SHA/CI/junit) |
-| check / ship / clean | Programmatic gates; ship safety; archive finished worklog |
+| check / ship / audit / clean | Structural gates; ship safety; semantic finality; archive worklog |
 
 ---
 
@@ -74,7 +74,7 @@ start → learning (only if knowledge missing) / coaching (only if contradicted)
 
 ### Prerequisites
 
-- Bash 4+ (`brew install bash` on macOS)  
+- Bash 3.2+
 - One of: Claude Code, Cursor, Codex, Antigravity  
 - Git  
 
@@ -87,6 +87,9 @@ bash install.sh
 ```
 
 `install.sh` deploys slash commands, skill symlinks, and host bundles.
+It writes host integration files under `~/.claude`, `~/.cursor`, `~/.codex`, and optionally
+`~/.agents`; it does not edit product source. See the complete install/update/verification guide:
+[docs/INSTALL.md](./docs/INSTALL.md).
 
 ### Claude Code
 
@@ -127,6 +130,7 @@ More host detail: [MARKETPLACE.md](./MARKETPLACE.md).
 /dev-workflow:test     TICKET-123
 /dev-workflow:check    TICKET-123
 /dev-workflow:ship     TICKET-123
+/dev-workflow:audit    TICKET-123    ← required for P0/P1 finality; human AUDIT CONFIRM
 /dev-workflow:clean    TICKET-123    ← after done; free worklog memory
 
 # Anytime
@@ -146,7 +150,7 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:learning` | `[brief/path]` | AI builds `domain-knowledge/`; asks when unclear |
 | `/dev-workflow:coaching` | `<topic/ticket>` | You teach corrections / new or changed specs |
 | `/dev-workflow:start` | `<Ticket> [URL]` | Enter pipeline at first failing gate |
-| `/dev-workflow:spec` | `<Ticket> [URL/spec]` | Write `02-spec.md`; set Risk; P0 → `02b-security.md` |
+| `/dev-workflow:spec` | `<Ticket> [URL/spec]` | Set Type/Risk, provenance, ACs; P0 → security file |
 | `/dev-workflow:conflict` | `<Ticket> [decision]` | Write conflict report + QA log |
 | `/dev-workflow:confirm` | `<Ticket>` | Wait for human `CONFIRM G3:`; write INDEX + `03b-human-confirm.md` |
 | `/dev-workflow:plan` | `<Ticket>` | TDD plan mapped to ACs/claims |
@@ -154,8 +158,9 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:review` | `<Ticket>` | Neutral diff review + How/By (`06-review-qa.md`) |
 | `/dev-workflow:fix` | `<Ticket>` | Triage findings; fix only justified (`06c-fix-log.md`) |
 | `/dev-workflow:test` | `<Ticket>` | Real tests + SHA/CI/junit (`06b-test-evidence.md`) |
-| `/dev-workflow:check` | `<Ticket> [slug] [G8\|G9]` | Run `check-gates.sh` |
+| `/dev-workflow:check` | `<Ticket> [slug] [G8\|G9\|AUDIT]` | Run deterministic checker |
 | `/dev-workflow:ship` | `<Ticket>` | Fill `07-ship.md` (G9); refuse if checker fails |
+| `/dev-workflow:audit` | `<Ticket>` | Check C1–C8 coherence; require human sign-off |
 | `/dev-workflow:clean` | `<Ticket> [--force] [--purge]` | Archive/purge that ticket worklog only |
 | `/dev-workflow:status` | `[Ticket]` | Gate + knowledge status |
 | `/dev-workflow` | `<Ticket> [URL]` | Alias for `:start` |
@@ -167,7 +172,7 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | Gate | PASS means | Retry with |
 |------|------------|------------|
 | **G0** | Domain knowledge covers ticket | `:learning` / `:coaching` |
-| **G1** | Spec + Risk (+ security if P0) | `:spec` |
+| **G1** | One Type + Risk, requirement provenance, ACs (+ security if P0) | `:spec` |
 | **G2** | Conflicts decided (P2 soft unless `--strict`) | `:conflict` |
 | **G3** | Human confirm in INDEX **and** `03b-human-confirm.md` | `:confirm` |
 | **G4** | Plan mapped (P2 soft unless `--strict`) | `:plan` |
@@ -180,8 +185,8 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 
 | Risk | Lane | Notes |
 |------|------|-------|
-| **P0** | Hard | Money/auth/PII/legacy — dual CONFIRM; no WAIVE G3/G8; `02b-security.md` |
-| **P1** | Hard | Default product change — full G0–G9 |
+| **P0** | Hard | Money/auth/PII/legacy — dual CONFIRM, security, G0–G9 + AUDIT |
+| **P1** | Hard | Default product change — full G0–G9 + AUDIT |
 | **P2** | Fast | Chore — G2/G4/G5/G7 soft unless `--strict` |
 
 Details: [references/risk.md](./references/risk.md). The authoritative stage interface is
@@ -240,7 +245,8 @@ Must be stored in **INDEX.md** and **03b-human-confirm.md** with `Source: user-m
     ├── 06-review-qa.md
     ├── 06c-fix-log.md            # after :fix (triage)
     ├── 06b-test-evidence.md
-    └── 07-ship.md
+    ├── 07-ship.md
+    └── 08-semantic-audit.md       # C1–C8 + AUDIT CONFIRM
 ```
 
 ---
@@ -250,9 +256,13 @@ Must be stored in **INDEX.md** and **03b-human-confirm.md** with `Source: user-m
 ```bash
 export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 
-# Pre-merge (recommended)
+# Structural pre-merge floor
 "$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 \
   --project my-project --min G9 --strict
+
+# Final P0/P1 check after semantic audit + human sign-off
+"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 \
+  --project my-project --min AUDIT --strict
 
 # Pilot score (after 10 tickets)
 "$DEV_WORKFLOW_PLUGIN/bin/pilot-score.sh" \
@@ -262,7 +272,7 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 | Flag | Default | Meaning |
 |------|---------|---------|
 | `--project` | auto | Project slug |
-| `--min` | `G8` | Check through gate; use `G9` before merge |
+| `--min` | `G8` | Check through `G0`…`G9` or `AUDIT`; final P0/P1 uses `AUDIT` |
 | `--strict` | off | SHA/junit verify; implies `--verify-net`; no P2 soft; no G8 WAIVE |
 | `--verify-net` | off* | HTTP HEAD on CI URL (*on when `--strict`) |
 | `--json` | off | Machine-readable result |
@@ -286,6 +296,7 @@ See [docs/USER-GUIDE.md §7](./docs/USER-GUIDE.md#7-pilot-prove-the-workflow-wor
 | Doc | Audience | Content |
 |-----|----------|---------|
 | **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)** | Developers | Full day-to-day guide |
+| [docs/INSTALL.md](./docs/INSTALL.md) | Installers | Install, update, verify, host paths |
 | [MARKETPLACE.md](./MARKETPLACE.md) | Installers | Host-specific install + smoke |
 | [STRUCTURE.md](./STRUCTURE.md) | Contributors | Annotated tree |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Contributors | How to change the plugin |

@@ -1,7 +1,8 @@
 # User guide — dev-workflow v0.4
 
 This guide explains **how to use** the plugin day-to-day.  
-For install hosts → [MARKETPLACE.md](../MARKETPLACE.md). For design layout → [STRUCTURE.md](../STRUCTURE.md).
+For installation/update → [INSTALL.md](./INSTALL.md). For host command summary →
+[MARKETPLACE.md](../MARKETPLACE.md). For design layout → [STRUCTURE.md](../STRUCTURE.md).
 
 ---
 
@@ -41,11 +42,15 @@ is the judge for meaning — neither substitutes for the other.
 | **test** (`:test`, G8) | Real test run + SHA/CI/junit | After review (and `:fix` if needed) |
 | **check** (`:check`) | Run `check-gates.sh` | Before ship/merge |
 | **audit** (`:audit`) | Semantic coherence cross-check + human sign-off | After G9 PASS, before ship is final |
-| **clean** (`:clean`) | Archive/purge finished ticket worklog | After `:audit` PASS (or `--force`) |
+| **clean** (`:clean`) | Archive/purge worklog; G9 floor, audit still determines P0/P1 finality | After G9; recommended after required audit |
 
 ---
 
 ## 2. First-time setup (once per machine)
+
+Prerequisites: Bash 3.2+, Git, and at least one supported host. The installer writes integration
+files under your home directory but does not edit product source. Read [INSTALL.md](./INSTALL.md)
+for exact paths, updates, isolated smoke testing, and troubleshooting.
 
 ```bash
 git clone https://github.com/ninhlee99/dev-workflow.git
@@ -106,7 +111,9 @@ AI jumps to the **first failing gate**. You can also run stages manually (below)
 
 Must produce `02-spec.md` with:
 
+- Exactly one **Type:** Bug / New feature / Spec change / Requirement change
 - **Risk:** P0 / P1 / P2 (required)
+- Requirement provenance: truth label, source/quote, verification date, confidence, unresolved owner
 - Scenario AC rows (Given / When / Then) filled
 - NEG / PERM / EDGE as needed
 - UI states if Touches UI = Yes
@@ -133,6 +140,10 @@ Must produce `02-spec.md` with:
 
 Fills `03-conflict-report.md` + `03-qa-log.md`.  
 Every non-MATCH needs decision + owner + date.
+
+Investigation changes by Type: Bug follows the real execution path; New feature surveys one analog
+and insertion points; Spec change traces every consumer; Requirement change finds every encoding of
+the old/new rule and requires named authority. Mixed tickets classify each claim separately.
 
 ### 3.5 Confirm (G3) — **you must type this**
 
@@ -171,11 +182,11 @@ Rules:
 
 | Stage | Artifact | Must include |
 |-------|----------|--------------|
-| plan | `04-plan.md` | Tasks mapped to AC/claims |
-| build | `05-impl-log.md` | Coverage map, no MISSING, PASS marks |
+| plan | `04-plan.md` | Tasks mapped to AC/claims + runnable command discovery proof |
+| build | `05-impl-log.md` | RED failure/reason → GREEN result + coverage map + SHA |
 | review | `06-review-qa.md` | Defect class sweep + findings (`path:line`) + How/By per AC |
 | fix | `06c-fix-log.md` | Triage FIX/SKIP/DEFER; only justified patches |
-| test | `06b-test-evidence.md` | Raw test output + **Commit SHA** + CI URL **or** junit path |
+| test | `06b-test-evidence.md` | Executed-command ledger, assertion evidence, output, SHA, CI/junit |
 
 **Review stance:** judge the **diff**, not guessed framework habits. Hunt 500 / missing / injection / case (`downcase`/`upcase`). P0/P1 OPEN → run `:fix` before `:test`.  
 **Fix stance:** SKIP style-only, out-of-scope, or suggestions that contradict AC/system; never SKIP P0 without PM waiver.
@@ -196,7 +207,9 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 
 `--strict` turns on CI-native checks (SHA vs git HEAD, junit parse) and implies `--verify-net`.
 
-Ship artifact `07-ship.md` must cover: migration, feature flag, **canary %**, **soak time**, on-call, SLO, rollback.  
+Ship artifact `07-ship.md` first selects a deployment profile, then covers relevant migration,
+feature flag, **canary %**, **soak time**, on-call, SLO, rollback, execution authority, and observable
+abort signal.
 Canary `N/A` needs a reason ≥ 10 characters (and must not be a repeated placeholder like "abc abc abc").
 
 ### 3.7.5 Audit (semantic coherence, before ship is final)
@@ -216,6 +229,8 @@ AUDIT CONFIRM: TICKET-123 <your name> <YYYY-MM-DD>
 
 Same anti-forge rule as `CONFIRM G3:` — AI/tool names are rejected. An AI's own verdict on its own
 audit is not enough; that is exactly the blind spot this stage exists to catch, one level up.
+Every C1–C8 section requires two verbatim evidence quotes, a non-placeholder reason, and a resolved
+COHERENT/N/A verdict. Any missing, UNCLEAR, or INCOHERENT pair blocks PASS.
 
 ```bash
 "$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
@@ -272,9 +287,9 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 
 | File | Role | Gate |
 |------|------|------|
-| `INDEX.md` | Status, Risk, Pilot, waivers, CONFIRM lines | all |
-| `01-intent.md` | Raw intent | — |
-| `02-spec.md` | ACs + Risk | G1 |
+| `INDEX.md` | Status, Type, Risk, Pilot, waivers, CONFIRM lines | all |
+| `01-intent.md` | Intent, Type, requirement provenance | — |
+| `02-spec.md` | Type/Risk, provenance, AC/NEG/PERM/EDGE, UI oracles | G1 |
 | `02b-security.md` | Threat / secrets / contract (**P0 only**) | G1 |
 | `03-conflict-report.md` | Claims MATCH/NO/UNCLEAR | G2 |
 | `03-qa-log.md` | Open questions | G5 |
@@ -294,7 +309,7 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | Gate | PASS means | If FAIL run |
 |------|------------|-------------|
 | G0 | Domain knowledge ready | `:learning` / `:coaching` |
-| G1 | Spec + Risk (+ security if P0) | `:spec` |
+| G1 | One Type + Risk, provenance, ACs (+ security if P0) | `:spec` |
 | G2 | Conflicts decided | `:conflict` |
 | G3 | Human CONFIRM in INDEX + `03b` | `:confirm` |
 | G4 | Plan mapped | `:plan` |
@@ -307,6 +322,7 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 
 **P2 fast lane:** G2/G4/G5/G7 are soft (warn) unless `--strict`.  
 **P0:** no WAIVE on G3/G8; dual confirm; security file required.
+**P0/P1 finality:** G9 is structural; AUDIT plus human sign-off is required.
 
 WAIVE row format on INDEX:
 
@@ -342,6 +358,8 @@ Success bar: each of miss-spec / reopen / escape ≤ half of baseline; `gate_blo
 | G8 FAIL SHA | Put real `git rev-parse HEAD` into machine evidence table |
 | G8 FAIL junit | Path must exist; XML must have `failures="0"` |
 | G9 FAIL canary N/A | Add reason: `N/A (internal tool, no canary)` |
+| AUDIT FAIL quoted evidence | Add two exact source quotes and a real REASON to every C1–C8 pair |
+| Installed command missing | Restart/reload host; rerun installer; check paths in `INSTALL.md` |
 | Checker PASS but PR merges without it | Enable required status check from CI template |
 
 ---
@@ -351,6 +369,7 @@ Success bar: each of miss-spec / reopen / escape ≤ half of baseline; `gate_blo
 | Doc | Content |
 |-----|---------|
 | [README.md](../README.md) | Overview + install + command index |
+| [INSTALL.md](./INSTALL.md) | Install, update, verify, host paths |
 | [references/risk.md](../references/risk.md) | P0/P1/P2 + timeboxes |
 | [references/security.md](../references/security.md) | P0 security file rules |
 | [references/pilot.md](../references/pilot.md) | Pilot ops |

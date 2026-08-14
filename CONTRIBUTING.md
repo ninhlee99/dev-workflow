@@ -6,7 +6,7 @@ Thank you for improving this plugin. This document explains how to contribute ch
 
 ## Prerequisites
 
-- Bash 4+ (macOS: `brew install bash`)
+- Bash 3.2+
 - One of: Claude Code, Cursor, Codex, or Antigravity (for smoke-testing)
 - Git
 
@@ -16,7 +16,9 @@ Thank you for improving this plugin. This document explains how to contribute ch
 
 See [STRUCTURE.md](./STRUCTURE.md) for a full annotated layout. The key principle:
 
-> **Single source of truth in `references/` and `templates/`.** Stage skills (`skills/*/SKILL.md`) symlink to these via `install.sh`. Never duplicate content across stages.
+> **Contract first.** `references/stage-contract.md` owns stage prerequisites/outputs/routing;
+> `references/skill-quality.md` owns evidence/truthfulness rules. Stage-specific behavior stays in
+> `skills/*/SKILL.md`; shared artifact shape stays in `templates/`.
 
 ---
 
@@ -39,14 +41,17 @@ Edit files, then re-run `bash install.sh` to refresh symlinks and commands.
 3. Add `<stage>` to the `STAGES` array in `install.sh`.
 4. If the stage produces an artifact, add a template under `templates/`.
 5. Document the gate (if any) in `references/workflow.md` and `bin/check-gates.sh`.
-6. Run `bash install.sh` and smoke-test.
+6. Update `references/stage-contract.md`, user docs, and command tooltip.
+7. Add positive and negative behavior to `tests/regression.sh`.
+8. Run `bash install.sh` in an isolated HOME and smoke-test.
 
 ---
 
 ## Editing gates
 
 Gate logic lives in `bin/check-gates.sh`. Each gate section is labelled `# --- Gx ---`.  
-Keep gate checks **file-based and grep-based** — no external dependencies.  
+Keep gate checks deterministic and dependency-light. Prefer explicit parsers when a Markdown table
+cannot be validated safely with a small grep/awk rule.
 Always test with the `fixtures/workspaces/demo` fixture:
 
 ```bash
@@ -74,10 +79,10 @@ DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
 
 ## Token discipline
 
-- `references/*.md` and `skills/*/SKILL.md`: keep concise. Target < 200 words per file.
+- Keep the smallest sufficient interface; move genuinely shared policy to one reference.
 - No filler phrases ("please", "make sure to", "note that").
-- Imperative sentences only.
-- Load references on-demand inside skills — do not preload everything.
+- Load references on demand; do not duplicate a contract merely to save one file read.
+- Measure token use before claiming an optimization; shorter text is not automatically more accurate.
 
 ---
 
@@ -99,6 +104,7 @@ Scope: stage name or component (e.g. `spec`, `check-gates`, `install`).
 ## Pull request checklist
 
 - [ ] `bash install.sh` runs without errors
+- [ ] `tests/regression.sh` exits 0
 - [ ] `bin/check-gates.sh FIX-FAIL --project demo --min G1` exits 1
 - [ ] `bin/check-gates.sh PASS-G8 --project demo --min G8` exits 0
 - [ ] `bin/check-gates.sh PASS-G9 --project demo --min G9 --strict` exits 0
