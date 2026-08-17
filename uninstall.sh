@@ -2,7 +2,7 @@
 # Uninstall dev-workflow from one coding agent, or all supported agents.
 set -euo pipefail
 
-STAGES=(start learning coaching spec conflict confirm plan build review fix test check ship audit status clean)
+STAGES=(start learning coaching spec conflict confirm plan build review fix test check ship audit status clean feedback)
 TARGET_HOST="claude"
 TARGET_EXPLICIT=0
 PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"

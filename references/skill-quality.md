@@ -85,3 +85,4 @@ reviewer; the skill's job is to produce auditable evidence.
 | status | read-only truthful state and next action | mutation or optimistic gate inference |
 | clean | recoverable removal of one resolved worklog | domain knowledge, repos, or unrelated tickets |
 | start | preflight and dispatch to the first owning stage | doing every stage itself or bypassing a refusal |
+| feedback | confirmed dev-workflow defect reports filed as GitHub issue(s) | fixing the underlying skill or filing target-product bugs |
