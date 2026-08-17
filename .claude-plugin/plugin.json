@@ -21,6 +21,7 @@
     "ship",
     "gates",
     "multi-project",
-    "workspaces"
+    "workspaces",
+    "feedback"
   ]
 }
