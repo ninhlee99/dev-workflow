@@ -38,10 +38,9 @@ whether or not any other skill is present in the session — do not skip or wate
 that lacks extra tooling. Log AC/claim-to-test mapping in `templates/05-impl-log.md` under **this**
 worklog.
 
-Optional enhancement: if a `tdd` or `test-driven-development` skill is also available in this
-session, invoke it for a more thorough red-green-refactor treatment (refactor-phase discipline,
-project-specific test patterns) on top of the required cycle above — never as a substitute for it,
-and its absence changes nothing about the required steps.
+Also invoke the `tdd` skill for a more thorough red-green-refactor treatment (refactor-phase
+discipline, project-specific test patterns) on top of the required cycle above — it does not
+replace the required cycle. dev-workflow installs `tdd` automatically if it isn't already present.
 Fill **Commit SHA** at the top of `05-impl-log.md` with the real commit the PASS claim is made
 against — required for P0/P1/`--strict`, same bar as G8's test evidence. A PASS recorded with no
 SHA, or against a stale one, is not verifiable evidence.

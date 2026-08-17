@@ -35,6 +35,10 @@ requirement. Reporter wording is `DOCUMENTED`, not independently verified, unles
 analyst inference remains `INFERRED`.
 Set **Risk** per `references/risk.md`.
 If P0: create `02b-security.md` from template (`references/security.md`).
+
+Also invoke the `security-review` skill against the pending/planned changes for broader
+OWASP-style coverage on top of the required `02b-security.md` template above — it does not
+replace the template. Fold any findings it surfaces into `02b-security.md`.
 Fill Scenario AC + NEG/PERM/EDGE (+ UI if needed).
 
 If Touches UI = Yes: fill the **QA handoff — testable oracle** table in `02-spec.md`. This

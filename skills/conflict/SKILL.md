@@ -31,6 +31,11 @@ Read `references/conflict-check.md` (full 5-step MAP→DIFF→CONFIRM→LOG proc
 Write required artifacts: `03-conflict-README.md`, `03-conflict-report.md`, `03-qa-log.md`.
 Classify claims as MATCH/NO/UNCLEAR; request explicit confirm for non-MATCH.
 
+Walk non-MATCH claims with the user using the `grilling` skill's technique — one claim at a
+time, recommend an answer, wait for it before the next — instead of dumping the full claim table
+for a blanket confirm. This does not replace the required per-claim MATCH/NO/UNCLEAR confirm
+above. dev-workflow installs `grilling` automatically if it isn't already present.
+
 ## What a claim looks like (don't skip straight to the report table)
 
 ```
