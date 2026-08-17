@@ -91,7 +91,7 @@ bash install.sh --agy                   # Antigravity only (requires agy)
 bash install.sh --all                   # all supported agents
 ```
 
-`install.sh` installs only the selected host. Cursor and Codex receive all 16 live stage skills;
+`install.sh` installs only the selected host. Cursor and Codex receive all 17 live stage skills;
 their skill directories link to this clone, so skill content does not become a stale copy.
 It writes host integration files under `~/.claude`, `~/.cursor`, `~/.codex`, and optionally
 `~/.agents`; it does not edit product source. See the complete install/update/verification guide:
@@ -203,6 +203,7 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:audit` | `<Ticket>` | Check C1–C8 coherence; require human sign-off |
 | `/dev-workflow:clean` | `<Ticket> [--force] [--purge]` | Archive/purge that ticket worklog only |
 | `/dev-workflow:status` | `[Ticket]` | Gate + knowledge status |
+| `/dev-workflow:feedback` | `[free text]` | Report a dev-workflow bug/pain point as a GitHub issue |
 | `/dev-workflow` | `<Ticket> [URL]` | Alias for `:start` |
 
 ---

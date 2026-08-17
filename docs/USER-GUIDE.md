@@ -271,6 +271,21 @@ CLI:
 "$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
 ```
 
+### 3.9 Feedback (report a dev-workflow bug)
+
+```
+/dev-workflow:feedback [what went wrong]
+```
+
+- Use when **dev-workflow itself** misbehaves — a skill's output, a gate, a generated artifact —
+  not a bug in the product/ticket you are building.
+- Aggregates whatever you've described this session, checks `gh issue list` for an existing
+  duplicate, then asks you to confirm each title/body before filing.
+- Files via `gh issue create --repo ninhlee99/dev-workflow`; reports back the issue URL(s), or the
+  reason an item was skipped (duplicate, declined).
+- Requires `gh` installed and authenticated (`gh auth status`). Any authenticated GitHub account
+  can open an issue on a public repo — write access is not required.
+
 ---
 
 ## 4. Commands cheat sheet
@@ -293,6 +308,7 @@ CLI:
 | `:audit` | Semantic coherence + human sign-off | Ticket ID (after G9 PASS) |
 | `:clean` | Archive/purge ticket worklog | Ticket ID; optional `--force` / `--purge` |
 | `:status` | Where am I? | Optional Ticket ID |
+| `:feedback` | Report a dev-workflow bug/pain point | Free text description |
 
 ---
 
