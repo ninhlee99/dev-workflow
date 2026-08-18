@@ -3,7 +3,7 @@ name: build
 description: >-
   TDD then implement. Uses plan/spec/clarify decisions when they exist; self-analyzes
   the ticket directly when they don't. Use /dev-workflow:build standalone or after plan.
-argument-hint: "<Ticket ID> Uses confirmed plan if present, else self-analyzes and calls :plan first — implement with TDD and log claim↔test mapping in the worklog"
+argument-hint: "[Ticket ID] Uses confirmed plan if present, else self-analyzes and calls :plan first — implement with TDD and log claim↔test mapping in the worklog. Ticket ID optional, derived if omitted"
 arguments: [ticket_id]
 disable-model-invocation: false
 ---
@@ -37,7 +37,10 @@ here, but "checks" doesn't mean "refuses to start without one already on file":
 Implement from a plan — either the confirmed one on disk, or the one `:plan` just produced
 (confirmed or self-analyzed) per the precondition above.
 Read `references/task-isolation.md` — log **only** into `worklogs/<Ticket_ID>/` for this ticket.
-Print `project=… ticket=… worklog=… locale=…` at start; refuse empty ticket.
+No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
+this stage normally; only derive an `adhoc-<slug>` worklog name once a decision actually needs
+persisting, not before.
+Print `project=… ticket=<id-or-adhoc-slug-or-empty>… worklog=… locale=…` at start.
 
 **Use TDD (required, regardless of what's installed).** Per task in `04-plan.md`: write the
 failing test from that task's test command first, run it and confirm it fails for the stated

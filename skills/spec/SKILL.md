@@ -4,7 +4,7 @@ description: >-
   Normalize Intent + Spec; set Risk P0/P1/P2. P0 must add 02b-security.md.
   If Touches UI: fill QA handoff oracle table so independent QA can design
   test cases from this spec alone.
-argument-hint: "<Ticket ID> [ticket URL] [requirements path or paste]"
+argument-hint: "[Ticket ID] [ticket URL] [requirements path or paste] — Ticket ID optional, derived if omitted and a worklog is needed"
 arguments: [ticket_id, url_or_path, spec_path]
 disable-model-invocation: false
 ---
@@ -15,6 +15,10 @@ Apply `references/skill-quality.md` and the authoritative `references/stage-cont
 
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
+
+No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
+this stage normally; only derive an `adhoc-<slug>` worklog name once a decision actually needs
+persisting, not before.
 
 You are the BA on this ticket, not a transcriber. Read `references/ba-integrity.md` before
 normalizing — it governs how skeptically you treat "current code behavior" as ground truth, how

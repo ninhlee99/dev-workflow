@@ -3,7 +3,7 @@ name: start
 description: >-
   Full delivery pipeline from first failing gate. Use /dev-workflow:start.
   Stops for human confirm on clarify decisions before plan.
-argument-hint: "<Ticket ID> [ticket URL] [spec path or paste] — start full pipeline from first failing gate"
+argument-hint: "[Ticket ID] [ticket URL] [spec path or paste] — start full pipeline from first failing gate; Ticket ID optional, derived if omitted and a worklog is needed"
 arguments: [ticket_id, url_or_path, extra]
 disable-model-invocation: false
 ---
@@ -17,7 +17,10 @@ Read `references/workflow.md`, `references/project-root.md`, `references/locale.
 If this is the first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per
 `references/locale.md` before anything else — do not guess from message language. Otherwise read
 the already-set `Chat locale` from `domain-knowledge/INDEX.md` and use it silently.
-Resolve and print `project=<slug> home=<path> ticket=<id> worklog=<path> locale=<code>`.
+If no Ticket ID was given, follow `references/task-isolation.md` "No Ticket ID given" — proceed
+with the pipeline regardless; only derive an `adhoc-<slug>` name once a stage actually needs to
+persist a decision/worklog, not before.
+Resolve and print `project=<slug> home=<path> ticket=<id-or-adhoc-slug-or-empty> worklog=<path-or-none> locale=<code>`.
 Run `bin/check-workspace.sh` once; FAIL → fix layout before gates (this is a workspace-structure
 check, not a knowledge-content one — see the G0 note below for the difference).
 Ensure worklog is **only** `worklogs/<Ticket_ID>/` — never mix another ticket.

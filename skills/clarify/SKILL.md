@@ -3,7 +3,7 @@ name: clarify
 description: >-
   Diff new spec vs running business; ask a short numbered list of open questions;
   user answers free-text in one message, AI matches answers to claims itself.
-argument-hint: "<Ticket ID> [free-text answers when resuming] — find open questions against existing business; record decisions in the worklog"
+argument-hint: "[Ticket ID] [free-text answers when resuming] — find open questions against existing business; record decisions in the worklog. Ticket ID optional, derived if omitted"
 arguments: [ticket_id, confirm_text]
 disable-model-invocation: false
 ---
@@ -14,6 +14,10 @@ Apply `references/skill-quality.md` and the type dispatch in `references/stage-c
 
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
+
+No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
+this stage normally; only derive an `adhoc-<slug>` worklog name once a decision actually needs
+persisting, not before.
 
 Compare spec to running behavior and force decisions.
 

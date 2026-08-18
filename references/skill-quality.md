@@ -43,6 +43,30 @@ Default reading budget: the named artifact, its direct dependencies, and one rel
 chain. Exceed it only for a cited open question, cross-repo hop, all-consumer search required by a
 Spec/Requirement change, or P0 threat path. This is a relevance budget, not a shortcut.
 
+## Plan-first discipline (multi-file or multi-step work)
+
+A senior doesn't discover scope by editing; they map it, then act. Before touching a second file
+in the same task, or before any change whose blast radius isn't obvious from the request alone:
+
+1. **Enumerate before editing.** Search/read enough to name every file the change touches, in one
+   pass — not "edit one, grep, find another, edit, grep again." If the enumeration surfaces a file
+   or component materially outside what the user asked for (a different subsystem, a script with
+   its own contract, machine-verified logic), stop and confirm scope before writing anything —
+   don't discover the boundary by accident partway through.
+2. **Track every open thread explicitly.** When a request has more than one deliverable (two
+   review findings to fix, two file groups to update), keep both visible for the rest of the
+   turn — a todo list, or an explicit restated plan — so neither silently drops if the turn is
+   interrupted, compacted, or the user's next message only addresses one of them. Never let a
+   started-but-unfinished thread go unmentioned; say what's still open before ending the turn.
+3. **Calibrate before writing long-form content.** Before adding a substantial new section to a
+   reference/doc file (roughly: more than a short paragraph), form a one-line view of the right
+   length/depth and, if genuinely unsure, ask — don't default to maximal detail because it's safer
+   to over-write than to guess wrong.
+4. **Review the diff on purpose before reporting done.** After editing, re-read the changed files
+   with one specific question in mind: "does anything I already knew (an existing rule, an
+   adjacent line) now contradict what I just wrote?" Finding contradictions by a lucky incidental
+   grep is not the same as looking for them; do the second one deliberately, not just the first.
+
 ## Change discipline
 
 - Preserve user changes and unrelated dirty files.
@@ -60,7 +84,8 @@ below; do not average a weak dimension away:
 - **9/10:** all required inputs/outputs and negative paths handled; conclusions trace to evidence;
   uncertainty is explicit; ownership and stop conditions are respected; deterministic checks pass.
 - **8/10 or lower:** any required field is warn-only, a material claim lacks provenance, prose and
-  checker disagree, an unresolved item is hidden, or the skill claims more than it verifies.
+  checker disagree, an unresolved item is hidden, the skill claims more than it verifies, or the
+  deliberate contradiction-check in "Plan-first discipline" step 4 was skipped.
 
 Record deficiencies rather than awarding yourself a numeric PASS. Numbers are for an independent
 reviewer; the skill's job is to produce auditable evidence.

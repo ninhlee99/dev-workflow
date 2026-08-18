@@ -96,6 +96,41 @@ just a box to check if stumbled upon:
    reporter didn't test?" (This is exactly what was missed on DJ-4748: b's pollution was fixed
    without checking whether a's default type was also wrong.)
 
+## Duplicate-scan — runs on every ticket, not just Requirement/Spec change
+
+The per-Type strategies below tell you to search for every consumer/encoding when Type is
+**Spec change** or **Requirement change**. That is not the only time duplication matters — a
+ticket classified as **Bug** or a trivial-looking **P2 copy tweak** can just as easily touch text
+or logic that's duplicated elsewhere, and Risk=P2 softening G2/G4/G5/G7 (`references/risk.md`)
+is about evidence rigor, not license to skip asking the question at all.
+
+Before closing any claim as done — regardless of Type or Risk tier — ask both of these, and record
+the answer even when it's "no, checked, nothing else found":
+
+- **Same text elsewhere?** If the change is copy/label/message/tooltip text, grep for that exact
+  string (or its translation key) across the codebase before assuming this is the only occurrence.
+  A confirmation dialog's button label, an error message, a validation hint — these get copy-pasted
+  across screens more often than they get shared as one component. Found more than one occurrence →
+  this becomes a question for the user (see below), not a silent decision either way.
+- **Same logic elsewhere?** If the change is behavioral (a validation rule, a calculation, a
+  permission check, a default value), search for the same rule implemented a second time —
+  different screen, different repo, frontend+backend pair, a sibling endpoint. Two implementations
+  of "must be logged in to apply" or "max 3 free postings" drifting apart silently is the exact
+  failure mode `references/ba-integrity.md`'s Requirement-change section already warns about; it
+  doesn't stop being a risk just because this particular ticket got classified as a Bug fix.
+
+**If you find another occurrence, don't decide for the user whether it should change too.** Surface
+it as a short, concrete question — this is exactly the kind of thing `:clarify`'s multi-angle pass
+(below) and numbered-question flow exists for:
+
+> "Nút X ở màn hình A đang đổi text sang 'Y'. Cùng text/label này cũng xuất hiện ở màn hình B
+> (file:line) — có cần đổi đồng bộ không, hay chỉ màn hình A?"
+
+If the search finds nothing else, say so briefly (`Checked: no other occurrence of this text/logic
+found`) rather than leaving the question unasked-and-unanswered in silence — an explicit "checked,
+clean" is a finding too, and it's what lets `:review`/`:audit` trust that this was actually looked
+at rather than skipped because the ticket looked small.
+
 ## Classify the ticket first — the investigation strategy depends on it
 
 Before choosing *how* to investigate, decide *what kind* of ticket this is. The four types need

@@ -297,12 +297,12 @@ CLI:
 |---------|-------------|------------------|
 | `:learning` | New project / empty knowledge | Brief or path |
 | `:coaching` | AI wrong / spec changed | Topic + correction |
-| `:start` | Begin ticket | Ticket ID (+ URL) |
-| `:spec` | Clarify requirements | Ticket ID; set Risk |
-| `:clarify` | Spec vs code | Ticket ID |
+| `:start` | Begin ticket | Ticket ID optional (derived if omitted); + URL |
+| `:spec` | Clarify requirements | Ticket ID optional (derived if omitted); set Risk |
+| `:clarify` | Spec vs code | Ticket ID optional (derived if omitted) |
 | `:confirm` | Before any plan/code | **Your** `CONFIRM G3:…` |
-| `:plan` | After G3 PASS | Ticket ID |
-| `:build` | Implement | Ticket ID |
+| `:plan` | After G3 PASS | Ticket ID optional (derived if omitted) |
+| `:build` | Implement | Ticket ID optional (derived if omitted) |
 | `:review` | Diff review + evidence | Ticket ID |
 | `:fix` | Triage/fix review findings | Ticket ID (after OPEN P0/P1) |
 | `:test` | Real test run | Ticket ID + machine fields |
@@ -312,6 +312,11 @@ CLI:
 | `:clean` | Archive/purge ticket worklog | Ticket ID; optional `--force` / `--purge` |
 | `:status` | Where am I? | Optional Ticket ID |
 | `:feedback` | Report a dev-workflow bug/pain point | Free text description |
+
+No Ticket ID? `:start`/`:spec`/`:clarify`/`:plan`/`:build` still run — nothing is refused. If the
+work needs a decision recorded, the AI derives a short `adhoc-<slug>` name from the task itself
+(e.g. `adhoc-confirm-btn-text`) and tells you once. If nothing needs persisting (a question, a
+read-only lookup, a claim that resolves clean), no worklog is written and no name is invented.
 
 ---
 
