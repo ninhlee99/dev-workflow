@@ -192,12 +192,12 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 |---------|-----------|--------|
 | `/dev-workflow:learning` | `[brief/path]` | AI builds `domain-knowledge/`; asks when unclear |
 | `/dev-workflow:coaching` | `<topic/ticket>` | You teach corrections / new or changed specs |
-| `/dev-workflow:start` | `<Ticket> [URL]` | Enter pipeline at first failing gate |
-| `/dev-workflow:spec` | `<Ticket> [URL/spec]` | Set Type/Risk, provenance, ACs; P0 → security file |
-| `/dev-workflow:clarify` | `<Ticket> [decision]` | Write clarify report + QA log |
+| `/dev-workflow:start` | `[Ticket] [URL]` | Enter pipeline at first failing gate; Ticket optional, derived if omitted |
+| `/dev-workflow:spec` | `[Ticket] [URL/spec]` | Set Type/Risk, provenance, ACs; P0 → security file; Ticket optional, derived if omitted |
+| `/dev-workflow:clarify` | `[Ticket] [decision]` | Write clarify report + QA log; Ticket optional, derived if omitted |
 | `/dev-workflow:confirm` | `<Ticket>` | Hand user a pre-filled `CONFIRM G3:` line; write INDEX + `03b-human-confirm.md` |
-| `/dev-workflow:plan` | `<Ticket>` | TDD plan mapped to ACs/claims |
-| `/dev-workflow:build` | `<Ticket>` | Implement + coverage map; self-analyzes if no plan exists yet |
+| `/dev-workflow:plan` | `[Ticket]` | TDD plan mapped to ACs/claims; Ticket optional, derived if omitted |
+| `/dev-workflow:build` | `[Ticket]` | Implement + coverage map; self-analyzes if no plan exists yet; Ticket optional, derived if omitted |
 | `/dev-workflow:review` | `<Ticket>` | Neutral diff review + How/By (`06-review-qa.md`) |
 | `/dev-workflow:fix` | `<Ticket>` | Triage findings; fix only justified (`06c-fix-log.md`) |
 | `/dev-workflow:test` | `<Ticket>` | Real tests + SHA/CI/junit (`06b-test-evidence.md`) |
@@ -207,7 +207,11 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:clean` | `<Ticket> [--force] [--purge]` | Archive/purge that ticket worklog only |
 | `/dev-workflow:status` | `[Ticket]` | Gate + knowledge status |
 | `/dev-workflow:feedback` | `[free text]` | Report a dev-workflow bug/pain point as a GitHub issue |
-| `/dev-workflow` | `<Ticket> [URL]` | Alias for `:start` |
+| `/dev-workflow` | `[Ticket] [URL]` | Alias for `:start`; Ticket optional, derived if omitted |
+
+`[Ticket]` = optional — if omitted, the stage still runs; a short `adhoc-<slug>` worklog name is
+derived only once a decision needs persisting (see `references/task-isolation.md`). `<Ticket>` =
+still required — these stages write/verify machine-checked evidence keyed to an exact ticket.
 
 ---
 
