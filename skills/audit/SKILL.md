@@ -19,7 +19,7 @@ If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `refere
 before anything else.
 
 Verify the worklog's own claims agree with each other — not a second code review, not a second
-conflict check. Both of those must already have structurally passed.
+clarify check. Both of those must already have structurally passed.
 
 ## Precondition
 
@@ -55,4 +55,4 @@ real human phrase, not an AI's word for it — semantic audit is a judgment call
 - Running before G9 structural PASS
 - Writing a verdict without both quoted sides
 - Marking Result PASS without the human `AUDIT CONFIRM:` phrase recorded
-- Treating this as `:review` or `:conflict` re-run (different stages, different question)
+- Treating this as `:review` or `:clarify` re-run (different stages, different question)

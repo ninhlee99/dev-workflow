@@ -1,1 +1,0 @@
-/Users/ninh.le/Documents/daijob/project/plugins/dev-workflow/skills/conflict/SKILL.md

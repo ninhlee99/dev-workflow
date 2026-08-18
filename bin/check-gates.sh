@@ -105,7 +105,7 @@ INDEX="$WORKLOG/INDEX.md"
 SPEC="$WORKLOG/02-spec.md"
 SECURITY="$WORKLOG/02b-security.md"
 HCONFIRM="$WORKLOG/03b-human-confirm.md"
-CREPORT="$WORKLOG/03-conflict-report.md"
+CREPORT="$WORKLOG/03-clarify-report.md"
 QALOG="$WORKLOG/03-qa-log.md"
 PLAN="$WORKLOG/04-plan.md"
 IMPL="$WORKLOG/05-impl-log.md"
@@ -513,13 +513,13 @@ fi
 
 # --- G2 ---
 if need_gate G2; then
-  file_ok "$CREPORT" || maybe_fail G2 "missing 03-conflict-report.md"
+  file_ok "$CREPORT" || maybe_fail G2 "missing 03-clarify-report.md"
   if file_ok "$CREPORT"; then
     if grep -qE '## G2' "$CREPORT" && grep -qE 'G2.*☑ FAIL' "$CREPORT"; then
-      maybe_fail G2 "03-conflict-report marks G2 FAIL"
+      maybe_fail G2 "03-clarify-report marks G2 FAIL"
     fi
     # Count claim rows whose Match/Status column is NO or UNCLEAR with no
-    # Decision recorded — an unconfirmed conflict claim. Table shapes vary
+    # Decision recorded — an unconfirmed clarify claim. Table shapes vary
     # (5-col fixture "Status"/"Decision" vs 8-col template "Match?"/"Decision
     # (verbatim)"), so locate columns by header name instead of a fixed
     # index: find the "Match" or "Status" column (the verdict) and the

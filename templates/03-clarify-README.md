@@ -1,13 +1,13 @@
-# 03 Conflict artifacts
+# 03 Clarify artifacts
 
-Follow `./references/conflict-check.md` (plugin `references/conflict-check.md`) — concrete steps, not an orphan skill name.
+Follow `references/clarify-check.md` for the concrete steps.
 
 **Always** store under the parent project worklog:
 
-- `03-conflict-report.md` ← use template `03-conflict-report.md`
+- `03-clarify-report.md` ← use template `03-clarify-report.md`
 - `03-qa-log.md` ← use template `03-qa-log.md`
 
-**Do not** use `docs/conflict-reports/` / `spec/conflict-reports/` inside child app repos.
+**Do not** use `docs/clarify-reports/` / `spec/clarify-reports/` inside child app repos.
 
 ## G2 PASS when
 

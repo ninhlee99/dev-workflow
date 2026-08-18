@@ -36,7 +36,7 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
    below; quality-only findings stay out of the Sev/Class table.
 4. Write findings into `templates/06-review-qa.md` Code review tables (Sev, Class, Location, Evidence, Risk, Fix proposal, Status=`OPEN`).
 5. Fill AC/NEG/PERM/EDGE How/By/Date evidence (+ UI checklist if Touches UI = Yes).
-6. Re-check conflict decisions still hold after impl.
+6. Re-check clarify decisions still hold after impl.
 7. Run `/dev-workflow:check <Ticket> [slug] G7` before any G7 PASS claim.
 
 ## Result rules

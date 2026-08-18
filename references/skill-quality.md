@@ -72,7 +72,7 @@ reviewer; the skill's job is to produce auditable evidence.
 | learning | evidence-backed project knowledge bootstrap | ticket requirements or production edits |
 | coaching | confirmed knowledge delta + impact list + changelog | silently rewriting active ticket decisions |
 | spec | typed/risked requirement model and testable oracles | deciding unresolved business conflicts |
-| conflict | type-specific current-vs-intended analysis and decision questions | implementation or invented decisions |
+| clarify | type-specific current-vs-intended analysis and decision questions | implementation or invented decisions |
 | confirm | provenance of exact authorized human decisions | judging or fabricating those decisions |
 | plan | executable, traceable implementation/test tasks | coding or expanding confirmed scope |
 | build | scoped RED→GREEN implementation evidence | changing AC to fit code |
@@ -81,7 +81,7 @@ reviewer; the skill's job is to produce auditable evidence.
 | test | execution evidence for every planned/coverage command | treating logs or filenames as assertions |
 | check | deterministic structural/provenance enforcement | semantic judgment |
 | ship | deployment-specific safety and rollback readiness | push/merge/deploy without authority |
-| audit | cross-artifact semantic coherence | redoing review/conflict or passing unresolved pairs |
+| audit | cross-artifact semantic coherence | redoing review/clarify or passing unresolved pairs |
 | status | read-only truthful state and next action | mutation or optimistic gate inference |
 | clean | recoverable removal of one resolved worklog | domain knowledge, repos, or unrelated tickets |
 | start | preflight and dispatch to the first owning stage | doing every stage itself or bypassing a refusal |

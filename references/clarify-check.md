@@ -28,12 +28,18 @@ Steps:
    `UNCLEAR`. Before `MATCH`, identify an independent intent source. No independent source for a
    non-trivial behavior claim means `UNCLEAR — code-as-baseline only`, unless the authorized project
    norm explicitly selected code as baseline and that decision is quoted.
-3) write all claims to `03-conflict-report.md` with source AC, proposal, decision, owner, date.
+3) write all claims to `03-clarify-report.md` with source AC, proposal, decision, owner, date.
    Include claims nobody asked about if you found a real documented-vs-actual mismatch or an
    old-spec-vs-new-spec conflict while doing step 2 — do not limit claims to what the reporter
    already suspected.
 4) write questions to `03-qa-log.md` (`OPEN/CONFIRMED/WAIVED`).
-5) require explicit confirm for every `NO` or `UNCLEAR` via `:confirm` (`CONFIRM G3:`).
+5) ask every `NO`/`UNCLEAR` claim as one short numbered list (after the multi-angle BA pass in
+   `references/ba-integrity.md`), take the user's free-text batch reply, match it to claims
+   yourself, **echo the matches back before writing any Decision** (a wrong silent match is worse
+   than one extra line), and re-ask only the unresolved remainder — see `skills/clarify/SKILL.md`'s
+   "Ask once, in plain language" section. Satisfied once every claim in `03-qa-log.md` reaches
+   `CONFIRMED`/`WAIVED`, however many question rounds it took — the round count isn't checked,
+   only the end state. `:confirm` (`CONFIRM G3:`) locks the resulting decisions in afterward.
 
 Any unresolved claim or OPEN row means G2/G5 FAIL; block `:plan` and `:build`.
 P2 may WAIVE G2 only with INDEX five-field row + reason.

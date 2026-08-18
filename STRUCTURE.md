@@ -36,7 +36,7 @@ dev-workflow/
 │   ├── enforce.md                  # Checker flags
 │   ├── project-root.md             # Path resolution
 │   ├── learning.md / coaching.md
-│   ├── conflict-check.md
+│   ├── clarify-check.md
 │   ├── code-review.md              # Neutral diff review + :fix triage
 │   ├── locale.md                   # Chat/setup in user language
 │   ├── workspace-health.md         # check-workspace.sh rules
@@ -71,7 +71,7 @@ dev-workflow/
 ```
 
 **Stages in `install.sh`:**  
-`start learning coaching spec conflict confirm plan build review fix test check ship audit status clean feedback`
+`start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback`
 
 **Host selection:** default `claude`; shorthand `--claude|--cursor|--codex|--agy|--all` (long-form
 `--host`/`--agent` is also supported). Cursor and
@@ -88,7 +88,7 @@ the repository clone, worklogs, unrelated files, and modified Codex marketplace 
 |----------|------|
 | domain-knowledge / PROJECT.md | G0 |
 | `02-spec.md` (+ `02b-security.md` if P0) | G1 |
-| `03-conflict-report.md` | G2 |
+| `03-clarify-report.md` | G2 |
 | `03b-human-confirm.md` + INDEX CONFIRM | G3 |
 | `04-plan.md` | G4 |
 | `03-qa-log.md` (no OPEN) | G5 |

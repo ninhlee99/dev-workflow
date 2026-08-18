@@ -5,7 +5,7 @@ one weak dimension cannot be hidden by averaging. Apply `references/skill-qualit
 
 | Criterion | Target | Required evidence for 9 |
 |---|---|---|
-| Spec / conflict / confirm | ≥9 | Type+Risk enforced; provenance labels; type-specific strategy; exact claim decisions; anti-forge confirm |
+| Spec / clarify / confirm | ≥9 | Type+Risk enforced; provenance labels; type-specific strategy; exact claim decisions; anti-forge confirm |
 | Risk lanes | ≥9 | P0/P1/P2 in checker; explicit P2 waivers; P0 dual authority + security |
 | Evidence authenticity | ≥9 | RED→GREEN record; command ledger; assertion evidence; SHA↔git; parsed JUnit; reachable CI under strict |
 | Security (P0) | ≥9 | threat/abuse/PII/contract evidence; named owner; no silent waiver |

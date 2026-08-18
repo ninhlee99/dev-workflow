@@ -42,7 +42,7 @@ One row per AC. G7 FAIL if `How verified` or `By` missing.
 | PERM-01 | | | | | ☐ |
 | EDGE-01 | | | | | ☐ |
 
-## Conflict decisions re-check
+## Clarify decisions re-check
 
 | claim_id | Still correct after impl? | Note |
 |---|---|---|

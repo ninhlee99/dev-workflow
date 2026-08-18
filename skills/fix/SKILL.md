@@ -63,7 +63,7 @@ will still fail G7, not silently pass.
 - Fix everything in the comment thread “to be safe”
 - Rewrite large modules while fixing one nil check
 - Invent PASS on review/test after partial fix
-- Change AC/spec silently to make finding go away (use `:coaching` / `:conflict` instead)
+- Change AC/spec silently to make finding go away (use `:coaching` / `:clarify` instead)
 
 ## Done means
 

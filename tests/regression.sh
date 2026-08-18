@@ -107,7 +107,7 @@ cat >"$tmp_root/workspaces/demo/worklogs/AUDIT-BYPASS/08-semantic-audit.md" <<'E
 ### C1 — Conflict claim Proposal ↔ Decision
 ☑ INCOHERENT
 ## Routing
-| C1 | :conflict | decision does not answer proposal |
+| C1 | :clarify | decision does not answer proposal |
 AUDIT CONFIRM: AUDIT-BYPASS Human 2026-08-14
 ☑ PASS
 EOF
@@ -155,13 +155,13 @@ find "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS" -name '*.bak' -delete
 assert_success "AUDIT accepts eight resolved evidence-backed pairs with human sign-off" \
   "$CHECK" AUDIT-PASS --project demo --min AUDIT
 
-if grep -q 'case.*Bug\|Bug)' "$ROOT/references/conflict-check.md" &&
-   grep -q 'New feature' "$ROOT/references/conflict-check.md" &&
-   grep -q 'Spec change' "$ROOT/references/conflict-check.md" &&
-   grep -q 'Requirement change' "$ROOT/references/conflict-check.md"; then
-  ok "conflict-check dispatches all four ticket types"
+if grep -q 'case.*Bug\|Bug)' "$ROOT/references/clarify-check.md" &&
+   grep -q 'New feature' "$ROOT/references/clarify-check.md" &&
+   grep -q 'Spec change' "$ROOT/references/clarify-check.md" &&
+   grep -q 'Requirement change' "$ROOT/references/clarify-check.md"; then
+  ok "clarify-check dispatches all four ticket types"
 else
-  bad "conflict-check dispatches all four ticket types"
+  bad "clarify-check dispatches all four ticket types"
 fi
 
 printf 'RESULT: %s passed, %s failed\n' "$PASS" "$FAIL"
