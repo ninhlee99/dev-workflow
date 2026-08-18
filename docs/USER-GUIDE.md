@@ -36,7 +36,7 @@ is the judge for meaning — neither substitutes for the other.
 
 | Word | Means | When |
 |------|--------|------|
-| **confirm** (`:confirm`, G3) | Human sign-off on conflict/spec decisions | **Before** plan/build |
+| **confirm** (`:confirm`, G3) | Human sign-off on clarify/spec decisions | **Before** plan/build |
 | **review** (`:review`, G7) | Neutral diff review + How/By evidence | **After** build |
 | **fix** (`:fix`) | Triage review findings; fix only justified defects | After review FAIL (P0/P1 OPEN) |
 | **test** (`:test`, G8) | Real test run + SHA/CI/junit | After review (and `:fix` if needed) |
@@ -147,26 +147,29 @@ Must produce `02-spec.md` with:
 | **P1** | Normal behavior / API change (default) |
 | **P2** | Copy, config, docs, tiny non-behavioral chore |
 
-### 3.4 Conflict (G2)
+### 3.4 Clarify (G2)
 
 ```
-/dev-workflow:conflict TICKET-123
+/dev-workflow:clarify TICKET-123
 ```
 
-Fills `03-conflict-report.md` + `03-qa-log.md`.  
-Every non-MATCH needs decision + owner + date.
+Fills `03-clarify-report.md` + `03-qa-log.md`.  
+Every non-MATCH needs decision + owner + date. AI asks all open questions as one short numbered
+list — reply in plain language, any order, in one message; AI matches your answers to the right
+questions and re-asks only what's still unresolved.
 
 Investigation changes by Type: Bug follows the real execution path; New feature surveys one analog
 and insertion points; Spec change traces every consumer; Requirement change finds every encoding of
 the old/new rule and requires named authority. Mixed tickets classify each claim separately.
 
-### 3.5 Confirm (G3) — **you must type this**
+### 3.5 Confirm (G3) — **you send this back**
 
 ```
 /dev-workflow:confirm TICKET-123
 ```
 
-AI lists decisions. You reply **exactly**:
+AI summarizes the decisions, then hands you a ready-to-send line with the ticket and date already
+filled in — you just edit the name and send it back:
 
 ```text
 CONFIRM G3: TICKET-123 Your Name 2026-08-11
@@ -296,7 +299,7 @@ CLI:
 | `:coaching` | AI wrong / spec changed | Topic + correction |
 | `:start` | Begin ticket | Ticket ID (+ URL) |
 | `:spec` | Clarify requirements | Ticket ID; set Risk |
-| `:conflict` | Spec vs code | Ticket ID |
+| `:clarify` | Spec vs code | Ticket ID |
 | `:confirm` | Before any plan/code | **Your** `CONFIRM G3:…` |
 | `:plan` | After G3 PASS | Ticket ID |
 | `:build` | Implement | Ticket ID |
@@ -322,7 +325,7 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | `01-intent.md` | Intent, Type, requirement provenance | — |
 | `02-spec.md` | Type/Risk, provenance, AC/NEG/PERM/EDGE, UI oracles | G1 |
 | `02b-security.md` | Threat / secrets / contract (**P0 only**) | G1 |
-| `03-conflict-report.md` | Claims MATCH/NO/UNCLEAR | G2 |
+| `03-clarify-report.md` | Claims MATCH/NO/UNCLEAR | G2 |
 | `03-qa-log.md` | Open questions | G5 |
 | `03b-human-confirm.md` | Exact human CONFIRM text | G3 |
 | `04-plan.md` | Tasks | G4 |
@@ -341,10 +344,10 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 |------|------------|-------------|
 | G0 | Domain knowledge ready | `:learning` / `:coaching` |
 | G1 | One Type + Risk, provenance, ACs (+ security if P0) | `:spec` |
-| G2 | Conflicts decided | `:conflict` |
+| G2 | Conflicts decided | `:clarify` |
 | G3 | Human CONFIRM in INDEX + `03b` | `:confirm` |
 | G4 | Plan mapped | `:plan` |
-| G5 | No OPEN questions | `:conflict` |
+| G5 | No OPEN questions | `:clarify` |
 | G6 | Coverage + tests logged PASS | `:build` |
 | G7 | Review: no OPEN P0/P1 + evidence filled | `:review` / `:fix` |
 | G8 | Test evidence + machine fields | `:test` |

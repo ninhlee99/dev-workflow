@@ -42,8 +42,11 @@ Risk lanes (P0/P1/P2), evidence provenance, and optional pilot scoring.
 
 ## Flow
 
+`learning`/`coaching` run independently of this pipeline — the user calls them directly to
+bootstrap/correct domain-knowledge; `:start` never invokes them, it stops at G0 and asks you to.
+
 ```
-start → learning (only if knowledge missing) / coaching (only if contradicted) → spec → conflict → confirm → plan
+start → spec → clarify → confirm → plan
                                               ↓
                                             build
                                               ↓
@@ -62,8 +65,8 @@ start → learning (only if knowledge missing) / coaching (only if contradicted)
 |------|---------|
 | learning / coaching | AI learns domain; you correct mistakes |
 | spec | Testable ACs + **Risk P0/P1/P2** (+ `02b-security.md` if P0) |
-| conflict | Type-specific spec/intent vs running behavior; decisions recorded |
-| confirm | **You** type `CONFIRM G3:…` (see below) |
+| clarify | Type-specific spec/intent vs running behavior; decisions recorded |
+| confirm | AI hands you a pre-filled `CONFIRM G3:…` line; edit name, send it back (see below) |
 | plan / build | TDD plan + implementation + coverage map |
 | review / fix / test | Diff findings + triage/fix + machine evidence (SHA/CI/junit) |
 | check / ship / audit / clean | Structural gates; ship safety; semantic finality; archive worklog |
@@ -161,8 +164,8 @@ worklogs, unrelated host configuration, and any modified Codex marketplace file.
 
 # 3) Typical manual path
 /dev-workflow:spec     TICKET-123
-/dev-workflow:conflict TICKET-123
-/dev-workflow:confirm  TICKET-123    ← you must reply with CONFIRM G3:…
+/dev-workflow:clarify TICKET-123
+/dev-workflow:confirm  TICKET-123    ← AI hands you a ready CONFIRM G3: line; edit name, send it back
 /dev-workflow:plan     TICKET-123
 /dev-workflow:build    TICKET-123
 /dev-workflow:review   TICKET-123
@@ -191,10 +194,10 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:coaching` | `<topic/ticket>` | You teach corrections / new or changed specs |
 | `/dev-workflow:start` | `<Ticket> [URL]` | Enter pipeline at first failing gate |
 | `/dev-workflow:spec` | `<Ticket> [URL/spec]` | Set Type/Risk, provenance, ACs; P0 → security file |
-| `/dev-workflow:conflict` | `<Ticket> [decision]` | Write conflict report + QA log |
-| `/dev-workflow:confirm` | `<Ticket>` | Wait for human `CONFIRM G3:`; write INDEX + `03b-human-confirm.md` |
+| `/dev-workflow:clarify` | `<Ticket> [decision]` | Write clarify report + QA log |
+| `/dev-workflow:confirm` | `<Ticket>` | Hand user a pre-filled `CONFIRM G3:` line; write INDEX + `03b-human-confirm.md` |
 | `/dev-workflow:plan` | `<Ticket>` | TDD plan mapped to ACs/claims |
-| `/dev-workflow:build` | `<Ticket>` | Implement + coverage map; refuses if prior gates fail |
+| `/dev-workflow:build` | `<Ticket>` | Implement + coverage map; self-analyzes if no plan exists yet |
 | `/dev-workflow:review` | `<Ticket>` | Neutral diff review + How/By (`06-review-qa.md`) |
 | `/dev-workflow:fix` | `<Ticket>` | Triage findings; fix only justified (`06c-fix-log.md`) |
 | `/dev-workflow:test` | `<Ticket>` | Real tests + SHA/CI/junit (`06b-test-evidence.md`) |
@@ -214,10 +217,10 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 |------|------------|------------|
 | **G0** | Domain knowledge covers ticket | `:learning` / `:coaching` |
 | **G1** | One Type + Risk, requirement provenance, ACs (+ security if P0) | `:spec` |
-| **G2** | Conflicts decided (P2 soft unless `--strict`) | `:conflict` |
+| **G2** | Conflicts decided (P2 soft unless `--strict`) | `:clarify` |
 | **G3** | Human confirm in INDEX **and** `03b-human-confirm.md` | `:confirm` |
 | **G4** | Plan mapped (P2 soft unless `--strict`) | `:plan` |
-| **G5** | No OPEN questions (P2 soft unless `--strict`) | `:conflict` |
+| **G5** | No OPEN questions (P2 soft unless `--strict`) | `:clarify` |
 | **G6** | Coverage map + PASS | `:build` |
 | **G7** | Review: no OPEN P0/P1 + evidence (P2 soft unless `--strict`) | `:review` / `:fix` |
 | **G8** | Tests + machine evidence (`--strict` = CI-native) | `:test` |
@@ -248,7 +251,8 @@ No WAIVE for money/permission/legacy without PM. P0 cannot WAIVE G3/G8.
 
 ## Confirm phrase (required)
 
-After `:confirm`, reply exactly:
+`:confirm` hands you this line pre-filled (ticket + date already in place) — edit the name and
+send it back:
 
 ```text
 CONFIRM G3: TICKET-123 Your Name 2026-08-11
@@ -278,7 +282,7 @@ Must be stored in **INDEX.md** and **03b-human-confirm.md** with `Source: user-m
     ├── 01-intent.md
     ├── 02-spec.md
     ├── 02b-security.md          # P0 only
-    ├── 03-conflict-report.md
+    ├── 03-clarify-report.md
     ├── 03-qa-log.md
     ├── 03b-human-confirm.md     # exact human CONFIRM text
     ├── 04-plan.md
