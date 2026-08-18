@@ -58,7 +58,7 @@ both sides** — a verdict without both quotes is not evidence.
 
 ### C7 — Conflict side-effects ↔ Review Side effects checklist
 
-| Side effect (from conflict report) | Review Side effects status | Verdict | Reason |
+| Side effect (from clarify report) | Review Side effects status | Verdict | Reason |
 |---|---|---|---|
 | | | ☐ COHERENT ☐ INCOHERENT ☐ UNCLEAR ☐ N/A | |
 
@@ -88,7 +88,7 @@ not that the Decision actually addresses what the finding described. Check that 
 
 | Pair | Route back to | Reason for routing |
 |---|---|---|
-| | `:conflict` / `:plan` / `:build` / `:review` / `:ship` | |
+| | `:clarify` / `:plan` / `:build` / `:review` / `:ship` | |
 
 ## Sign-off (required — AI verdict alone is not final)
 

@@ -12,7 +12,7 @@
   "keywords": [
     "spec",
     "requirements",
-    "conflict-check",
+    "clarify-check",
     "learning",
     "coaching",
     "tdd",
@@ -24,11 +24,11 @@
     "developerName": "Ninh Lee",
     "category": "Productivity",
     "shortDescription": "Clear-spec gated delivery for multi-repo projects",
-    "longDescription": "Learn domain, clarify specs, conflict-check against running code, plan/TDD/build with evidence maps, confirm with How/By, and enforce gates via check-gates.sh. Works across multiple project workspaces.",
+    "longDescription": "Learn domain, clarify specs, clarify-check against running code, plan/TDD/build with evidence maps, confirm with How/By, and enforce gates via check-gates.sh. Works across multiple project workspaces.",
     "defaultPrompt": "Use Dev Workflow to route this ticket through the first failing evidence gate. Do not invent PASS or human confirmation.",
     "capabilities": [
       "Requirements analysis",
-      "Type-specific conflict investigation",
+      "Type-specific clarify investigation",
       "TDD planning and implementation",
       "Evidence-backed review and testing",
       "G0-G9 structural checks",

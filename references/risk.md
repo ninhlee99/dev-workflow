@@ -26,7 +26,7 @@ Still need AC, `CONFIRM G3:` (+ `03b-human-confirm.md`), tests/machine evidence,
 | Stage | Soft max |
 |---|---|
 | learning (first project) | 1–2 sessions |
-| spec + conflict + confirm | ≤ 1 day for P1 |
+| spec + clarify + confirm | ≤ 1 day for P1 |
 | plan | ≤ 2 h |
 | build | per estimate |
 | review + fix? + test + ship + clean? | ≤ 0.5 day after build green |

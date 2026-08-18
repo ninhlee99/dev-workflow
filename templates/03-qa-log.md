@@ -1,4 +1,4 @@
-# 03 QA log (conflict Q&A): [Ticket_ID]
+# 03 QA log (clarify Q&A): [Ticket_ID]
 
 - **Date:** [YYYY-MM-DD]
 

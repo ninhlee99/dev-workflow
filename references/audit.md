@@ -12,7 +12,7 @@ doesn't actually exercise the AC it's mapped to. Regex/awk have a hard ceiling h
 patterns, not logic. This stage exists to check logic, using the one tool that can: an AI (or
 human) actually reading the content in context.
 
-This is not a re-run of `:review` (that hunts code diff defects) and not a re-run of `:conflict`
+This is not a re-run of `:review` (that hunts code diff defects) and not a re-run of `:clarify`
 (that diffs spec vs running code). This reads the **worklog's own internal consistency** — do its
 parts agree with each other and with the spec — after every gate has already structurally passed.
 
@@ -22,7 +22,7 @@ parts agree with each other and with the spec — after every gate has already s
 - Before `:ship` is treated as final / before merge
 - Risk P0/P1 required; P2 optional (skip is acceptable only with a recorded reason)
 
-**Do NOT use** as a substitute for `:review` (code defects) or `:conflict` (spec vs code) — this
+**Do NOT use** as a substitute for `:review` (code defects) or `:clarify` (spec vs code) — this
 stage assumes both already passed and only checks the worklog's internal story holds together.
 
 ## The Process
@@ -38,7 +38,7 @@ Semantic audit:
 
 ### Step 1: LOAD
 
-Read in full (not skimmed): `02-spec.md`, `03-conflict-report.md`, `04-plan.md`, `05-impl-log.md`,
+Read in full (not skimmed): `02-spec.md`, `03-clarify-report.md`, `04-plan.md`, `05-impl-log.md`,
 `06-review-qa.md`, `06b-test-evidence.md`, `07-ship.md`. All must already be `check-gates.sh` PASS
 — if not, stop and route back to `:check`, do not audit an incomplete worklog.
 
@@ -55,7 +55,7 @@ quotes is not evidence, it's an opinion — do not write one.
 | C4 | Review AC evidence "How verified" ↔ AC Given/When/Then | The verification steps described actually correspond to the scenario, not a copy-pasted generic phrase repeated across unrelated AC rows |
 | C5 | Ship Migration section ↔ Ship Rollback section | If Migration = Yes, Rollback steps must address undoing that specific migration (schema revert / backfill note), not a generic "revert commit" that would leave the DB in a broken half-migrated state |
 | C6 | Ship Feature flag ↔ Ship Rollout plan | If a flag exists, rollout plan should reference using it (gradual enable) — a flag declared but rollout plan ignoring it entirely is a contradiction worth flagging |
-| C7 | Conflict report side-effect claims ↔ Review "Side effects" checklist | Anything conflict-report flagged as a kept/changed side effect (notification, cache, audit log) should appear verified (not silently dropped) in review's Side effects section |
+| C7 | Clarify report side-effect claims ↔ Review "Side effects" checklist | Anything clarify-report flagged as a kept/changed side effect (notification, cache, audit log) should appear verified (not silently dropped) in review's Side effects section |
 | C8 | Fix-log Decision ↔ Review finding Class/Location | `check-gates.sh` G7 only verifies a `06c-fix-log.md` row exists for every triaged finding — it cannot judge whether the Decision actually addresses what the finding described. A `FIX` decision whose "Changes applied" row touches a different file than the finding's `Location`, or whose one-line reason doesn't relate to the finding's `Class` (e.g. finding is `injection`, fix note says "renamed variable"), is a fix-log entry that exists structurally but proves nothing |
 
 ### Step 3: VERDICT
@@ -66,7 +66,7 @@ Each pair gets exactly one of:
 - **INCOHERENT** — both sides quoted, they conflict or one is vacuous; state the concrete
   contradiction
 - **UNCLEAR** — insufficient content on one side to judge (e.g. field genuinely N/A) — this is not
-  a pass, it needs a human decision same as `:conflict`'s UNCLEAR label
+  a pass, it needs a human decision same as `:clarify`'s UNCLEAR label
 
 Format per pair:
 
@@ -88,10 +88,10 @@ even the ones that are trivially COHERENT (e.g. C5/C6 when there's no migration/
 
 ### Step 5: GATE
 
-- Any `INCOHERENT` → route back to the **stage that owns the broken side** (C1/C2 → `:conflict`/`:plan`;
+- Any `INCOHERENT` → route back to the **stage that owns the broken side** (C1/C2 → `:clarify`/`:plan`;
   C3/C4 → `:build`/`:review`; C5/C6/C7 → `:ship`; C8 → `:fix`) — do not patch the audit file
   itself to make it pass
-- Any `UNCLEAR` → ask the user directly, same anti-guess rule as `:conflict` Step 5
+- Any `UNCLEAR` → ask the user directly, same anti-guess rule as `:clarify` Step 5
 - When all 8 pairs are `COHERENT` or explicitly `N/A` with reason, the audit is AI-complete, not
   final — an AI's own verdict on its own audit has the same blind-spot risk this stage exists to
   catch, one level up. Require the same anti-forge human sign-off `:confirm` (G3) uses: ask for

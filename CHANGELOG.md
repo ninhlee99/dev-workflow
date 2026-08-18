@@ -8,6 +8,48 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed `:conflict` stage to `:clarify` (same G2/G5 role — surface spec-vs-code
+  questions and record decisions). Worklog artifact filenames also renamed
+  (`03-conflict-*.md` → `03-clarify-*.md`).
+- `:spec`, `:plan`, and `:build` no longer hard-refuse when their preferred upstream
+  artifact is missing — each now self-analyzes from ticket/code and continues,
+  marking the result `Source: self-analyzed (no upstream artifact)`, so any stage
+  can be run standalone. `:confirm` and `:audit` still require real human sign-off;
+  `:review`/`:test`/`:fix` still require an actual diff to act on.
+- `:learning` no longer asks unclear business-purpose questions inline — it opens a
+  coaching ticket (`domain-knowledge/coaching-tickets/<NNN>-*.md`, new template
+  `templates/domain-knowledge/coaching-ticket.md`) and keeps exploring. `:coaching`
+  gained a ticket-answer path: append the answer, re-investigate using it as a lead,
+  follow up or self-close (only when the answer doesn't conflict with recorded
+  knowledge — contradictions still require explicit user confirm, same as before).
+- `:start` no longer dispatches `:learning`/`:coaching` itself — a G0 failure now
+  stops `:start` and tells the user to run them directly, then call `:start` again.
+  `:learning`/`:coaching` are independent of the delivery pipeline, not steps in it.
+- `:clarify` and `:confirm` UX simplified: `:clarify` now asks all open questions as
+  one short numbered list (after a multi-angle BA pass — user-facing/data-state/
+  consumer angles — documented in `references/ba-integrity.md`) and accepts one
+  free-text reply, matching answers to claims itself instead of requiring a
+  per-claim structured reply. `:confirm` now summarizes decisions and hands the user
+  a pre-filled `CONFIRM G3: <Ticket> <name> <date>` line to edit and send back,
+  instead of requiring the phrase to be composed from memory — the anti-forge
+  mechanism (a real user message proves sign-off) is unchanged.
+
+### Fixed
+
+- `:coaching` Path A self-close now requires recording exactly which files were
+  searched before concluding "no conflict" (`Target` file, `business.md`,
+  `glossary.md`) — a bare "none found" with no searched-files trail no longer
+  qualifies as a completed check; it falls through to the diff-don't-overwrite
+  human-confirm path instead.
+- `:clarify`'s free-text answer matching now echoes the matched claim↔answer pairs
+  back before writing any `Decision`, so a silently wrong match (plausible with
+  ambiguous free text) surfaces before it's recorded, not after.
+- `:confirm` now handles a reply that's clearly an agreement but not in the exact
+  `CONFIRM G3:` shape — composes the correct line from what the user just said and
+  hands it back once more, instead of only repeating the request unhelpfully.
+
 ### Documentation
 
 - Added `docs/INSTALL.md` with host paths, isolated install verification, update steps, and troubleshooting.

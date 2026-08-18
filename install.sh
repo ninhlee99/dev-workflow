@@ -3,7 +3,8 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STAGES=(start learning coaching spec conflict confirm plan build review fix test check ship audit status clean feedback)
+STAGES=(start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback)
+VENDORED_SKILLS=(grilling tdd)
 TARGET_HOST="claude"
 TARGET_EXPLICIT=0
 PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"
@@ -139,6 +140,29 @@ install_colon_commands() {
   shopt -u nullglob
 }
 
+install_vendored_skill_if_missing() {
+  local name="$1"
+  local dest_root="$2"
+  local label="$3"
+  local dest="$dest_root/$name"
+  local vendor_src="$PLUGIN_DIR/skills/_vendor/$name"
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    echo "  [$label] $name already present, skipping"
+    return
+  fi
+  [[ -d "$vendor_src" ]] || { echo "  [$label] WARNING: no vendored copy of $name, skipping" >&2; return; }
+  mkdir -p "$dest_root"
+  ln -sfn "$vendor_src" "$dest"
+  echo "  [$label] installed $name (vendored by dev-workflow)"
+}
+
+install_vendored_skills_if_missing() {
+  local dest_root="$1" label="$2" name
+  for name in "${VENDORED_SKILLS[@]}"; do
+    install_vendored_skill_if_missing "$name" "$dest_root" "$label"
+  done
+}
+
 install_claude() {
   echo "==> Claude Code"
   mkdir -p "$HOME/.claude/skills" "$HOME/.claude/plugins" "$HOME/.claude/commands"
@@ -148,6 +172,7 @@ install_claude() {
   if [[ -n "$PROJECT_CLAUDE_CMDS" ]]; then
     install_colon_commands "$PROJECT_CLAUDE_CMDS" "project-claude-command"
   fi
+  install_vendored_skills_if_missing "$HOME/.claude/skills" "claude-skill"
   echo "  Reload plugins, then run /dev-workflow:status"
 }
 
@@ -157,6 +182,7 @@ install_cursor() {
   install_colon_commands "$HOME/.cursor/commands" "cursor-command"
   rm -rf "$HOME/.cursor/skills/dev-workflow"
   install_stage_links "$HOME/.cursor/skills" "cursor-skill"
+  install_vendored_skills_if_missing "$HOME/.cursor/skills" "cursor-skill"
   echo "  Restart/reload Cursor, then run /dev-workflow:status"
 }
 
@@ -190,6 +216,7 @@ install_codex() {
   echo "==> Codex"
   mkdir -p "$HOME/.codex/skills" "$HOME/.codex/plugins"
   install_stage_links "$HOME/.codex/skills" "codex-skill"
+  install_vendored_skills_if_missing "$HOME/.codex/skills" "codex-skill"
   ln -sfn "$PLUGIN_DIR" "$HOME/.codex/plugins/dev-workflow"
   install_codex_marketplace_seed
   echo "  Start a new Codex task so the refreshed skills are discovered"

@@ -8,7 +8,7 @@ looked simple.
 
 ## The failure this exists to prevent
 
-On DJ-4748, the first `:spec`/`:conflict` pass fixed a keyword-search bug correctly, but recorded
+On DJ-4748, the first `:spec`/`:clarify` pass fixed a keyword-search bug correctly, but recorded
 "default query type = AND" as a *confirmed assumption* — when in fact that was just a description
 of what the buggy code currently did. Nobody checked it against the UI help text, which said
 space-separated keywords should be OR. The bug got half-fixed: the loud symptom (pollution) went
@@ -237,11 +237,38 @@ ticket happens to mention.
    record that as the source — a requirement change without a named authority is itself an open
    question, not something to infer from ticket tone.
 
+## Multi-angle BA pass — before asking, not after the first answer
+
+`:clarify` asks the user once, as a short numbered list, and expects free-text answers it matches
+itself (see `skills/clarify/SKILL.md`). That only works if question #1 is already the sharp,
+complete question — a trickle of "oh, one more thing" follow-ups is exactly the wasted round-trips
+this pass exists to prevent. Before finalizing the question for any non-MATCH claim, check it from
+at least these three angles — a question that only reflects one of them is probably not sharp yet:
+
+- **User-facing angle** — what does the end user concretely see or experience if this claim goes
+  one way vs. the other? Not "it might affect the UI" — the actual visible difference (a message
+  that appears/doesn't, a button that's enabled/disabled, a count that's off by the disputed
+  amount).
+- **Data/state angle** — what invariant, migration, or existing record is at risk depending on the
+  answer? If the claim touches state that's hard to undo (money, permissions, already-persisted
+  records), the question should surface that stake, not just the behavioral difference.
+- **Consumer angle** — who else currently depends on the behavior being questioned (other code,
+  other specs, other worklogs)? This overlaps with "search direct consumers" in the Spec
+  change/Requirement change strategies above, but here it's a check on the *question itself*: if
+  answering it one way would ripple into a consumer nobody's mentioned yet, ask about that ripple
+  in the same question rather than discovering it after the user already answered.
+
+Concretely: draft the question, then ask yourself "if the user answers this literally as asked,
+is there a second question I'd immediately need to ask next?" If yes, that second question belongs
+in the same numbered item now — either folded into one sharper question, or listed as its own
+numbered item in the same batch. The pass fails its purpose if it produces a complete-looking list
+that turns out to need a second round anyway.
+
 ## Say so plainly
 
 When you find one of the above, do not soften it into a footnote or bury it in a coverage table.
 Say directly: "the current default is X, the documented behavior is Y, these disagree, here's the
 evidence, here's what I think it means, here's what I need from you to proceed." A stakeholder
-should be able to read your one paragraph and understand the disagreement without opening the
-conflict report. Being right about a subtle conflict that nobody reads is the same as not finding
-it.
+should be able to read your one paragraph and understand the disagreement without opening
+`03-clarify-report.md`. Being right about a subtle conflict that nobody reads is the same as not
+finding it.

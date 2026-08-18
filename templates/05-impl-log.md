@@ -34,7 +34,7 @@ A row claiming PASS with an empty Test path is worse than one honestly marked MI
 |---|---|---|---|
 | AC-01 | | | ☐ PASS ☐ FAIL ☐ MISSING |
 
-## Coverage vs conflict decisions
+## Coverage vs clarify decisions
 
 | Claim / decision | Covered by test/code? | Evidence |
 |---|---|---|

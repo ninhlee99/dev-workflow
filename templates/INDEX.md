@@ -8,7 +8,7 @@
 - **Updated:** [YYYY-MM-DD]
 - **Worklog:** `workspaces/<project-slug>/worklogs/<Ticket_ID>/`
 - **Touches UI?** ☐ Yes ☐ No
-- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `01-intent.md`; drives investigation strategy in `:conflict`)
+- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `01-intent.md`; drives investigation strategy in `:clarify`)
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (see `references/risk.md`)
 - **Lane:** ☐ hard ☐ fast
 - **Pilot:** ☐ yes ☐ no   (if yes, G9 requires row in `pilot/PILOT-*.md`)
@@ -36,7 +36,7 @@ CONFIRM G3: …
 |---|---|---|---|
 | G0 Domain knowledge | ☐ PASS ☐ FAIL | `../domain-knowledge/` (+ repos) | empty → `:learning`; wrong/changed → `:coaching` |
 | G1 Spec clear | ☐ PASS ☐ FAIL ☐ WAIVE | `02-spec.md` (+ `02b-security.md` if P0) | Scenario AC + Risk; P0 security |
-| G2 Conflict documented | ☐ PASS ☐ FAIL ☐ WAIVE | `03-conflict-report.md` | P2 soft unless `--strict` |
+| G2 Conflict documented | ☐ PASS ☐ FAIL ☐ WAIVE | `03-clarify-report.md` | P2 soft unless `--strict` |
 | G3 User sign-off | ☐ PASS ☐ FAIL | `INDEX.md` + `03b-human-confirm.md` | literal `CONFIRM G3:` (P0 + PM); no AI names |
 | G4 Plan | ☐ PASS ☐ FAIL ☐ WAIVE | `04-plan.md` | task ↔ AC/claim + regression |
 | G5 No open Qs | ☐ PASS ☐ FAIL ☐ WAIVE | `03-qa-log.md` | OPEN = FAIL |

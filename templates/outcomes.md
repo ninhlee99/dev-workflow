@@ -4,7 +4,7 @@ Copy this file → `workspaces/<project-slug>/outcomes.md`. Fill after each ship
 
 ## Miss definitions
 
-- **Miss-spec:** reopen / hotfix from wrong AC, missed edge/neg/perm, unconfirmed conflict, missed UI state
+- **Miss-spec:** reopen / hotfix from wrong AC, missed edge/neg/perm, unconfirmed clarify, missed UI state
 - **UI bug:** UI defect after merge (within 14 days)
 - **Logic bug:** wrong business rule after merge (14 days)
 

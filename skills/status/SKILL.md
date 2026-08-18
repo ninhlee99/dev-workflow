@@ -20,7 +20,9 @@ Read `references/workflow.md`, `references/project-root.md`, `references/locale.
 Reply in user language.
 Without ticket: report domain freshness (see `bin/check-workspace.sh` W0–W6 checks — plugin dir,
 PROJECT.md, domain-knowledge/INDEX.md, worklogs/ layout, stray files, per-ticket INDEX.md,
-marker-slug consistency) + run its summary directly, do not re-derive by hand.
+marker-slug consistency) + run its summary directly, do not re-derive by hand. Also list any
+`domain-knowledge/coaching-tickets/*.md` with `Status: OPEN` (id + title) so the user can see
+what's waiting on an answer — these are async and don't block anything, just surface them.
 With ticket: report gate state from **that** worklog INDEX only (`task-isolation.md`); suggest
 `:clean` if G9 PASS and user wants to free memory — `:clean` only needs G9, not `:audit`.
 No code changes; keep default output short.

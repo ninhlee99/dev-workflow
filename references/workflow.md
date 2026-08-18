@@ -16,12 +16,12 @@ Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
 ## Gates and dispatch
 | Gate | PASS means | FAIL command |
 |---|---|---|
-| G0 | domain knowledge matches ticket scope | empty → `:learning`; wrong/changed → `:coaching` |
+| G0 | domain knowledge matches ticket scope | empty → `:learning`; wrong/changed → `:coaching` (directly, or by answering a coaching ticket `:learning` opened — see `references/learning.md`/`coaching.md`). `:start` does not run either for you — see "Stage order" below. |
 | G1 | AC + Risk set; **P0 also `02b-security.md`**; **Touches UI also QA handoff oracle table** | `:spec` |
-| G2 | each non-MATCH has decision, owner, date (P2 soft unless `--strict`) | `:conflict` |
+| G2 | each non-MATCH has decision, owner, date (P2 soft unless `--strict`) | `:clarify` |
 | G3 | human `CONFIRM G3:` on INDEX **and** `03b-human-confirm.md` (no AI names; P0 + PM) | `:confirm` |
 | G4 | tasks map to AC/claims (P2 soft unless `--strict`) | `:plan` |
-| G5 | no OPEN Qs (P2 soft unless `--strict`) | `:conflict` |
+| G5 | no OPEN Qs (P2 soft unless `--strict`) | `:clarify` |
 | G6 | coverage map + tests pass | `:build` |
 | G7 | AC evidence How/By + no OPEN P0/P1 review findings (P2 soft unless `--strict`) | `:review` (then `:fix` if findings) |
 | G8 | test evidence + machine fields; `--strict`/P0 = CI-native verify | `:test` |
@@ -38,11 +38,28 @@ structural PASS is necessary but not sufficient for ship to be final. See `refer
 
 ## Stage order
 
-`:start` dispatches the first applicable owner. Use `:learning` only when knowledge is missing and
-`:coaching` only when existing knowledge is contradicted/changed; they are not unconditional serial
-steps. Delivery then follows `:spec` → `:conflict` → `:confirm` → `:plan` → `:build` → `:review` →
+`:learning`/`:coaching` are independent of the delivery pipeline below and are never dispatched
+by `:start` — the user runs them directly. `:learning`'s unclear findings become async coaching
+tickets in `domain-knowledge/coaching-tickets/`, answered one at a time via
+`:coaching <ticket-id> <answer>` whenever the user gets to them — this loop runs on its own
+schedule, entirely outside `:start`.
+
+`:start` dispatches the first applicable failing owner **within the delivery pipeline only**. If
+G0 fails (domain-knowledge missing or contradicted), `:start` stops and tells the user to run
+`:learning`/`:coaching` themselves, then call `:start` again — it does not invoke either on their
+behalf. Delivery then follows `:spec` → `:clarify` → `:confirm` → `:plan` → `:build` → `:review` →
 (`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` → `:audit` → `:status` →
 (`:clean` when ticket done). `references/stage-contract.md` is authoritative.
 
 If current stage already PASS, jump to next. End `:spec`, end `:plan`, and before close `:build`: print uncovered AC/claim map; any gap = FAIL.
 P2 fast lane may WAIVE G2/G4/G5/G7 with INDEX rows — never silent skip.
+
+## Independence
+
+Each stage above is independently runnable, not just chainable through `:start`. `:spec` self-chains
+into `:clarify` for any ambiguous claim; `:plan` self-analyzes the ticket when spec/clarify weren't
+run; `:build` calls `:plan` (which self-analyzes if needed) when no plan exists yet. A result built
+this way is marked `Source: self-analyzed (no upstream artifact)` so later stages and humans can see
+it wasn't built from confirmed scope. `:confirm` and `:audit` are the exception — their human
+sign-off requirement is never satisfied by self-analysis. See `references/stage-contract.md`'s
+**(preferred)** markers for exactly which `Requires` entries soften this way.

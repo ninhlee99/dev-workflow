@@ -29,9 +29,14 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
 1. Resolve worklog; open `02-spec.md`, `05-impl-log.md`, confirmed claims, INDEX Risk.
 2. Collect change set (`git diff` base…HEAD or files listed in impl log). No diff → FAIL review; do not invent.
 3. Hunt defect classes per `code-review.md`: **500**, **missing**, **injection**, **case** (downcase/upcase/normalize), **other**. Fill class rows even if `none`.
+
+   Also invoke the `code-review` skill (medium/high effort) on the same diff for broader
+   reuse/simplification/efficiency coverage on top of the required class hunt above — it does not
+   replace the class hunt. Fold any correctness findings it surfaces into the class rows
+   below; quality-only findings stay out of the Sev/Class table.
 4. Write findings into `templates/06-review-qa.md` Code review tables (Sev, Class, Location, Evidence, Risk, Fix proposal, Status=`OPEN`).
 5. Fill AC/NEG/PERM/EDGE How/By/Date evidence (+ UI checklist if Touches UI = Yes).
-6. Re-check conflict decisions still hold after impl.
+6. Re-check clarify decisions still hold after impl.
 7. Run `/dev-workflow:check <Ticket> [slug] G7` before any G7 PASS claim.
 
 ## Result rules

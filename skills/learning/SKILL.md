@@ -2,9 +2,9 @@
 name: learning
 description: >-
   AI self-learns any project from a brief: auto-creates workspaces/<project-slug>/,
-  explores repos, promotes domain-knowledge; asks only when business unclear.
-  Changed specs → :coaching.
-argument-hint: "[project brief or path] — AI self-learns; auto-creates workspaces/<project-slug>/; asks only when business unclear"
+  explores repos, promotes domain-knowledge; opens a coaching ticket per unclear
+  business function instead of blocking on inline questions. Changed specs → :coaching.
+argument-hint: "[project brief or path] — AI self-learns; auto-creates workspaces/<project-slug>/; opens coaching tickets for unclear function purposes"
 arguments: [brief]
 disable-model-invocation: false
 ---
@@ -30,7 +30,19 @@ List areas deliberately not explored; do not imply project-wide completeness fro
 After create: run `bin/check-workspace.sh <slug>` — must PASS before later stages.
 
 Read `references/learning.md` fully before exploring — it defines the "captured enough" DoD bar
-(Bad vs Good example) and the target-driven exploration rule (follow real entrypoints, don't
-full-read the repo). Do not tick `Needs learning: no` without meeting that bar.
+(Bad vs Good example), the target-driven exploration rule (follow real entrypoints, don't
+full-read the repo), and the **"Ticket vs inline"** routing rule for unclear items. Do not tick
+`Needs learning: no` without meeting that bar.
+
+## When a function's business purpose is unclear
+
+Do not stop the pass to ask inline — per `references/learning.md`'s "Ticket vs inline" section,
+open a coaching ticket (copy `templates/domain-knowledge/coaching-ticket.md` into
+`domain-knowledge/coaching-tickets/<NNN>-<slug>.md`, cite the exact `file:line`) and keep exploring
+the rest of the scope. Reserve inline `[LEARNING]` questions for structural/navigational blockers
+only (which repo/slug, which of two same-named services is live) — anything that's actually about
+*why* the code behaves this way goes to a ticket, not the inline prompt. Report opened ticket paths
+at the end of the pass; they don't block `Exit` (see `learning.md`), they're answered async via
+`/dev-workflow:coaching <ticket-id> <answer>`.
 
 Refuse hardcoded paths, invented business, and jumping to later stages.

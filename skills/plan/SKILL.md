@@ -1,9 +1,10 @@
 ---
 name: plan
 description: >-
-  Break confirmed spec+conflict decisions into small tasks with DoD/tests.
-  Use /dev-workflow:plan only after conflict claims are fully confirmed.
-argument-hint: "<Ticket ID> Run only after spec and conflict pass — write a TDD-ready implementation plan into the worklog"
+  Break spec+clarify decisions into small tasks with DoD/tests when they exist;
+  self-analyzes the ticket directly when they don't. Use /dev-workflow:plan standalone
+  or after spec/clarify.
+argument-hint: "<Ticket ID> Uses confirmed spec+clarify scope if present, else self-analyzes the ticket — write a TDD-ready implementation plan into the worklog"
 arguments: [ticket_id]
 disable-model-invocation: false
 ---
@@ -17,27 +18,35 @@ Apply `references/skill-quality.md`; this stage owns an executable traceability 
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
-Run `/dev-workflow:check <Ticket> [slug] G3` first. If it FAILs, stop — scope isn't confirmed yet
-(no `CONFIRM G3:` phrase, or a conflict claim still open). Planning against unconfirmed scope
-produces tasks that get thrown away the moment `:confirm` lands on a different decision — route
-the user to `:conflict`/`:confirm` instead of drafting a plan you already know is provisional.
+Run `/dev-workflow:check <Ticket> [slug] G3` for awareness.
+- **PASS** (real `CONFIRM G3:` phrase, no open clarify claim): plan from that confirmed scope, as
+  below.
+- **FAIL because a clarify claim is still OPEN/unconfirmed**: don't silently resolve it yourself —
+  surface it and prefer routing to `:clarify`/`:confirm` over guessing a decision someone already
+  flagged as needing a human call.
+- **FAIL because `02-spec.md`/`03-clarify-report.md` simply don't exist** (standalone `:plan` call,
+  no `:spec`/`:clarify` run): self-analyze the ticket directly — read the ticket text and relevant
+  code the way `:spec`/`:clarify` would have — and produce the same task table anyway. Mark
+  `04-plan.md`'s header `Source: self-analyzed (no upstream spec/clarify)` so downstream stages
+  know this plan wasn't built from a confirmed scope. Still refuse only when there is truly nothing
+  to reason from (empty ticket, no description, no diff).
 
 ## Steps
 
-Create implementation plan from confirmed scope only.
+Create implementation plan from confirmed scope when available, else from the self-analysis above.
 Fill `templates/04-plan.md` for the ticket.
 Each task must map to AC/claim, target repo/path, DoD, and test command.
 
 **Task granularity should match the ticket's `Type:`** (see INDEX.md, set at `:spec`):
-- **Bug** — usually one focused task at the root-cause location found in `:conflict`; resist
+- **Bug** — usually one focused task at the root-cause location found in `:clarify`; resist
   splitting a single-file fix into multiple tasks just to have more rows.
 - **New feature** — one task per layer touched (migration/model, service/operation, controller,
-  view, tests), following the insertion points identified in `:conflict`'s survey — do not
+  view, tests), following the insertion points identified in `:clarify`'s survey — do not
   collapse a multi-layer feature into one giant task with no per-layer DoD.
 - **Spec change** — one task for the primary behavior change, plus **one task per affected
-  consumer** found during `:conflict`'s "trace every consumer" step — each consumer's update needs
+  consumer** found during `:clarify`'s "trace every consumer" step — each consumer's update needs
   its own DoD/test so a fixed one isn't silently forgotten.
-- **Requirement change** — one task per place the rule was found encoded (`:conflict` should have
+- **Requirement change** — one task per place the rule was found encoded (`:clarify` should have
   listed them) — do not bundle "update the rule everywhere" into a single task; each encoding
   needs its own test proving the new value took effect there specifically.
 
