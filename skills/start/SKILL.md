@@ -2,7 +2,7 @@
 name: start
 description: >-
   Full delivery pipeline from first failing gate. Use /dev-workflow:start.
-  Stops for human confirm on conflicts before plan.
+  Stops for human confirm on clarify decisions before plan.
 argument-hint: "<Ticket ID> [ticket URL] [spec path or paste] — start full pipeline from first failing gate"
 arguments: [ticket_id, url_or_path, extra]
 disable-model-invocation: false
@@ -18,22 +18,27 @@ If this is the first `/dev-workflow:*` command in this workspace, ask `[LOCALE]`
 `references/locale.md` before anything else — do not guess from message language. Otherwise read
 the already-set `Chat locale` from `domain-knowledge/INDEX.md` and use it silently.
 Resolve and print `project=<slug> home=<path> ticket=<id> worklog=<path> locale=<code>`.
-Run `bin/check-workspace.sh` once; FAIL → fix layout (or `:learning`) before gates.
+Run `bin/check-workspace.sh` once; FAIL → fix layout before gates (this is a workspace-structure
+check, not a knowledge-content one — see the G0 note below for the difference).
 Ensure worklog is **only** `worklogs/<Ticket_ID>/` — never mix another ticket.
-Run the first applicable failing owner only: learning when knowledge is missing; coaching when
-knowledge is contradicted/changed; otherwise spec → conflict → confirm → plan → build → review →
-fix (only justified OPEN findings) → test → check → ship → audit. Do not run learning and coaching
-as unconditional sequential ceremony.
+
+**`:start` never dispatches `:learning` or `:coaching`.** They're independent of this pipeline
+(see `references/workflow.md` "Stage order"), not stages `:start` walks through. If G0 FAILs
+because domain-knowledge is missing or contradicted, **stop and tell the user** to run `:learning`
+or `:coaching` themselves first, then call `:start` again — do not auto-invoke either one on their
+behalf. Otherwise, run the first applicable failing owner in the delivery pipeline only:
+spec → clarify → confirm → plan → build → review → fix (only justified OPEN findings) → test →
+check → ship → audit.
 
 This ordering is enforced by **you reading and following it**, not by a script — `check-gates.sh`
-verifies each stage's *output artifact* is real, but nothing stops calling `:build` before
-`:plan` exists if you skip straight there. The actual backstop is `:build`'s own refusal
-("Refuses production code if gates fail") and each stage's file-existence check in
-`check-gates.sh` — jumping ahead produces an immediate, visible FAIL at the next `:check` call,
-not a silent wrong result. Still: don't rely on that backstop as permission to skip steps: run
-`bin/check-workspace.sh` and the gate table check *before* dispatching each stage, the way this
-file says, rather than after something breaks.
+verifies each stage's *output artifact* is real, and every individual stage is independently
+runnable (each self-analyzes when its preferred upstream artifact is missing, see
+`references/stage-contract.md`). `:start`'s job is to walk the full pipeline in order rather than
+leave every stage to self-analyze around every other — dispatching `:build` here always means
+routing through `:plan` first (which routes through `:spec`/`:clarify` first), not calling `:build`
+standalone and letting it self-analyze a plan on the fly. Follow the order this file says rather
+than skipping ahead just because a later stage's own self-sufficiency would technically allow it.
 
-Ask user on ambiguity or conflict decisions; never hardcode paths.
+Ask user on ambiguity or clarify decisions; never hardcode paths.
 After dispatch, surface the owning stage's evidence and stop condition; do not absorb its
 responsibility or continue past a human/failed gate.

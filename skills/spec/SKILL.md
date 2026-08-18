@@ -25,7 +25,7 @@ loud symptom). Apply it now, not just when something already looks broken.
 **First, classify the ticket** — Bug / New feature / Spec change / Requirement change — per
 `references/ba-integrity.md`'s "Classify the ticket first" section, and record it as `Type: …` in
 **both** `01-intent.md` and the worklog `INDEX.md` (`Type:` field, next to `Risk:`) — `INDEX.md` is
-what downstream stages (`:conflict` especially) actually check, so a classification that only
+what downstream stages (`:clarify` especially) actually check, so a classification that only
 lives in `01-intent.md` will get missed. Each type has its own investigation strategy in that
 file; use the matching one, not the bug procedure by default. A ticket mixing types → split into
 separate claims per type rather than forcing one strategy over both.
@@ -54,3 +54,13 @@ never leave it silently blank.
 Empty knowledge → `:learning`; wrong/changed → `:coaching`.
 Before PASS, verify exactly one Type per claim, exactly one Risk, every requirement has a source or
 explicit `UNVERIFIED`, and every UI oracle is observable without asking the implementer.
+
+## Standalone use — self-chain into `:clarify`
+
+`:spec` runs standalone with no other stage's output required. Once this stage's own PASS bar
+above is met, check whether any claim is ambiguous or contradicts observed running behavior. If
+so, **invoke `:clarify` yourself** before reporting done, so a bare `/dev-workflow:spec <Ticket>`
+call leaves the ticket with both a normalized spec and its open questions surfaced/decided, not
+just a spec that silently defers questions to a stage the user may never call. Skip this internal
+call when there is nothing ambiguous to raise — an empty claim table doesn't need a `:clarify` run
+manufactured for it.

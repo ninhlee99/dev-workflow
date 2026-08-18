@@ -1,9 +1,9 @@
 ---
 name: build
 description: >-
-  TDD then implement only after coaching/spec/conflict/confirm/plan gates pass.
-  Use /dev-workflow:build. Refuses production code if gates fail.
-argument-hint: "<Ticket ID> Run only after plan pass — implement with TDD and log claim↔test mapping in the worklog"
+  TDD then implement. Uses plan/spec/clarify decisions when they exist; self-analyzes
+  the ticket directly when they don't. Use /dev-workflow:build standalone or after plan.
+argument-hint: "<Ticket ID> Uses confirmed plan if present, else self-analyzes and calls :plan first — implement with TDD and log claim↔test mapping in the worklog"
 arguments: [ticket_id]
 disable-model-invocation: false
 ---
@@ -15,19 +15,27 @@ Apply `references/skill-quality.md`; this stage owns scoped RED→GREEN evidence
 ## Precondition (check before writing a single line of production code)
 
 A Senior dev handed a ticket checks the spec is confirmed before opening an editor — do the same
-here, don't wait until claiming G6 PASS to discover G4/G5 never passed:
+here, but "checks" doesn't mean "refuses to start without one already on file":
 
 0. If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per
    `references/locale.md` before anything else.
-1. Run `/dev-workflow:check <Ticket> [slug] G5` — if it FAILs, stop. There is nothing to build:
-   either the plan doesn't exist (G4) or a conflict claim is still unconfirmed (G2/G5). Route the
-   user to `:plan` or `:conflict`/`:confirm`, do not start coding "to make progress" while scope
-   is still unsettled.
-2. Only once G5 PASSes does this stage's own work begin.
+1. Run `/dev-workflow:check <Ticket> [slug] G5` for awareness.
+2. If it PASSes, build from the existing `04-plan.md` as normal.
+3. If it FAILs because `04-plan.md` doesn't exist yet (standalone `:build` call, no `:plan` run),
+   **invoke `:plan` yourself** first — per the composition model, `:build` pulls in the stage it
+   needs rather than improvising an implementation with no recorded task breakdown. `:plan` itself
+   self-analyzes the ticket when spec/clarify are also missing, so this still works with zero
+   upstream artifacts; it just means every task/decision downstream gets marked
+   `Source: self-analyzed (no upstream artifact)`.
+4. If it FAILs because a plan exists but a clarify claim is still OPEN/unconfirmed, surface that
+   gap and prefer routing to `:clarify`/`:confirm` over silently guessing the decision — this is
+   the one case where "self-analyze and continue" is the wrong call, since a real open question
+   was already raised and left unanswered, not simply skipped.
 
 ## Steps
 
-Implement only after prior gates pass (through G4 plan / G5 open-Q clear).
+Implement from a plan — either the confirmed one on disk, or the one `:plan` just produced
+(confirmed or self-analyzed) per the precondition above.
 Read `references/task-isolation.md` — log **only** into `worklogs/<Ticket_ID>/` for this ticket.
 Print `project=… ticket=… worklog=… locale=…` at start; refuse empty ticket.
 
@@ -47,7 +55,8 @@ SHA, or against a stale one, is not verifiable evidence.
 Do not edit another ticket’s impl log or reuse its PASS marks.
 Run `/dev-workflow:check <Ticket> [slug] G6` before any G6 PASS claim.
 Coverage gaps, failing tests, or missing/stale Commit SHA keep build FAIL.
-Never invent PASS; refuse coding when prerequisite gates fail.
+Never invent PASS; never invent a confirmed decision — a self-analyzed plan may proceed to code,
+but a clarify claim someone already flagged OPEN may not be silently resolved by `:build`.
 Chat in user language (`references/locale.md`).
 
 ## 9/10 controls
