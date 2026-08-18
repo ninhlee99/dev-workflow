@@ -22,8 +22,30 @@ explicit user instruction overrides the repo-name default.
 
 If an existing `~/.workspaces/<slug>/PROJECT.md` already lists the repo(s) in play, reuse that
 slug; do not create a second, feature-named workspace for the same repos.
-3) explore repos, write facts only, and tag unclear items as `[LEARNING]`.
+3) explore repos, write facts only, and route unclear items per "Ticket vs inline" below.
 4) promote to `domain-knowledge/` and INDEX only after answers.
+
+## Ticket vs inline — where an unclear item goes
+
+Two different kinds of "I don't know" come up during learning; they route differently:
+
+- **Structural/navigational** (needed to keep learning itself moving — "which repo is
+  this slug", "which of these two similarly-named services is the live one") → ask
+  `[LEARNING]` inline, same turn, as before. These block the pass; there's nothing
+  useful to explore until they're answered.
+- **Business purpose of a function/flow** (code is readable, but *why* it does what it
+  does — the business rule behind it — can't be determined from code + existing
+  `domain-knowledge/` alone) → **open a coaching ticket** instead of asking inline.
+  Copy `templates/domain-knowledge/coaching-ticket.md` to
+  `domain-knowledge/coaching-tickets/<NNN>-<slug>.md` (`NNN` = next unused sequence
+  number in that directory), fill `Opened`/`Target`/the `Q1` question citing the exact
+  `file:line` that's unclear, and **keep exploring the rest of the scope** — one
+  unclear function does not stall the whole pass. At the end of the pass, report the
+  opened ticket paths so the user knows what's waiting, and answer them whenever
+  (async) via `/dev-workflow:coaching <ticket-id> <answer>`.
+
+Do not open a ticket for something a few more minutes of code reading would resolve —
+tickets are for genuine business-intent gaps, not a shortcut around exploration effort.
 
 ## Explore with a target, not a full read
 
@@ -51,5 +73,7 @@ the first. Do not tick it to unblock G0 — G0's job is to catch exactly this sh
 of `business.md`/`architecture.md` still reads like the first example after this pass, leave it
 marked unconfirmed rather than writing something that merely fills the space.
 
-Exit: `PROJECT.md` + business/architecture/glossary + domain files for explored repos, no open learning questions.
+Exit: `PROJECT.md` + business/architecture/glossary + domain files for explored repos, no open
+inline `[LEARNING]` (structural) questions. Open coaching tickets do **not** block exit — they're
+answered async via `:coaching`; report their paths and move on.
 Refuse: hardcoded paths, invented business, jumping to build/spec. Spec changes after learning use `:coaching`.
