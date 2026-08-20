@@ -45,7 +45,14 @@ manufacturing a split.
 2. **One analysis pass, not incremental discovery.** Per
    `references/skill-quality.md` "Plan-first discipline" — enumerate the full
    scope in one pass. For every natural sub-part, work out now, not later:
-   - Proposed child ticket name + one-line scope.
+   - Proposed child ticket name + one-line scope. If the epic itself came in
+     without a real tracker ID, derive each child's name as an `adhoc-<slug>`
+     per `references/task-isolation.md` "No Ticket ID given" (2–5 words,
+     kebab-case, drawn from that child's own subject) — same convention a
+     bare `:start`/`:spec` call would use, so each child's worklog folder is
+     unambiguous the moment `:spec`/`:start` opens it. If the user later
+     supplies real tracker IDs for one or more children, rename those
+     folders per that same section instead of keeping the adhoc name.
    - `Type:` per `references/ba-integrity.md` (Bug / New feature / Spec
      change / Requirement change) — a mixed epic almost always produces
      children of different Types; do not force one Type onto all of them.
