@@ -181,10 +181,19 @@ worklogs, unrelated host configuration, and any modified Codex marketplace file.
 # 1) First time on a project
 /dev-workflow:learning
 
-# 2) Start a ticket (default entry point — analyze once, ask once, run to first real stop)
+# 2) Epic-shaped request? Split before opening any child worklog.
+/dev-workflow:decompose "tách monolith thanh toán thành microservice riêng"
+# → epic-map.md + one confirm, then hands off the first unblocked child
+
+# 3) Start a ticket (default entry point — analyze once, ask once, run to first real stop)
 /dev-workflow TICKET-123 https://tracker/TICKET-123
 
-# 3) Typical manual path
+# ...or with no Ticket ID at all — still works, no ID required up front
+/dev-workflow "sửa text nút xác nhận đơn hàng"
+# → AI derives worklogs/adhoc-confirm-btn-text/ once a decision needs saving;
+#   pure Q&A/read-only work needs no worklog at all
+
+# 4) Typical manual path
 /dev-workflow:spec     TICKET-123
 /dev-workflow:clarify TICKET-123
 /dev-workflow:confirm  TICKET-123    ← AI hands you a ready CONFIRM G3: line; edit name, send it back
@@ -202,7 +211,11 @@ worklogs, unrelated host configuration, and any modified Codex marketplace file.
 /dev-workflow:status TICKET-123
 ```
 
-Worklogs live at: `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`.
+Ticket ID is optional for the conversational stages (`:spec`, `:clarify`, `:plan`, `:build`,
+`:start`, `:decompose`) — omit it and the stage still runs; see the `[Ticket]` note under
+[Commands](#commands) below for exactly when a worklog gets created.
+
+Worklogs live at: `~/.workspaces/<project-slug>/worklogs/<Ticket_ID-or-adhoc-slug>/`.
 
 Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 
