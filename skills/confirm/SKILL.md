@@ -16,6 +16,13 @@ Apply `references/skill-quality.md`; this stage records decisions but never manu
 If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
+**Risk=P2 fast path**: G3 is soft for P2 (see `references/risk.md`) — a real human `CONFIRM G3:`
+is still the safest evidence, but a genuinely tiny, non-behavioral P2 ticket may skip this stage
+and go straight to `:plan`/`:build` with `check-gates.sh` only warning, not failing, at G3. Say so
+explicitly once — `"Risk=P2 — CONFIRM G3 is optional here; skip it and continue, or send the
+confirm line if you'd rather have it on record."` — and let the user pick. `--strict` or any risk
+other than P2 always requires the full flow below.
+
 1. Present clarify decisions + OPEN Qs + spec deltas as a short summary — what's being locked in,
    not a raw dump of `03-clarify-report.md`.
 2. Hand the user a ready-to-send line instead of asking them to compose one from memory:

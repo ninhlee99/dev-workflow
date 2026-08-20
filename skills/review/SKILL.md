@@ -30,6 +30,17 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
 2. Collect change set (`git diff` base…HEAD or files listed in impl log). No diff → FAIL review; do not invent.
 3. Hunt defect classes per `code-review.md`: **500**, **missing**, **injection**, **case** (downcase/upcase/normalize), **other**. Fill class rows even if `none`.
 
+   If the diff touches code with a finding already `DEFERRED` on a **different** ticket's
+   `06c-fix-log.md` for the same defect, do not re-raise it here as a new finding — note in this
+   ticket's evidence that it was seen and is already tracked there. "Touches code" here means the
+   DEFERRED finding's own function/method body is part of this diff — not merely a nearby line in
+   the same file (an adjacent export, an import, a sibling function). A diff that edits code next
+   to, but not inside, the deferred function is a genuinely different change; review it fresh. A
+   cross-ticket DEFERRED item is already-known signal, not new; re-raising it on every ticket that
+   happens to touch the same file is noise, not diligence. (This differs from `fix/SKILL.md`'s
+   same-pass SKIP rule for a duplicate
+   *within* one review — this is about carrying a decision across tickets.)
+
    Also invoke the `code-review` skill (medium/high effort) on the same diff for broader
    reuse/simplification/efficiency coverage on top of the required class hunt above — it does not
    replace the class hunt. Fold any correctness findings it surfaces into the class rows

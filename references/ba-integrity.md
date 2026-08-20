@@ -101,7 +101,7 @@ just a box to check if stumbled upon:
 The per-Type strategies below tell you to search for every consumer/encoding when Type is
 **Spec change** or **Requirement change**. That is not the only time duplication matters — a
 ticket classified as **Bug** or a trivial-looking **P2 copy tweak** can just as easily touch text
-or logic that's duplicated elsewhere, and Risk=P2 softening G2/G4/G5/G7 (`references/risk.md`)
+or logic that's duplicated elsewhere, and Risk=P2 softening G2/G3/G4/G5/G7 (`references/risk.md`)
 is about evidence rigor, not license to skip asking the question at all.
 
 Before closing any claim as done — regardless of Type or Risk tier — ask both of these, and record

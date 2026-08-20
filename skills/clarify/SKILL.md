@@ -35,8 +35,29 @@ and note `Source: self-analyzed (no upstream :spec)` next to it so later stages 
 pass never happened.
 
 Read `references/clarify-check.md` (full 5-step MAP→DIFF→CONFIRM→LOG process).
-Write required artifacts: `03-clarify-README.md`, `03-clarify-report.md`, `03-qa-log.md`.
+Write this ticket's own artifacts: `03-clarify-report.md`, `03-qa-log.md`. `03-clarify-README.md`
+is static process documentation (G2 PASS rules, forbidden shortcuts) — read it, do not fill it in
+per ticket.
 Classify claims as MATCH/NO/UNCLEAR.
+
+**Fast path — every claim already MATCH from `:spec`'s own intent Q&A.** The test is not "did
+intent already ask and answer this" (any claim can technically satisfy that) — it is **"is this
+claim a near-identical restatement of behavior that already exists and runs in the codebase"**
+(a pure analog: same shape as an existing sibling function/endpoint, no new state, no new error
+class, no new consumer). A claim that introduces anything genuinely new to the codebase — a new
+error class, a new state, a new consumer, a domain rule with no existing precedent — gets the full
+report even if intent's Q&A already settled the answer, because the reasoning trail (why this
+answer, not just what it is) has real value for whoever reads this ticket later; a one-line MATCH
+citation loses that trail. If unsure which case a claim is, default to the full report.
+
+If the ticket has exactly the claim(s) `:spec` already resolved this way, running the full
+MAP→DIFF→CONFIRM→LOG conversation would just restate what `01-intent.md` already says — real
+ceremony, not real verification, on a ticket this small. Still write all three artifacts (G2 checks
+`03-clarify-report.md` exists), but the report may be a one-line-per-claim table citing
+`01-intent.md`'s answer as the MATCH evidence directly,
+skip the ask/echo conversation in the section below, and `03-qa-log.md`/`03-clarify-README.md` may
+stay minimal (no open Q&A to log). The moment any claim is NO/UNCLEAR, or a MATCH needs evidence
+`:spec` didn't already establish, drop the fast path and run the full process for that claim.
 
 ## Ask once, in plain language — not a form to fill out
 

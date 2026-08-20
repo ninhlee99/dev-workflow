@@ -45,8 +45,13 @@ Risk lanes (P0/P1/P2), evidence provenance, and optional pilot scoring.
 `learning`/`coaching` run independently of this pipeline — the user calls them directly to
 bootstrap/correct domain-knowledge; `:start` never invokes them, it stops at G0 and asks you to.
 
+`:start` (also the bare `/dev-workflow` alias) is the one entry point — same gates, no shortcuts,
+just fewer stops than calling each stage by hand:
+
 ```
-start → spec → clarify → confirm → plan
+epic-shaped? → decompose → epic-map.md (one confirm) → first child
+                                              ↓
+        start → spec → clarify → confirm → plan   (one analysis pass, one confirm, then continuous)
                                               ↓
                                             build
                                               ↓
@@ -63,6 +68,8 @@ start → spec → clarify → confirm → plan
 
 | Step | Meaning |
 |------|---------|
+| decompose | Split an epic into child tickets + dependencies; one confirm covers the split |
+| start | Default entry point: analyze once, ask once, then run to the first real stop |
 | learning / coaching | AI learns domain; you correct mistakes |
 | spec | Testable ACs + **Risk P0/P1/P2** (+ `02b-security.md` if P0) |
 | clarify | Type-specific spec/intent vs running behavior; decisions recorded |
@@ -70,6 +77,21 @@ start → spec → clarify → confirm → plan
 | plan / build | TDD plan + implementation + coverage map |
 | review / fix / test | Diff findings + triage/fix + machine evidence (SHA/CI/junit) |
 | check / ship / audit / clean | Structural gates; ship safety; semantic finality; archive worklog |
+
+`:start` and the named `/dev-workflow:<stage>` commands are both valid ways to work a ticket —
+`:start` minimizes stops for "just get this done"; calling each stage yourself gives full manual
+control of one specific step. Neither weakens a gate; `:start` reruns the exact same
+`check-gates.sh` checks the manual path does.
+
+**Every stage above runs standalone — the diagram is the full path, not a hard requirement.** Call
+any `/dev-workflow:<stage>` directly on a ticket with no upstream artifact on disk yet; `clarify`,
+`plan`, and `build` self-analyze the ticket in place of the missing `spec`/`clarify`/`plan` output
+they'd normally read, and mark the result `Source: self-analyzed (no upstream artifact)` so later
+stages/humans can see it wasn't built from confirmed scope. A one-line typo fix doesn't need a full
+`spec` → `clarify` → `confirm` round-trip: run `/dev-workflow:build <Ticket>` directly and it plans
+and implements from its own reading of the ticket. The only two stages that never soften this way
+are `confirm` and `audit` — their human sign-off can't be self-analyzed. See
+`references/workflow.md`'s "Independence" section for exactly which stages fall back this way.
 
 ---
 
@@ -159,8 +181,8 @@ worklogs, unrelated host configuration, and any modified Codex marketplace file.
 # 1) First time on a project
 /dev-workflow:learning
 
-# 2) Start a ticket (routes to first failing gate)
-/dev-workflow:start TICKET-123 https://tracker/TICKET-123
+# 2) Start a ticket (default entry point — analyze once, ask once, run to first real stop)
+/dev-workflow TICKET-123 https://tracker/TICKET-123
 
 # 3) Typical manual path
 /dev-workflow:spec     TICKET-123
@@ -190,9 +212,10 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 
 | Command | Arguments | Effect |
 |---------|-----------|--------|
+| `/dev-workflow:decompose` | `<epic description/path>` | Split an epic into child tickets + dependencies; `epic-map.md`, one confirm |
 | `/dev-workflow:learning` | `[brief/path]` | AI builds `domain-knowledge/`; asks when unclear |
 | `/dev-workflow:coaching` | `<topic/ticket>` | You teach corrections / new or changed specs |
-| `/dev-workflow:start` | `[Ticket] [URL]` | Enter pipeline at first failing gate; Ticket optional, derived if omitted |
+| `/dev-workflow` | `[Ticket] [URL]` | Default entry point: analyze once, ask once, run to the first real stop; Ticket optional, derived if omitted |
 | `/dev-workflow:spec` | `[Ticket] [URL/spec]` | Set Type/Risk, provenance, ACs; P0 → security file; Ticket optional, derived if omitted |
 | `/dev-workflow:clarify` | `[Ticket] [decision]` | Write clarify report + QA log; Ticket optional, derived if omitted |
 | `/dev-workflow:confirm` | `<Ticket>` | Hand user a pre-filled `CONFIRM G3:` line; write INDEX + `03b-human-confirm.md` |
@@ -207,7 +230,6 @@ Step-by-step with examples: [docs/USER-GUIDE.md](./docs/USER-GUIDE.md).
 | `/dev-workflow:clean` | `<Ticket> [--force] [--purge]` | Archive/purge that ticket worklog only |
 | `/dev-workflow:status` | `[Ticket]` | Gate + knowledge status |
 | `/dev-workflow:feedback` | `[free text]` | Report a dev-workflow bug/pain point as a GitHub issue |
-| `/dev-workflow` | `[Ticket] [URL]` | Alias for `:start`; Ticket optional, derived if omitted |
 
 `[Ticket]` = optional — if omitted, the stage still runs; a short `adhoc-<slug>` worklog name is
 derived only once a decision needs persisting (see `references/task-isolation.md`). `<Ticket>` =
@@ -222,7 +244,7 @@ still required — these stages write/verify machine-checked evidence keyed to a
 | **G0** | Domain knowledge covers ticket | `:learning` / `:coaching` |
 | **G1** | One Type + Risk, requirement provenance, ACs (+ security if P0) | `:spec` |
 | **G2** | Conflicts decided (P2 soft unless `--strict`) | `:clarify` |
-| **G3** | Human confirm in INDEX **and** `03b-human-confirm.md` | `:confirm` |
+| **G3** | Human confirm in INDEX **and** `03b-human-confirm.md` (P2 soft unless `--strict`) | `:confirm` |
 | **G4** | Plan mapped (P2 soft unless `--strict`) | `:plan` |
 | **G5** | No OPEN questions (P2 soft unless `--strict`) | `:clarify` |
 | **G6** | Coverage map + PASS | `:build` |
@@ -235,7 +257,7 @@ still required — these stages write/verify machine-checked evidence keyed to a
 |------|------|-------|
 | **P0** | Hard | Money/auth/PII/legacy — dual CONFIRM, security, G0–G9 + AUDIT |
 | **P1** | Hard | Default product change — full G0–G9 + AUDIT |
-| **P2** | Fast | Chore — G2/G4/G5/G7 soft unless `--strict` |
+| **P2** | Fast | Chore — G2/G3/G4/G5/G7 soft unless `--strict`; no human CONFIRM round-trip needed |
 
 Details: [references/risk.md](./references/risk.md). The authoritative stage interface is
 [references/stage-contract.md](./references/stage-contract.md); every skill follows the evidence and

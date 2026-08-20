@@ -1,8 +1,6 @@
 # 01 Intent: [Feature_Name]
 
 - **Ticket:** [url]
-- **Date:** [YYYY-MM-DD]
-- **Confirmed by:** [name]
 - **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change
 
 ## Goal (1–2 sentences)

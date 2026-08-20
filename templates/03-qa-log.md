@@ -1,7 +1,5 @@
 # 03 QA log (clarify Q&A): [Ticket_ID]
 
-- **Date:** [YYYY-MM-DD]
-
 ## Q&A
 
 | # | claim_id | Agent question | Dev answer (after PM/BA/comtor) | Status |

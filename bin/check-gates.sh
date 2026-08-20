@@ -27,7 +27,7 @@ Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9|AUDIT] [
 Default --min G8. Merge: --min G9 --strict (implies --verify-net).
 Ship final: --min AUDIT (requires G9 PASS + 08-semantic-audit.md human sign-off).
 --strict: CI-native verify; no P2 soft; no G8 WAIVE; enable --verify-net.
-G3 requires INDEX phrase + 03b-human-confirm.md (no AI names).
+G3 requires INDEX phrase + 03b-human-confirm.md (no AI names). P2 without --strict: G3 soft (warn).
 P0: 02b-security.md. Pilot:yes on INDEX requires pilot log row at G9.
 
 Exit: 0 PASS · 1 FAIL · 2 usage/path error
@@ -50,7 +50,7 @@ need_gate() {
 
 p2_soft_gate() {
   local g="$1"
-  [[ "$RISK" == "P2" && "$STRICT" -eq 0 && ( "$g" == "G2" || "$g" == "G4" || "$g" == "G5" || "$g" == "G7" ) ]]
+  [[ "$RISK" == "P2" && "$STRICT" -eq 0 && ( "$g" == "G2" || "$g" == "G3" || "$g" == "G4" || "$g" == "G5" || "$g" == "G7" ) ]]
 }
 
 fail() { FAILS+=("$1"); }
@@ -139,14 +139,24 @@ detect_risk() {
 
 table_val() {
   local file="$1" key="$2"
-  awk -F'|' -v k="$key" '
+  local v
+  # Templates use two shapes for the same field name: a `| Field | Value |`
+  # pipe-table row (06b-test-evidence.md) and a `- **Field:** value` bold
+  # bullet line (05-impl-log.md). Try pipe-table first, then fall back to
+  # the bullet form — a template-conformant file in either shape must read.
+  v="$(awk -F'|' -v k="$key" '
     tolower($0) ~ tolower(k) {
       v=$3
       gsub(/^[[:space:]]+|[[:space:]]+$/, "", v)
       print v
       exit
     }
-  ' "$file" 2>/dev/null || true
+  ' "$file" 2>/dev/null || true)"
+  if [[ -z "$v" ]]; then
+    v="$(grep -iE "^-[[:space:]]*\*\*[^*]*${key}[^*]*\*\*[[:space:]]*:?" "$file" 2>/dev/null | head -1 | \
+      sed -E 's/^-[[:space:]]*\*\*[^*]*\*\*[[:space:]]*:?[[:space:]]*//' || true)"
+  fi
+  printf '%s' "$v"
 }
 
 detect_risk
@@ -209,7 +219,11 @@ maybe_fail() {
 }
 
 ui_ticket() {
-  if file_ok "$SPEC" && grep -qiE 'Touches UI\?.*☑ Yes|Touches UI\?.*\[x\] Yes|Touches UI\?\*\*.*Yes' "$SPEC"; then
+  # Template default prints both checkbox options on one line
+  # ("☐ Yes ☑ No"); matching the literal word "Yes" anywhere on the line
+  # also matches inside the *unchecked* option. Require the check glyph
+  # immediately before "Yes" instead of the word alone.
+  if file_ok "$SPEC" && grep -qiE '(☑|\[x\]|\[X\])[[:space:]]*Yes' "$SPEC"; then
     return 0
   fi
   return 1
@@ -250,11 +264,14 @@ verify_sha_git() {
   if git -C "$PROJECT_HOME" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     root="$PROJECT_HOME"
     head="$(git -C "$PROJECT_HOME" rev-parse HEAD 2>/dev/null || true)"
-  elif git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-    head="$(git rev-parse HEAD 2>/dev/null || true)"
   else
-    warn "G8: no git repo to verify SHA against"
+    # No -C fallback to the invoking shell's cwd here on purpose: that repo
+    # is not necessarily related to PROJECT_HOME (workspace-based layout by
+    # design keeps them separate), so a bare `git rev-parse` would silently
+    # verify the SHA against whatever unrelated repo the caller happens to
+    # be sitting in — a false PASS or false FAIL that depends on invocation
+    # context invisible from the worklog itself.
+    warn "G8: PROJECT_HOME ($PROJECT_HOME) is not a git repo — cannot verify SHA against it"
     return
   fi
   [[ -n "$head" ]] || return
@@ -294,6 +311,31 @@ low_signal_text() {
   return 1
 }
 
+# N/A-with-reason fields ("N/A — no on-call for a local library") are valid
+# per template/skill instructions (P2/profile-based N/A). low_signal_text's
+# placeholder match treats the whole string as low-signal once it starts with
+# "N/A" + punctuation, which would reject every honest one. Extract the
+# reason after "N/A" (if present) and score that instead of the raw field —
+# same rule the Canary % check already applies.
+low_signal_field() {
+  local text="$1"
+  if echo "$text" | grep -qiE 'N/?A'; then
+    local reason
+    reason="$(python3 -c "
+import re,sys
+s=sys.argv[1]
+m=re.search(r'\bN/?A\b\s*[\(\[—:\-]*\s*(.*)', s, re.I)
+print((m.group(1) if m else '').strip(' )]*'))
+" "$text" 2>/dev/null || true)"
+    if [[ ${#reason} -lt 10 ]]; then
+      return 0
+    fi
+    low_signal_text "$reason"
+    return $?
+  fi
+  low_signal_text "$text"
+}
+
 verify_ci_url() {
   local url="$1"
   [[ "$url" =~ ^https?:// ]] || return
@@ -320,9 +362,36 @@ if need_gate G0; then
     # template's own "G0 DoD" section defines as done: "Needs learning" must
     # be explicitly "no", and the Present table must have at least one area
     # actually ticked (not every row still "☐").
-    if grep -qiE 'Needs learning:\*{0,2}[[:space:]]*(☑[[:space:]]*yes|\[x\][[:space:]]*yes|yes)\b' "$DK_INDEX"; then
+    # Two valid shapes coexist: a plain "no"/"yes" answer (no checkbox at
+    # all) and the template's "☐ no  ☐ yes" both-options-shown default,
+    # where the ticked option is marked ☑/[x]. Either a ticked "yes" glyph,
+    # or the bare word "yes" with NO checkbox glyphs on the line at all
+    # (meaning the answer was written free-form, not left as the unticked
+    # template skeleton), counts as yes. Un-ticked "☐ yes" alone must not.
+    needs_learning_line="$(grep -i 'Needs learning' "$DK_INDEX" | head -1 || true)"
+    has_checkbox_glyph=0
+    if [[ -n "$needs_learning_line" ]] && echo "$needs_learning_line" | grep -qE '☐|☑'; then
+      has_checkbox_glyph=1
+    fi
+    is_yes=0
+    if [[ -n "$needs_learning_line" ]]; then
+      if [[ "$has_checkbox_glyph" -eq 1 ]]; then
+        echo "$needs_learning_line" | grep -qiE '(☑|\[x\]|\[X\])[[:space:]]*yes' && is_yes=1
+      else
+        echo "$needs_learning_line" | grep -qiE '\byes\b' && is_yes=1
+      fi
+    fi
+    is_no=0
+    if [[ -n "$needs_learning_line" ]]; then
+      if [[ "$has_checkbox_glyph" -eq 1 ]]; then
+        echo "$needs_learning_line" | grep -qiE '(☑|\[x\]|\[X\])[[:space:]]*no' && is_no=1
+      else
+        echo "$needs_learning_line" | grep -qiE '\bno\b' && is_no=1
+      fi
+    fi
+    if [[ "$is_yes" -eq 1 ]]; then
       maybe_fail G0 "domain-knowledge/INDEX Needs learning = yes — run :learning first"
-    elif ! grep -qiE 'Needs learning:\*{0,2}[[:space:]]*(☑[[:space:]]*no|\[x\][[:space:]]*no|no)\b' "$DK_INDEX"; then
+    elif [[ "$is_no" -ne 1 ]]; then
       maybe_fail G0 "domain-knowledge/INDEX Needs learning not set to explicit no"
     fi
     present_ticked="$(grep -cE '☑|\[x\]|\[X\]' "$DK_INDEX" 2>/dev/null || true)"
@@ -633,7 +702,12 @@ if need_gate G4; then
     if [[ "$REQUIRE_MACHINE" -eq 1 ]]; then
       grep -qiE '\|[^|]*(Command discovery|Discovery proof)[^|]*\|' "$PLAN" || \
         maybe_fail G4 "04-plan missing Command discovery proof column"
-      grep -qE '\|[[:space:]]*[0-9]+[[:space:]]*\|.*\|[[:space:]]*[^|]*(checked|dry-run|--list|existing command)[^|]*\|' "$PLAN" || \
+      # The previous check anchored the keyword to the row's *last* |...|
+      # segment via a greedy `.*` — the template's own column layout puts a
+      # trailing Status column after Discovery proof, pushing a correctly
+      # placed keyword out of reach. Match the keyword anywhere on a numbered
+      # task row instead of pinning it to one column position.
+      grep -qE '\|[[:space:]]*[0-9]+[[:space:]]*\|.*(checked|dry-run|--list|existing command)' "$PLAN" || \
         maybe_fail G4 "04-plan has no verified command discovery proof"
     fi
   fi
@@ -1006,27 +1080,17 @@ if need_gate G9; then
       canary_line="$(grep -i 'Canary %' "$SHIP" | head -1 || true)"
       if [[ -z "$canary_line" ]] || [[ "$canary_line" =~ \.\.\.|… ]]; then
         maybe_fail G9 "Canary % empty/placeholder"
-      elif echo "$canary_line" | grep -qiE 'N/?A'; then
-        reason="$(python3 -c "
-import re,sys
-s=sys.argv[1]
-m=re.search(r'\bN/?A\b\s*[\(\[—:\-]*\s*(.*)', s, re.I)
-print((m.group(1) if m else '').strip(' )]*'))
-" "$canary_line" 2>/dev/null || true)"
-        if [[ ${#reason} -lt 10 ]]; then
-          maybe_fail G9 "Canary N/A needs reason ≥10 chars (e.g. N/A (internal tool only))"
-        elif low_signal_text "$reason"; then
-          maybe_fail G9 "Canary N/A reason looks like a placeholder, not a real reason"
-        fi
+      elif low_signal_field "$canary_line"; then
+        maybe_fail G9 "Canary % empty/placeholder/low-signal (N/A needs a reason ≥10 chars, e.g. N/A (internal tool only))"
       fi
       soak_line="$(grep -i 'Soak time' "$SHIP" | head -1 || true)"
       soak_val="$(echo "$soak_line" | sed -E 's/.*:[[:space:]]*//;s/\*//g;s/^[[:space:]]+//;s/[[:space:]]+$//')"
-      if ! field_nonempty "$SHIP" "Soak time" || low_signal_text "$soak_val"; then
+      if ! field_nonempty "$SHIP" "Soak time" || low_signal_field "$soak_val"; then
         maybe_fail G9 "Soak time empty/placeholder/low-signal"
       fi
       oncall_line="$(grep -i 'on-call' "$SHIP" | head -1 || true)"
       oncall_val="$(echo "$oncall_line" | sed -E 's/.*:[[:space:]]*//;s/\*//g;s/^[[:space:]]+//;s/[[:space:]]+$//')"
-      if ! field_nonempty "$SHIP" "on-call" || low_signal_text "$oncall_val"; then
+      if ! field_nonempty "$SHIP" "on-call" || low_signal_field "$oncall_val"; then
         maybe_fail G9 "Alert/owner on-call empty/placeholder/low-signal"
       fi
       grep -qiE 'SLO|error-budget|error budget' "$SHIP" || maybe_fail G9 "SLO/error-budget note missing"
@@ -1035,9 +1099,9 @@ print((m.group(1) if m else '').strip(' )]*'))
       dash_val="$(echo "$dash" | sed -E 's/.*:[[:space:]]*//;s/\*//g;s/^[[:space:]]+//;s/[[:space:]]+$//')"
       if placeholderish "$dash_val" || [[ "$dash_val" =~ ^\.\.\.|… ]]; then
         maybe_fail G9 "Dashboard/log query empty"
-      elif [[ ! "$dash_val" =~ ^https?:// ]] && [[ ${#dash_val} -lt 15 ]]; then
+      elif [[ ! "$dash_val" =~ ^https?:// ]] && ! echo "$dash_val" | grep -qiE 'N/?A' && [[ ${#dash_val} -lt 15 ]]; then
         maybe_fail G9 "Dashboard/log query must be http(s) URL or concrete query ≥15 chars"
-      elif [[ ! "$dash_val" =~ ^https?:// ]] && low_signal_text "$dash_val"; then
+      elif [[ ! "$dash_val" =~ ^https?:// ]] && low_signal_field "$dash_val"; then
         maybe_fail G9 "Dashboard/log query looks like a placeholder, not a concrete query"
       fi
     fi
@@ -1134,6 +1198,8 @@ print(json.dumps({
   "machine_required": bool($REQUIRE_MACHINE),
   "fails": $(printf '%s\n' "${FAILS[@]:-}" | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'),
   "warns": $(printf '%s\n' "${WARNS[@]:-}" | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'),
+  "fail_count": ${#FAILS[@]},
+  "warn_count": ${#WARNS[@]},
   "ok": $([[ ${#FAILS[@]} -eq 0 ]] && echo True || echo False),
 }, indent=2))
 PY

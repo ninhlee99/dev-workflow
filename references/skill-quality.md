@@ -94,6 +94,7 @@ reviewer; the skill's job is to produce auditable evidence.
 
 | Skill | Owns | Explicitly does not own |
 |---|---|---|
+| decompose | epic split decision, dependency map, one epic-level confirm | any child's spec/clarify/code; lowering a child's Risk lane |
 | learning | evidence-backed project knowledge bootstrap | ticket requirements or production edits |
 | coaching | confirmed knowledge delta + impact list + changelog | silently rewriting active ticket decisions |
 | spec | typed/risked requirement model and testable oracles | deciding unresolved business conflicts |
@@ -109,5 +110,5 @@ reviewer; the skill's job is to produce auditable evidence.
 | audit | cross-artifact semantic coherence | redoing review/clarify or passing unresolved pairs |
 | status | read-only truthful state and next action | mutation or optimistic gate inference |
 | clean | recoverable removal of one resolved worklog | domain knowledge, repos, or unrelated tickets |
-| start | preflight and dispatch to the first owning stage | doing every stage itself or bypassing a refusal |
+| start | one analysis pass + sequencing + stop-point count across stages | any owning stage's verdict, evidence bar, or gate requirement; doing every stage itself or bypassing a refusal |
 | feedback | confirmed dev-workflow defect reports filed as GitHub issue(s) | fixing the underlying skill or filing target-product bugs |

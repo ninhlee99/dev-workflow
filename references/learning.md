@@ -77,3 +77,14 @@ Exit: `PROJECT.md` + business/architecture/glossary + domain files for explored 
 inline `[LEARNING]` (structural) questions. Open coaching tickets do **not** block exit — they're
 answered async via `:coaching`; report their paths and move on.
 Refuse: hardcoded paths, invented business, jumping to build/spec. Spec changes after learning use `:coaching`.
+
+## Fixing a stale fact you happen to pass through
+
+This stage's scope is capturing knowledge for the **current** target, not auditing everything
+previously confirmed. If a later `:learning` pass opens a domain file for its own target and
+notices an already-"confirmed" line that's now stale (a prior fact contradicted by what this pass
+just found), fixing that one line opportunistically — while already there for another reason — is
+in scope; treat it like `:coaching` would (state before/after, why). Do not go looking for
+staleness across files the current target gives no reason to open — that's a proactive full
+re-audit, which is `:coaching`'s job when the user asks for it, not something `:learning` does on
+its own initiative.

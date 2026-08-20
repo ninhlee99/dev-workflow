@@ -63,8 +63,10 @@ explicit `UNVERIFIED`, and every UI oracle is observable without asking the impl
 
 `:spec` runs standalone with no other stage's output required. Once this stage's own PASS bar
 above is met, check whether any claim is ambiguous or contradicts observed running behavior. If
-so, **invoke `:clarify` yourself** before reporting done, so a bare `/dev-workflow:spec <Ticket>`
-call leaves the ticket with both a normalized spec and its open questions surfaced/decided, not
-just a spec that silently defers questions to a stage the user may never call. Skip this internal
-call when there is nothing ambiguous to raise — an empty claim table doesn't need a `:clarify` run
-manufactured for it.
+so, say so before continuing — e.g. `"N claim(s) need clarification — running :clarify now. Say
+'stop' to hold here instead."` — then **invoke `:clarify` yourself**, so a bare
+`/dev-workflow:spec <Ticket>` call leaves the ticket with both a normalized spec and its open
+questions surfaced/decided, not just a spec that silently defers questions to a stage the user may
+never call. This is a heads-up, not a blocking question — proceed unless the user's next message
+says to stop. Skip this internal call when there is nothing ambiguous to raise — an empty claim
+table doesn't need a `:clarify` run manufactured for it.

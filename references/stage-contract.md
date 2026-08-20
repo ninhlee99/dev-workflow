@@ -11,6 +11,7 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 
 | Stage | Requires | Owns/produces | Blocks on | Next |
 |---|---|---|---|---|
+| decompose | epic-shaped request (spans >1 service/repo, mixes ticket Type, or independently shippable parts) | `epic-map.md` (project-level): child tickets + Type/Risk estimate + dependencies + epic-level Q&A, one confirm | any epic-level question unanswered | first unblocked child's spec/start |
 | learning | locale + project brief/path | domain knowledge with provenance; opens a coaching ticket per unclear function purpose instead of blocking | unknown business facts | coaching (async, per ticket) or spec |
 | coaching | existing knowledge + (explicit user correction or an answer to an open coaching ticket) | before/after delta, impacted consumers, changelog; self-closes the ticket when the answer doesn't conflict with recorded knowledge | unconfirmed delta/impact | spec or clarify |
 | spec (G1) | G0 + ticket input | Type, Risk, AC/NEG/PERM/EDGE, UI oracle | missing type/risk/source; ambiguous requirement | clarify (self-chained) |
@@ -26,7 +27,7 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 | audit (AUDIT) | G9 strict | C1–C8 quotes, verdicts, reasoning, human sign-off | any missing/UNCLEAR/INCOHERENT pair | owning stage |
 | status | workspace/ticket selector | read-only state, uncertainty, one next action | ambiguous selector/path | user clarification |
 | clean | exact ticket + G9 or explicit force | archive receipt or confirmed purge receipt | broad target; unconfirmed purge | start/status |
-| start | ticket + resolvable workspace | preflight + dispatch only, delivery pipeline (spec…audit) — never dispatches learning/coaching itself, stops and tells the user to run them | first failing prerequisite in the delivery pipeline; G0 failure routes the user to learning/coaching, not an auto-dispatch | owning stage |
+| start | ticket + resolvable workspace | single deep-analysis pass, one collapsed stop for confirm, then continuous dispatch through the delivery pipeline (spec…check) — never dispatches learning/coaching itself, stops and tells the user to run them | epic-shaped request (routes to decompose); first genuine stop (P0/P1 finding, unresolved clarify claim, or ship/audit — always manual); G0 failure routes the user to learning/coaching, not an auto-dispatch | owning stage at the stop point, or ship |
 
 ## Ticket-type strategy dispatch
 
@@ -38,3 +39,18 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 | Requirement change | Exact old/new rule → every encoding across code/config/copy/docs/repos → named authority |
 
 Mixed tickets use claim-level Type. They must not use one strategy for all claims.
+
+## Entry-point stages (outside the gate sequence)
+
+`decompose` and `start` do not own a gate themselves (no `G0`…`G9`/`AUDIT`
+row belongs to either) — they own **sequencing and stop-point count**, not
+verdicts. Every gate they pass through still runs the owning stage's real
+requirements from the table above; `check-gates.sh` does not know either
+stage exists and does not need to. `decompose` runs before any child's
+`spec`/`start`. `start` is the default way to walk `spec`→`check` (and hand
+off to `ship`/`audit`) with as few user-visible stops as the ticket's Risk
+allows — never a shortcut around what a stage requires. Calling a named
+`/dev-workflow:<stage>` command directly instead of `start` remains valid for
+manual, step-by-step control of one specific step. `references/risk.md`'s
+P0/P1/P2 lanes govern `start`'s stop count exactly as they govern the manual
+path; `start` does not introduce a fourth lane.

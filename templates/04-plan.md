@@ -1,6 +1,5 @@
 # 04 Plan: [Feature_Name]
 
-- **Date:** [YYYY-MM-DD]
 - **Input:** `02-spec.md` + `03-clarify-report.md`
 
 ## Standard DoD (per task)

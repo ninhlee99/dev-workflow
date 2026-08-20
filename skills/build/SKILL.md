@@ -47,7 +47,17 @@ failing test from that task's test command first, run it and confirm it fails fo
 reason (not a setup/syntax error), then implement the minimum to make it pass. This cycle applies
 whether or not any other skill is present in the session — do not skip or water it down on a repo
 that lacks extra tooling. Log AC/claim-to-test mapping in `templates/05-impl-log.md` under **this**
-worklog.
+worklog, using its exact bullet headers (`**RED command + failure excerpt:**`, `**Why RED proves
+the missing behavior:**`, `**GREEN result:**`) — `check-gates.sh` looks for those literal phrases,
+so paraphrasing them (e.g. "RED evidence:") passes on content but fails the gate on wording.
+
+**Watch for RED-for-the-wrong-reason on validation-throwing functions specifically.** When a task
+adds a function that validates by throwing (`TypeError` on bad input, etc.), the *first* RED run
+before the function exists at all can throw a "not a function" / reference error that happens to
+satisfy `assert.throws(SameErrorType)` — the test goes red, but not because validation ran and
+caught something; it's red because the function is missing. Read the RED failure's actual message,
+not just its color, before writing "why RED proves the missing behavior" — a coincidentally-typed
+error is not proof the validation logic exists yet.
 
 Also invoke the `tdd` skill for a more thorough red-green-refactor treatment (refactor-phase
 discipline, project-specific test patterns) on top of the required cycle above — it does not

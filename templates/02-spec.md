@@ -1,8 +1,6 @@
 # 02 Spec: [Feature_Name]
 
 - **Spec file:** [path or embedded below]
-- **Date:** [YYYY-MM-DD]
-- **Confirmed by:** [name]
 - **Touches UI?** ☐ Yes ☐ No
 - **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (required — see `references/risk.md`)

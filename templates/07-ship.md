@@ -1,7 +1,6 @@
 # 07 Ship: [Feature_Name]
 
 - **PR:** [url]
-- **Date:** [YYYY-MM-DD]
 - **Ticket:** [ID]
 - **Risk:** ☐ P0 ☐ P1 ☐ P2
 - **Commit SHA:** [sha]

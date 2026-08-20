@@ -1,7 +1,5 @@
 # 06 Review + QA: [Feature_Name]
 
-- **Date:** [YYYY-MM-DD]
-- **Reviewer:** [name/AI]
 - **Touches UI?** ☐ Yes ☐ No (copy from `02-spec`)
 - **Diff basis:** [base…HEAD / PR url / commit range]
 
