@@ -24,6 +24,9 @@ Slug = real repo/org name, not a name invented from the brief's feature wording 
 `references/learning.md` § Choosing the slug); use the user's explicit slug if they gave one, and
 reuse an existing workspace whose `PROJECT.md` already lists the same repo(s) instead of creating
 a new feature-named one.
+Fill `PROJECT.md` from `templates/workspaces/_project/PROJECT.md`'s exact structure (`Slug:` field
+included) — do not improvise the field layout, `bin/check-workspace.sh`'s W1 check expects that
+literal shape.
 Explore repos, capture facts; promote to `domain-knowledge/` only after answers; update INDEX.
 For every promoted material fact, record truth label, `path:line`/source, verified date, and confidence.
 List areas deliberately not explored; do not imply project-wide completeness from a targeted pass.

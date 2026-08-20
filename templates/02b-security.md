@@ -3,8 +3,6 @@
 Fill when **Risk = P0**. Store as `02b-security.md` in the worklog (copy from this template).
 
 - **Ticket:** [ID]
-- **Date:** [YYYY-MM-DD]
-- **Owner:** [name]
 
 ## Threat note (short)
 

@@ -1,6 +1,5 @@
 # 05 Impl log: [Feature_Name]
 
-- **Start date:** [YYYY-MM-DD]
 - **Commit SHA (at last PASS):** [40-char or short SHA — required for P0/P1/`--strict`]
 
 ## G6 PASS rules (required)
@@ -18,7 +17,6 @@ A row claiming PASS with an empty Test path is worse than one honestly marked MI
 ## Slice log
 
 ### Slice [n] — [name]
-- **Date:** …
 - **Repo:** …
 - **Files:** …
 - **Tests added/changed:** …

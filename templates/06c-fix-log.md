@@ -1,8 +1,6 @@
 # 06c Fix log: [Feature_Name]
 
-- **Date:** [YYYY-MM-DD]
 - **Ticket:** [Ticket_ID]
-- **Operator:** [name/AI]
 - **Source review:** `06-review-qa.md` (Code review findings)
 
 ## Triage
@@ -33,6 +31,12 @@ For each OPEN finding from review. Status after triage: `FIX` | `SKIP` | `DEFER`
 | ID | Reason | Follow-up? |
 |---|---|---|
 | | | ☐ none ☐ ticket … |
+
+## Deferred (keep for audit)
+
+| ID | Reason | Owner | Follow-up ticket |
+|---|---|---|---|
+| | | | |
 
 ## Result
 

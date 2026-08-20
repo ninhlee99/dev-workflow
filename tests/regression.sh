@@ -155,6 +155,49 @@ find "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS" -name '*.bak' -delete
 assert_success "AUDIT accepts eight resolved evidence-backed pairs with human sign-off" \
   "$CHECK" AUDIT-PASS --project demo --min AUDIT
 
+# Template-conformance check: an author who fills templates/06b-test-evidence.md's OWN shape
+# exactly (not a fixture, not a previously-working example) must reach G8 PASS. This guards
+# against template/checker drift that a fixture-only suite can't see — a fixture keeps working
+# forever even if the shipped template stops matching what the checker requires (this exact class
+# of bug shipped once: templates/06b-test-evidence.md's `**Dev:**` sign-off line was accidentally
+# dropped in an editing pass and no fixture caught it, because fixtures don't derive from the
+# template file).
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE"
+find "$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE" -type f -name '*.md' -exec \
+  sed -i.bak 's/PASS-G9/TEMPLATE-CONFORMANCE/g' {} \;
+find "$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE" -name '*.bak' -delete
+printf '<testsuite tests="3" failures="0"></testsuite>\n' \
+  >"$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE/junit.xml"
+python3 - "$ROOT/templates/06b-test-evidence.md" \
+  "$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE/06b-test-evidence.md" <<'PY'
+import re, sys
+src, dst = sys.argv[1], sys.argv[2]
+text = open(src).read()
+fills = {
+  r'\[Feature_Name\]': 'TEMPLATE-CONFORMANCE',
+  r'\[ID\]': 'TEMPLATE-CONFORMANCE',
+  r'☐ Yes ☐ No \(copy from `02-spec`\)': '☑ No',
+  r'☐ P0 ☐ P1 ☐ P2': '☑ P1',
+  r'\[40-char or short SHA\]': 'abcdef1234567890',
+  r'\[https://… or N/A-local\]': 'N/A-local',
+  r'\[path or URL\]': 'junit.xml',
+  r'\[name\]': 'fixture',
+  r'# paste test runner output here': 'rspec\nFinished in 0.12 seconds\n3 examples, 0 failures',
+  r'\| \| \| \| \| \| \| N/A \|': '| `rspec` | api | 2026-08-11T10:00Z / 2026-08-11T10:01Z | 0 | raw output above | AC-01 | N/A |',
+  r'\| AC-01 \| \| \| \|': '| AC-01 | test_ac01:1 `expect(success)` | missing success result | assertion passed |',
+  r'\| AC-01 \| \| \|': '| AC-01 | N/A | no UI |',
+  r'\| Unit \| \| \| \| \| ☐ PASS ☐ FAIL \|': '| Unit | 3 | 3 | 0 | 0 | ☑ PASS |',
+  r'\*\*Overall:\*\* ☐ PASS \(zero failures\) ☐ FAIL': '**Overall:** ☑ PASS (zero failures) ☐ FAIL',
+  r'\*\*G8 verdict:\*\* ☐ PASS ☐ FAIL': '**G8 verdict:** ☑ PASS ☐ FAIL',
+}
+for pattern, repl in fills.items():
+    text = re.sub(pattern, repl, text)
+open(dst, 'w').write(text)
+PY
+
+assert_success "template-conformance: 06b-test-evidence.md's own shape reaches G8 PASS" \
+  "$CHECK" TEMPLATE-CONFORMANCE --project demo --min G8 --strict
+
 if grep -q 'case.*Bug\|Bug)' "$ROOT/references/clarify-check.md" &&
    grep -q 'New feature' "$ROOT/references/clarify-check.md" &&
    grep -q 'Spec change' "$ROOT/references/clarify-check.md" &&

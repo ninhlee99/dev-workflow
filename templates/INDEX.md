@@ -1,26 +1,22 @@
 # Worklog INDEX: [Ticket_ID]
 
-- **Project slug:** `[project-slug]`
-- **Project home:** `workspaces/<project-slug>/`
+Project slug/home/worklog path are resolved by `bin/lib/resolve-paths.sh` and printed at the start
+of every `/dev-workflow:*` run (`project=… home=… worklog=…`) — do not re-copy them here. Chat
+locale lives once at `domain-knowledge/INDEX.md` (per workspace, not per ticket); do not duplicate
+it here either.
+
 - **Ticket:** [url]
 - **Feature alias:** [name]
-- **Owner (Dev):** [name]
-- **Updated:** [YYYY-MM-DD]
-- **Worklog:** `workspaces/<project-slug>/worklogs/<Ticket_ID>/`
 - **Touches UI?** ☐ Yes ☐ No
 - **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `01-intent.md`; drives investigation strategy in `:clarify`)
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (see `references/risk.md`)
-- **Lane:** ☐ hard ☐ fast
 - **Pilot:** ☐ yes ☐ no   (if yes, G9 requires row in `pilot/PILOT-*.md`)
-- **Chat locale:** [vi|en|ja|…]   (see `references/locale.md` — chat follows user language)
 
 ## Handoff
 
 - **Last stop:** …
 - **Waiting on:** ☐ learning  ☐ coaching  ☐ Dev confirm CLAIM #…  ☐ none
 - **G3 user sign-off:** ☐ PASS ☐ FAIL
-- **Signed off by:** [name]
-- **Signed off at:** [YYYY-MM-DD]
 - **Human confirm phrase (required):** `CONFIRM G3: <Ticket_ID> <name> <YYYY-MM-DD>`
 - **P0 PM phrase (required if P0):** `CONFIRM G3-PM: <Ticket_ID> <pm-name> <YYYY-MM-DD>`
 
@@ -32,19 +28,11 @@ CONFIRM G3: …
 
 ## Gate status
 
-| Gate | Status | Artifact | Note |
-|---|---|---|---|
-| G0 Domain knowledge | ☐ PASS ☐ FAIL | `../domain-knowledge/` (+ repos) | empty → `:learning`; wrong/changed → `:coaching` |
-| G1 Spec clear | ☐ PASS ☐ FAIL ☐ WAIVE | `02-spec.md` (+ `02b-security.md` if P0) | Scenario AC + Risk; P0 security |
-| G2 Conflict documented | ☐ PASS ☐ FAIL ☐ WAIVE | `03-clarify-report.md` | P2 soft unless `--strict` |
-| G3 User sign-off | ☐ PASS ☐ FAIL | `INDEX.md` + `03b-human-confirm.md` | literal `CONFIRM G3:` (P0 + PM); no AI names |
-| G4 Plan | ☐ PASS ☐ FAIL ☐ WAIVE | `04-plan.md` | task ↔ AC/claim + regression |
-| G5 No open Qs | ☐ PASS ☐ FAIL ☐ WAIVE | `03-qa-log.md` | OPEN = FAIL |
-| G6 Build+tests | ☐ PASS ☐ FAIL ☐ WAIVE | `05-impl-log.md` | 100% map + tests PASS |
-| G7 Review evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06-review-qa.md` (+ `06c-fix-log.md` if findings) | How/By + no OPEN P0/P1; UI if touches UI |
-| G8 Test evidence | ☐ PASS ☐ FAIL ☐ WAIVE | `06b-test-evidence.md` | machine evidence + zero failing tests |
-| G9 Ship safety | ☐ PASS ☐ FAIL ☐ WAIVE | `07-ship.md` | migration / flag / monitor / rollback |
-| Semantic audit | ☐ PASS ☐ FAIL ☐ N/A (P2) | `08-semantic-audit.md` | coherence check post-G9; see `references/audit.md` |
+Do not hand-transcribe a gate table here — `bin/check-gates.sh <Ticket> [--project <slug>] --min
+<gate> [--json]` is the one source of truth for PASS/FAIL/WAIVE per gate (see
+`references/workflow.md`'s gate table for what each gate requires and its FAIL command). A
+hand-written copy here can silently drift from what the checker actually says; run it instead of
+reading/writing a stale table.
 
 **Build only when G0–G3 PASS (P2: waived gates documented).** G9 structural PASS is required before
 `:ship` is treated as final, but not sufficient by itself — Semantic audit must also PASS (P0/P1

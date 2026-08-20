@@ -1,7 +1,5 @@
 # 06b Test Evidence: [Feature_Name]
 
-- **Date:** [YYYY-MM-DD]
-- **Tested by:** [name/AI]
 - **Ticket:** [ID]
 - **Touches UI?** ☐ Yes ☐ No (copy from `02-spec`)
 - **Risk:** ☐ P0 ☐ P1 ☐ P2
@@ -62,7 +60,6 @@ One row per test suite. G8 FAIL if any suite has failures.
 ## Sign-off
 
 - **Dev:** [name]
-- **Date:** [YYYY-MM-DD]
 - **G8 verdict:** ☐ PASS ☐ FAIL
 
 **Forbid G8 PASS** when any suite has failures or the evidence table is empty.

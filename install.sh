@@ -3,7 +3,7 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STAGES=(start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback)
+STAGES=(decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback)
 VENDORED_SKILLS=(grilling tdd)
 TARGET_HOST="claude"
 TARGET_EXPLICIT=0

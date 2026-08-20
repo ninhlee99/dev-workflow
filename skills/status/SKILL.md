@@ -28,3 +28,8 @@ With ticket: report gate state from **that** worklog INDEX only (`task-isolation
 No code changes; keep default output short.
 Report G9 structural, AUDIT semantic, and human sign-off separately. Run the checker when possible;
 never infer PASS from a checkbox alone. Include uncertainty and exactly one next command.
+
+Calling this mid-pipeline (after some gates PASS, before the ticket is done) is a legitimate,
+low-cost way to re-orient — not just a start/end check. `check-gates.sh --json` gives a full
+G0–current PASS/FAIL snapshot plus the next command in one call, cheaper than re-deriving gate
+state by hand from memory of what ran earlier in the conversation.

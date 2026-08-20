@@ -32,7 +32,10 @@ and ask the user to run it first if unclear.
 2. Load `02-spec.md` through `07-ship.md` for the ticket.
 3. For each pair, quote both sides verbatim before judging. No quote → no verdict. For C2–C4,
    inspect the named assertion/result; topical filename similarity is insufficient.
-4. Fill `templates/08-semantic-audit.md` → worklog `08-semantic-audit.md`.
+4. Fill `templates/08-semantic-audit.md` → worklog `08-semantic-audit.md`. Every pair's verdict and
+   reasoning go in that pair's `**VERDICT:**`/`**REASON:**` bullet lines specifically — not the
+   quoted-evidence table above them. The template shows the exact required bullet headers; use them
+   verbatim rather than paraphrasing, since `check-gates.sh` looks for those literal words.
 5. Any `INCOHERENT` → print routing table (which stage owns the fix) and stop; do not silently
    patch the audit file to make it pass.
 6. Any `UNCLEAR` → ask user directly; do not guess a verdict.

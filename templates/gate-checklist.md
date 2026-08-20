@@ -15,4 +15,4 @@ Project home: `workspaces/<project-slug>/`. Risk: see `references/risk.md`.
 | G8 Test | machine evidence; `--strict` = CI-native | `:test` |
 | G9 Ship | canary/soak/on-call/SLO/rollback | `:ship` |
 
-P2 fast lane may WAIVE G2/G4/G5/G7 with INDEX rows. P0: no WAIVE G3/G8.
+P2 fast lane may WAIVE G2/G3/G4/G5/G7 with INDEX rows. P0: no WAIVE G3/G8.

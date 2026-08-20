@@ -1,6 +1,5 @@
 # 03 Conflict report: [Ticket_ID]
 
-- **Date:** [YYYY-MM-DD]
 - **Spec:** `02-spec.md`
 - **Domain knowledge read first:** ☐ Yes
 - **Type strategy used:** Bug / New feature / Spec change / Requirement change / mixed-by-claim

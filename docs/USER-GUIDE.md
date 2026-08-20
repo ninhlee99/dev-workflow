@@ -113,10 +113,11 @@ You answer with `/dev-workflow:coaching` when AI is wrong or specs change.
 ### 3.2 Start a ticket
 
 ```
-/dev-workflow:start TICKET-123 https://your-tracker/TICKET-123
+/dev-workflow TICKET-123 https://your-tracker/TICKET-123
 ```
 
-AI jumps to the **first failing gate**. You can also run stages manually (below).
+AI analyzes once, asks once, then runs to the **first genuine stop**. You can also run stages
+manually (below).
 
 ### 3.3 Spec (G1)
 
@@ -359,7 +360,8 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | G9 | Ship safety complete | `:ship` |
 | AUDIT | Structure PASS (G0–G9) is necessary but not sufficient — this checks the worklog's own claims agree with each other (Rollback vs Migration, Decision vs Proposal, …) and requires a real human `AUDIT CONFIRM:` sign-off, not just an AI verdict | `:audit` |
 
-**P2 fast lane:** G2/G4/G5/G7 are soft (warn) unless `--strict`.  
+**P2 fast lane:** G2/G3/G4/G5/G7 are soft (warn) unless `--strict` — a tiny, non-behavioral P2
+ticket can skip the human `CONFIRM G3` round-trip entirely.
 **P0:** no WAIVE on G3/G8; dual confirm; security file required.
 **P0/P1 finality:** G9 is structural; AUDIT plus human sign-off is required.
 
