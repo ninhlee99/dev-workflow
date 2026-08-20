@@ -77,6 +77,10 @@ step-by-step path for controlling one specific step — `:start` does not replac
 a valid way to work a ticket. See `skills/start/SKILL.md`.
 
 `:decompose` runs *before* `:start` when a request is epic-shaped — spans more than one
-service/repo, mixes ticket Type, or has independently shippable parts. It never opens a child's
-worklog itself; it produces `epic-map.md` (project-level, not inside any one ticket's worklog) and
-hands off the first unblocked child to `:spec` or `:start`. See `skills/decompose/SKILL.md`.
+service/repo, mixes ticket Type, or has independently shippable parts. `:start` also offers it
+early, before its own single stop, when a ticket resolves to >4 claims or >2 Types without ever
+spanning a second repo — same offer, just triggered by claim count instead of repo count.
+`:decompose` never opens a child's worklog itself; it produces `epic-map.md` (project-level, not
+inside any one ticket's worklog), cross-checks the dependency graph with a duplicate-scan before
+hand-off, and hands off the first unblocked child to `:spec` or `:start`. See
+`skills/decompose/SKILL.md`.

@@ -11,7 +11,7 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 
 | Stage | Requires | Owns/produces | Blocks on | Next |
 |---|---|---|---|---|
-| decompose | epic-shaped request (spans >1 service/repo, mixes ticket Type, or independently shippable parts) | `epic-map.md` (project-level): child tickets + Type/Risk estimate + dependencies + epic-level Q&A, one confirm | any epic-level question unanswered | first unblocked child's spec/start |
+| decompose | epic-shaped request (spans >1 service/repo, mixes ticket Type, or independently shippable parts) | `epic-map.md` (project-level): child tickets + Type/Risk estimate + dependencies + epic-level Q&A, one confirm; dependency graph cross-checked with a duplicate-scan before hand-off | any epic-level question unanswered | first unblocked child's spec/start |
 | learning | locale + project brief/path | domain knowledge with provenance; opens a coaching ticket per unclear function purpose instead of blocking | unknown business facts | coaching (async, per ticket) or spec |
 | coaching | existing knowledge + (explicit user correction or an answer to an open coaching ticket) | before/after delta, impacted consumers, changelog; self-closes the ticket when the answer doesn't conflict with recorded knowledge | unconfirmed delta/impact | spec or clarify |
 | spec (G1) | G0 + ticket input | Type, Risk, AC/NEG/PERM/EDGE, UI oracle | missing type/risk/source; ambiguous requirement | clarify (self-chained) |
@@ -27,7 +27,7 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 | audit (AUDIT) | G9 strict | C1–C8 quotes, verdicts, reasoning, human sign-off | any missing/UNCLEAR/INCOHERENT pair | owning stage |
 | status | workspace/ticket selector | read-only state, uncertainty, one next action | ambiguous selector/path | user clarification |
 | clean | exact ticket + G9 or explicit force | archive receipt or confirmed purge receipt | broad target; unconfirmed purge | start/status |
-| start | ticket + resolvable workspace | single deep-analysis pass, one collapsed stop for confirm, then continuous dispatch through the delivery pipeline (spec…check) — never dispatches learning/coaching itself, stops and tells the user to run them | epic-shaped request (routes to decompose); first genuine stop (P0/P1 finding, unresolved clarify claim, or ship/audit — always manual); G0 failure routes the user to learning/coaching, not an auto-dispatch | owning stage at the stop point, or ship |
+| start | ticket + resolvable workspace | single deep-analysis pass, one collapsed stop for confirm, then continuous dispatch through the delivery pipeline (spec…check) — never dispatches learning/coaching itself, stops and tells the user to run them | epic-shaped request (routes to decompose); >4 claims or >2 Types found within one repo (routes to decompose early, same offer, before the collapsed stop); first genuine stop (P0/P1 finding, unresolved clarify claim, or ship/audit — always manual); G0 failure routes the user to learning/coaching, not an auto-dispatch | owning stage at the stop point, or ship |
 
 ## Ticket-type strategy dispatch
 
