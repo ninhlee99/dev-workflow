@@ -252,6 +252,9 @@ still required — these stages write/verify machine-checked evidence keyed to a
 
 ## Gates & risk
 
+This table is a reader-facing summary. `references/stage-contract.md` is the authoritative
+source — if the two disagree, the contract file wins; edit it first, then sync this table.
+
 | Gate | PASS means | Retry with |
 |------|------------|------------|
 | **G0** | Domain knowledge covers ticket | `:learning` / `:coaching` |

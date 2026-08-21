@@ -27,7 +27,8 @@ of one specific step.
 ## Step 0 — preflight and routing
 
 Read `references/workflow.md`, `references/project-root.md`,
-`references/locale.md`, `references/task-isolation.md`.
+`references/locale.md`, `references/task-isolation.md`,
+`references/epic-signal.md`.
 If this is the first `/dev-workflow:*` command in this workspace, ask
 `[LOCALE]` per `references/locale.md` before anything else — do not guess
 from message language. Otherwise read the already-set `Chat locale` from
@@ -39,22 +40,10 @@ Resolve and print `project=<slug> home=<path> ticket=<id-or-adhoc-slug-or-empty>
 Run `bin/check-workspace.sh` once; FAIL → fix layout before gates.
 Ensure worklog is **only** `worklogs/<Ticket_ID>/` — never mix another ticket.
 
-**Epic check.** Check the same signal `skills/decompose/SKILL.md` uses: spans
->1 service/repo, mixes ticket Type, or has independently shippable parts. If
-it matches → say so once and hand off: `"Việc này giống 1 epic (nhiều phần
-độc lập) — chạy /dev-workflow:decompose trước để tách rõ ràng, rồi quay lại
-đây cho từng phần?"` Wait for the answer; do not silently decompose inline.
-
-**In-repo split threshold.** A ticket can mix Type without ever spanning a
-second service/repo — a "mixes ticket Type" epic-signal already covers this,
-but don't wait for step 2's question list to visibly balloon before noticing.
-While running step 1's investigation, if the ticket resolves into **more than
-4 independent claims, or more than 2 distinct Types**, treat that as the same
-epic-signal firing early: say so and offer `:decompose` right there, same
-wording as above, instead of proceeding to one oversized step-2 stop. This
-reuses `:decompose`'s existing in-repo split path (it does not require
-spans->1-repo) — it only moves the offer earlier, before the merged question
-list gets long enough to risk the user skimming past something.
+**Epic check.** Read `references/epic-signal.md` and apply it now, while
+running step 1's investigation below, before the question list visibly
+balloons — this file is the only source for the signal and the numeric
+backstop; do not restate either here.
 
 Otherwise this is one ticket (any size) — continue below.
 
@@ -133,22 +122,13 @@ claim, new scope discovered only once code is touched) —
 guessing in that case; this does not override that safety, it just means the
 *normal* path doesn't hit it.
 
-## Step 3 — confirm, simplified
+## Step 3 — confirm
 
-Once step 2's questions are resolved, hand the user the same pre-filled line
-`skills/confirm/SKILL.md` already produces:
-`CONFIRM G3: <Ticket_ID> ___ <YYYY-MM-DD>` (P0 also `CONFIRM G3-PM:`).
-
-**Simplification, not a new mechanism**: the user does not need to type the
-line back. Any reply that clearly reads as agreement — a name, "ok <name>",
-"đồng ý, <name>" — is enough; compose the exact `CONFIRM G3: <Ticket> <Name>
-<Date>` line from that reply and show it back once so the user sees exactly
-what gets written, per `skills/confirm/SKILL.md` step 4's existing "compose
-it for them, hand it back once" rule. It still needs that one shown-back line
-to exist verbatim in `INDEX.md` and `03b-human-confirm.md` with `Source:
-user-message` — same anti-forge floor, just fewer keystrokes to clear it. A
-reply that doesn't read as agreement at all still gets a direct yes/no ask,
-never assumed.
+Once step 2's questions are resolved, dispatch `skills/confirm/SKILL.md`
+directly — its simplified reply path (a name, "ok <name>", "đồng ý, <name>"
+is enough; it composes and shows back the exact line, no verbatim retype
+required) applies the same way here as it does when the user calls
+`/dev-workflow:confirm` by hand. Nothing to duplicate here.
 
 Risk=P2: still offer the existing skip (`skills/confirm/SKILL.md`'s P2 fast
 path) in the same message as the line, so the user picks once: send the name,

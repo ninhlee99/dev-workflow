@@ -346,6 +346,9 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 
 ## 6. Gates (G0–G9 + AUDIT) in one table
 
+This table is a reader-facing summary. `references/stage-contract.md` is the authoritative
+source — if the two disagree, the contract file wins; edit it first, then sync this table.
+
 | Gate | PASS means | If FAIL run |
 |------|------------|-------------|
 | G0 | Domain knowledge ready | `:learning` / `:coaching` |

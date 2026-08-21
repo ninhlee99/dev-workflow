@@ -14,7 +14,17 @@ Set **Risk** on worklog `INDEX.md` and `02-spec.md` before `:plan`.
 2. Else changes user-visible behavior or API contract → **P1**
 3. Else → **P2**
 
-If unsure → **P1**.
+Ground the call in objective signal before falling back to judgment — check, in order:
+- **Touched paths/routes**: any file under an auth/permission/payment/PII-handling module,
+  or a migration → that alone forces **P0** regardless of diff size.
+- **Diff shape**: new/changed public API contract, new user-visible route or UI state → **P1**
+  floor even if the diff is a few lines.
+- **Diff size + surface**: single file, no route/API/schema change, no new consumer → **P2**
+  is the honest default, not "unsure."
+
+"Unsure" should mean "I checked the above and it's genuinely ambiguous," not "I didn't check."
+Only after checking touched paths and diff shape and still being unable to place it →
+**P1** (fail toward the hard lane, not the fast one).
 
 ## Fast lane (P2)
 

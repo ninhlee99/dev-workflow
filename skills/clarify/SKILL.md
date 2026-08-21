@@ -116,3 +116,11 @@ must route back here rather than guess a decision you already flagged as needing
 Never guess claim decisions. Before PASS, print the claim inventory by Type, evidence/truth label,
 uncovered consumer/encoding search, and unresolved items. Code alone may be `OBSERVED` but cannot
 become MATCH without an intent source or explicit project-baseline decision.
+
+**Report G2 and G5 as two separate lines, never one combined "clarify PASS."** This stage owns
+both gates but they resolve at different times: G2 (each non-MATCH claim has a decision/owner/date)
+is met once every claim in `03-clarify-report.md` is classified; G5 (no OPEN Qs) is met once
+every entry in `03-qa-log.md` is closed. A ticket can be G2 PASS with G5 still FAIL (a decision is
+recorded but its follow-up question is still open) — collapsing both into "clarify done" is exactly
+the false-complete signal that sends `:confirm`/`:plan` in on a half-finished ticket. State both,
+e.g. `G2: PASS (4/4 claims decided) · G5: FAIL (1 open Q — #3)`.

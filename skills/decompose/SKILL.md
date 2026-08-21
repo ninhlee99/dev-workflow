@@ -27,13 +27,9 @@ If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per
 - `:start`/`:spec` detect the same shape and offer this stage instead of
   silently opening one oversized worklog — offer, never auto-run.
 
-**Signal it's an epic, not one ticket:** two or more of — spans >1
-service/repo, mixes ticket Type (Bug + New feature, etc. — see
-`references/ba-integrity.md` "Classify the ticket first"), described
-deliverable has independently shippable parts, or the requester already used
-the word "epic"/"dự án"/"nhiều phần". One file, one Type, one deliverable is
-**not** an epic — say so and route to `:spec`/`:start` directly instead of
-manufacturing a split.
+**Signal it's an epic, not one ticket:** read `references/epic-signal.md` —
+the qualitative signal and the same-repo numeric backstop are defined there
+once, shared with `skills/start/SKILL.md`; do not restate either here.
 
 ## Steps
 
@@ -137,6 +133,12 @@ manufacturing a split.
   outside this stage's — and current AUDIT's — verified scope); say so if the
   epic's own risk profile calls for that kind of cross-child proof and no gate
   currently covers it, rather than implying `epic-map.md` closes that gap.
+- Has not yet been proven against a real multi-level epic (children that
+  themselves fan out, or a dependency chain deeper than one hop). Treat
+  `epic-map.md`'s dependency graph as reliable for a flat child list; for
+  anything deeper, say so explicitly and ask the user to double-check the
+  graph by hand rather than presenting it with the same confidence as a
+  validated feature.
 
 ## Result rules
 
