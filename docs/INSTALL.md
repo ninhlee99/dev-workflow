@@ -56,7 +56,7 @@ It does not modify product source. Depending on the host, it creates or refreshe
 | Codex marketplace | Creates `~/.agents/plugins/marketplace.json` only when that file does not already exist |
 | Antigravity | Rebuilds and validates `hosts/antigravity/`, then runs `agy plugin install` |
 
-All 16 stage skills are installed for Cursor/Codex, not a thin pointer. Shared `references/` and
+All 18 stage skills are installed for Cursor/Codex, not a thin pointer. Shared `references/` and
 `templates/` remain in the clone and are linked into every stage.
 Existing unrelated commands, skills, plugins, and an existing Codex marketplace file are preserved.
 

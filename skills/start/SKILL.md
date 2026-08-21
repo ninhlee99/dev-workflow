@@ -101,13 +101,23 @@ exists to prevent.
 "Single source for 'skip ceremony'" table applied early, before the pipeline
 starts, so the user picks once instead of discovering the soft-gate stage by
 stage. If step 1's classification lands on Risk=P2 (see risk.md "How to
-choose") or Type=Refactor (per `ba-integrity.md`), say so once and offer the
-matching shortcut instead of silently deciding for the user:
-`"Việc này nhỏ, không đổi hành vi (Risk=P2 candidate) — chạy :build <Ticket>
-luôn (tự phân tích, bỏ qua spec/clarify)? Nói 'full pipeline' nếu bạn muốn qua
-đủ từng gate."` Wait for their answer. Never offer this if the ticket touches
-money/authz/PII/legacy or changes user-visible behavior/API contract —
-neither qualifies for P2 or Refactor, so dispatch the full flow below instead.
+choose") or Type=Refactor (per `ba-integrity.md`), check `references/risk.md`
+"Trivial" first:
+
+- **Trivial matches** (P2, ≤1 file, ≤5 lines, no public identifier change,
+  duplicate-scan clean, not a multi-file Refactor): skip the offer-and-wait
+  below entirely. Run `:build <Ticket>` directly, log the one-line Trivial
+  entry on INDEX, then report what was done — never ask first. See risk.md
+  "Trivial" for the exact log line and report text.
+- **Otherwise** (P2 or Refactor but not Trivial), say so once and offer the
+  matching shortcut instead of silently deciding for the user:
+  `"Việc này nhỏ, không đổi hành vi (Risk=P2 candidate) — chạy :build <Ticket>
+  luôn (tự phân tích, bỏ qua spec/clarify)? Nói 'full pipeline' nếu bạn muốn qua
+  đủ từng gate."` Wait for their answer.
+
+Never offer either path if the ticket touches money/authz/PII/legacy or
+changes user-visible behavior/API contract — neither qualifies for P2 or
+Refactor, so dispatch the full flow below instead.
 
 ## Step 2 — the one stop (skipped only by the fast-path above)
 

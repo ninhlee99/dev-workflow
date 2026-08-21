@@ -34,7 +34,10 @@ other than P2 always requires the full flow below.
    that clearly reads as agreement — a name, "ok <name>", "đồng ý, <name>" — is enough. Compose the
    exact `CONFIRM G3: <Ticket> <Name> <Date>` line from that reply and show it back once so the user
    sees exactly what gets written, then treat that shown-back line as the record once uncontested
-   (same anti-forge floor, fewer keystrokes). This applies whether `:confirm` was called directly
+   (same anti-forge floor, fewer keystrokes). This is a speed/safety tradeoff, not a pure convenience
+   shortcut: the anti-forge floor is preserved only because the exact line is shown back and the
+   user gets one chance to contest it before it's written — if that show-back step is ever skipped,
+   this stops being safe. This applies whether `:confirm` was called directly
    or reached via `:start`'s step 3 — one rule, not two.
 4. Write the phrase(s) to **both** `INDEX.md` and `03b-human-confirm.md` (Source: user-message).
    Never fill in or guess the name, and never silently reinterpret free text as if it were the

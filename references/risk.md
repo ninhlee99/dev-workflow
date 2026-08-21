@@ -22,6 +22,43 @@ determination made early, before the pipeline starts, so the user is asked once 
 discovering the soft-gate stage by stage. If a ticket doesn't qualify for either row above, `:start`
 runs the full stop-by-stop flow — it never invents its own "looks small" judgment call.
 
+## Trivial (a filter on P2, not a third tier)
+
+**Trivial** narrows the P2 fast-path offer above into a no-ask auto-run for the smallest possible
+change. It is not a new Risk tier — Risk is still exactly P0/P1/P2, still chosen the same way. Trivial
+only changes whether `:start`'s step-1 fast-path *asks and waits* or *runs and reports*.
+
+A ticket is **Trivial** when **all** of the following hold:
+
+- Risk = P2 (per "How to choose" above).
+- Estimated diff ≤ 1 file, ≤ 5 lines.
+- No public identifier changes (function/route/API/column name).
+- The duplicate-scan (`ba-integrity.md` "Duplicate-scan") returns clean — zero other occurrences —
+  without asking the user to confirm the grep result.
+- Type ≠ Refactor spanning more than 1 file (multi-file Refactor already has its own route above;
+  it does not need Trivial).
+
+**The `≤ 5 lines` threshold is an unvalidated starting guess, not a measured number** — same status
+as epic-signal.md's 4-claims/2-types backstop. Log Trivial-lane outcomes in
+`templates/pilot-metrics.md` and adjust the number from that evidence, not from a new guess.
+
+**On match:** skip the "offer fast-path, wait for reply" step entirely. Run `:build <Ticket>`
+directly, write one INDEX log line (`Trivial: <description>, duplicate-scan clean, Risk=P2`) instead
+of opening a full worklog, then report after the fact: `"Sửa xong (trivial, P2, duplicate-scan
+clean). Nói 'full pipeline' nếu muốn undo và làm lại đầy đủ."` Do not ask before acting — the
+duplicate-scan already answered the one question that would have made this unsafe (does anything
+else depend on this text/logic).
+
+**This no-ask auto-run is a property of `:start`'s step-1 offer, not of Trivial itself.** Calling
+`/dev-workflow:build <Ticket>` (or any other stage) directly on a Trivial-shaped ticket still
+self-analyzes per the stage's own fallback (see `references/stage-contract.md`), but does not get
+the "run and report after the fact" treatment — that behavior only exists inside `:start`'s
+step-1 fast-path check.
+
+**Trivial does not apply** when the duplicate-scan finds ≥1 other occurrence (fall back to the
+normal P2 ask-first flow — that's exactly when "keep these in sync?" needs a human answer), or when
+Risk is P0/P1, or when the ticket doesn't otherwise qualify above.
+
 | Tier | When | Lane | Rules |
 |---|---|---|---|
 | **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | All G0–G9 + AUDIT. No WAIVE G3/G8. Dual `CONFIRM G3` + `CONFIRM G3-PM`. Machine evidence + **CI-native verify** under `--strict`. **`02b-security.md` required**. |
