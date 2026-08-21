@@ -97,14 +97,17 @@ exists to prevent.
    without asking; record the inference and its evidence so the user can
    correct it later instead of being asked to pre-approve it now.
 
-**Fast-path.** If step 1 finds the ticket genuinely tiny and non-behavioral
-(single-file, no logic/API/data-shape change — copy text, a config value, a
-comment, a label, a constant), say so once and offer the shortcut instead of
-silently deciding for the user: `"Việc này nhỏ, không đổi hành vi (Risk=P2
-candidate) — chạy :build <Ticket> luôn (tự phân tích, bỏ qua spec/clarify)?
-Nói 'full pipeline' nếu bạn muốn qua đủ từng gate."` Wait for their answer.
-Never offer this if the ticket touches money/authz/PII/legacy or changes
-user-visible behavior/API contract — dispatch the full flow below instead.
+**Fast-path.** This is not a third skip criterion — it's `references/risk.md`'s
+"Single source for 'skip ceremony'" table applied early, before the pipeline
+starts, so the user picks once instead of discovering the soft-gate stage by
+stage. If step 1's classification lands on Risk=P2 (see risk.md "How to
+choose") or Type=Refactor (per `ba-integrity.md`), say so once and offer the
+matching shortcut instead of silently deciding for the user:
+`"Việc này nhỏ, không đổi hành vi (Risk=P2 candidate) — chạy :build <Ticket>
+luôn (tự phân tích, bỏ qua spec/clarify)? Nói 'full pipeline' nếu bạn muốn qua
+đủ từng gate."` Wait for their answer. Never offer this if the ticket touches
+money/authz/PII/legacy or changes user-visible behavior/API contract —
+neither qualifies for P2 or Refactor, so dispatch the full flow below instead.
 
 ## Step 2 — the one stop (skipped only by the fast-path above)
 
@@ -147,12 +150,14 @@ or say "skip".
 
 ## Step 4 — run to the next real stop, without re-asking settled things
 
-Dispatch in order: plan → build → review → fix (only if P0/P1 OPEN) → test →
-check. Each stage still does its own required work in full (TDD, real diff
-review, real test execution, real checker run) — nothing here shortens what
-an individual stage owes; it only removes the *user* having to type the next
+Dispatch in the order `references/workflow.md` "Stage order" defines (this
+file does not restate that order — read it there so the two never drift).
+Each stage still does its own required work in full (TDD, real diff review,
+real test execution, real checker run) — nothing here shortens what an
+individual stage owes; it only removes the *user* having to type the next
 command each time. Print each stage's normal verdict/evidence as it
-completes — this optimizes stop count, not visibility into what happened.
+completes, grouped by the phase from `references/workflow.md` "Phase
+grouping" — this optimizes stop count, not visibility into what happened.
 
 This ordering is enforced by **you reading and following it**, not by a
 script — `check-gates.sh` verifies each stage's *output artifact* is real,

@@ -23,8 +23,10 @@ PROJECT.md, domain-knowledge/INDEX.md, worklogs/ layout, stray files, per-ticket
 marker-slug consistency) + run its summary directly, do not re-derive by hand. Also list any
 `domain-knowledge/coaching-tickets/*.md` with `Status: OPEN` (id + title) so the user can see
 what's waiting on an answer — these are async and don't block anything, just surface them.
-With ticket: report gate state from **that** worklog INDEX only (`task-isolation.md`); suggest
-`:clean` if G9 PASS and user wants to free memory — `:clean` only needs G9, not `:audit`.
+With ticket: report gate state from **that** worklog INDEX only (`task-isolation.md`); lead with
+the phase group from `references/workflow.md` "Phase grouping" (Spec-locked/Built/Verified/Shipped),
+individual gate letters second — e.g. `Verified (G7 PASS, G8 FAIL)`, not a bare gate-letter dump.
+Suggest `:clean` if G9 PASS and user wants to free memory — `:clean` only needs G9, not `:audit`.
 No code changes; keep default output short.
 Report G9 structural, AUDIT semantic, and human sign-off separately. Run the checker when possible;
 never infer PASS from a checkbox alone. Include uncertainty and exactly one next command.

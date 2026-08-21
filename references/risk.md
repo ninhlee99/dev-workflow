@@ -2,6 +2,26 @@
 
 Set **Risk** on worklog `INDEX.md` and `02-spec.md` before `:plan`.
 
+## Single source for "skip ceremony"
+
+Three different callers used to each carry their own skip logic (P2 soft-gate here, Refactor
+routing in `ba-integrity.md`, a separate "genuinely tiny" fast-path in `start/SKILL.md`). There are
+only two independent reasons ceremony can shrink — **Risk tier** (this file) and **ticket Type**
+(`ba-integrity.md`'s Refactor section) — so this file is the one place that names both and how they
+compose. Every other reference (`start/SKILL.md`, `skills/clarify/SKILL.md`, `skills/confirm/SKILL.md`)
+must point here, not restate its own criteria.
+
+| Reason | Trigger | What shrinks |
+|---|---|---|
+| Risk=P2 | see "How to choose" below | G2/G3/G4/G5/G7 soft (warn, not fail) |
+| Type=Refactor | every claim provably behavior-preserving (`ba-integrity.md` "Refactor") | skip spec/clarify entirely, route straight to `:build` |
+
+They stack independently — a P2 ticket that is also a Refactor gets both. `:start`'s step-1
+fast-path offer (`skills/start/SKILL.md`) is not a third criterion: it is the same P2/Refactor
+determination made early, before the pipeline starts, so the user is asked once instead of
+discovering the soft-gate stage by stage. If a ticket doesn't qualify for either row above, `:start`
+runs the full stop-by-stop flow — it never invents its own "looks small" judgment call.
+
 | Tier | When | Lane | Rules |
 |---|---|---|---|
 | **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | All G0–G9 + AUDIT. No WAIVE G3/G8. Dual `CONFIRM G3` + `CONFIRM G3-PM`. Machine evidence + **CI-native verify** under `--strict`. **`02b-security.md` required**. |

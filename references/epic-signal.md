@@ -26,6 +26,14 @@ more than 2 distinct Types**, treat that as the same epic-signal firing, even
 with zero repos spanned — do not wait for the qualitative signal above to
 also fire.
 
+**These two numbers (4, 2) are an unvalidated starting guess, not a measured
+threshold.** No pilot run has logged real claim-count/Type-count data against
+decompose-vs-no-decompose outcomes yet (`templates/pilot-metrics.md` is still
+empty in every workspace checked). If a pilot log accumulates enough rows to
+show these numbers firing too early (splitting tickets that shipped fine as
+one) or too late (a ticket that should have decomposed didn't), adjust the
+numbers here from that evidence — not from a new guess.
+
 ## When each caller checks this
 
 - `:decompose` checks it when the user calls it directly, or when another
