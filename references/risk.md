@@ -5,7 +5,7 @@ Set **Risk** on worklog `INDEX.md` and `02-spec.md` before `:plan`.
 | Tier | When | Lane | Rules |
 |---|---|---|---|
 | **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | All G0–G9 + AUDIT. No WAIVE G3/G8. Dual `CONFIRM G3` + `CONFIRM G3-PM`. Machine evidence + **CI-native verify** under `--strict`. **`02b-security.md` required**. |
-| **P1** | normal product behavior change | Hard | All G0–G9 + AUDIT. Machine evidence required. `--strict` required for the final AUDIT check. |
+| **P1** | normal product behavior change | Hard | All G0–G9 + AUDIT. Machine evidence required. `--strict` required for the final AUDIT check. **Small-P1 exception below softens AUDIT only** — every other G0–G9 requirement stays hard. |
 | **P2** | copy, config, docs, tiny non-behavioral chore | Fast | Required hard: G0, G1, G6, G8, G9. **G2/G3/G4/G5/G7 soft** unless `--strict` (warn, not fail) — a P2 ticket can reach G9 with no human `CONFIRM G3` round-trip, though one is still welcome. Still prefer INDEX WAIVE rows when skipping intentionally. |
 
 ## How to choose
@@ -25,6 +25,22 @@ Ground the call in objective signal before falling back to judgment — check, i
 "Unsure" should mean "I checked the above and it's genuinely ambiguous," not "I didn't check."
 Only after checking touched paths and diff shape and still being unable to place it →
 **P1** (fail toward the hard lane, not the fast one).
+
+## Small-P1 audit exception
+
+A P1 ticket still needs every other G0–G9 requirement (this is not a P1.5 tier — Risk stays P1,
+evidence bar stays full), but AUDIT becomes soft (warn, not fail) when **all** of these hold:
+
+- Single file changed, or changes confined to one existing module with no new file.
+- No new/changed public API contract, route, or schema/migration.
+- No new user-visible state (no new error class, no new consumer, no new permission branch) —
+  same "pure analog" bar `skills/clarify/SKILL.md`'s fast path already uses.
+
+If any of these is false, or it's genuinely ambiguous, run full AUDIT — this exception exists for
+a narrow, obviously-small P1 (e.g. a one-line validation-rule fix in a single existing function),
+not as a general P1 discount. `check-gates.sh --min AUDIT` still runs; it warns instead of failing
+when the exception applies and `--strict` was not passed. `--strict` always makes AUDIT hard again,
+same as it does for G3 on P2.
 
 ## Fast lane (P2)
 

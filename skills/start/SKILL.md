@@ -60,11 +60,22 @@ it to get to code faster; a shallow pass here is exactly what forces a
 second, third, fourth round of questions mid-build, which is what this step
 exists to prevent.
 
-1. Classify `Type:` (Bug / New feature / Spec change / Requirement change —
-   `references/ba-integrity.md`) and run **that type's actual investigation
-   strategy** — reproduce-and-trace for Bug, closest-analog survey for New
-   feature, before/after-and-every-consumer for Spec change, every-encoding
-   for Requirement change. Do not skip straight to writing tasks.
+1. Classify `Type:` (Bug / New feature / Spec change / Requirement change /
+   Refactor — `references/ba-integrity.md`) and run **that type's actual
+   investigation strategy** — reproduce-and-trace for Bug, closest-analog
+   survey for New feature, before/after-and-every-consumer for Spec change,
+   every-encoding for Requirement change, no-behavior-change-claim +
+   coverage-check for Refactor. Do not skip straight to writing tasks.
+
+   **Type=Refactor routes differently, regardless of size.** If every claim
+   in the ticket is provably behavior-preserving (`ba-integrity.md`
+   "Refactor" section), say so once and route straight to `:build <Ticket>`
+   — skip spec/clarify/confirm entirely, same as the fast-path below, but
+   for a different reason (type, not size — a Refactor can span many files
+   and still skip ceremony, because there is no spec delta to normalize).
+   The moment any claim isn't provably behavior-preserving, that claim drops
+   out of Refactor and back into whichever type actually fits; continue this
+   step normally for it.
 2. Run the duplicate-scan (`ba-integrity.md` "Duplicate-scan") regardless of
    Type/Risk — same text/logic elsewhere is a real question, not an
    afterthought.

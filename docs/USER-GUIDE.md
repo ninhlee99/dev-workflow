@@ -127,7 +127,7 @@ manually (below).
 
 Must produce `02-spec.md` with:
 
-- Exactly one **Type:** Bug / New feature / Spec change / Requirement change
+- Exactly one **Type:** Bug / New feature / Spec change / Requirement change / Refactor
 - **Risk:** P0 / P1 / P2 (required)
 - Requirement provenance: truth label, source/quote, verification date, confidence, unresolved owner
 - Scenario AC rows (Given / When / Then) filled

@@ -26,13 +26,23 @@ you adapt that skepticism to this project's risk profile, and what you're active
 (old-spec-vs-new-spec conflicts, documented-vs-actual mismatches, a fix that only patches the
 loud symptom). Apply it now, not just when something already looks broken.
 
-**First, classify the ticket** — Bug / New feature / Spec change / Requirement change — per
-`references/ba-integrity.md`'s "Classify the ticket first" section, and record it as `Type: …` in
-**both** `01-intent.md` and the worklog `INDEX.md` (`Type:` field, next to `Risk:`) — `INDEX.md` is
-what downstream stages (`:clarify` especially) actually check, so a classification that only
-lives in `01-intent.md` will get missed. Each type has its own investigation strategy in that
-file; use the matching one, not the bug procedure by default. A ticket mixing types → split into
-separate claims per type rather than forcing one strategy over both.
+**First, classify the ticket** — Bug / New feature / Spec change / Requirement change / Refactor —
+per `references/ba-integrity.md`'s "Classify the ticket first" section, and record it as `Type: …`
+in **both** `01-intent.md` and the worklog `INDEX.md` (`Type:` field, next to `Risk:`) —
+`INDEX.md` is what downstream stages (`:clarify` especially) actually check, so a classification
+that only lives in `01-intent.md` will get missed. Each type has its own investigation strategy in
+that file; use the matching one, not the bug procedure by default. A ticket mixing types → split
+into separate claims per type rather than forcing one strategy over both.
+
+**Type: Refactor short-circuits this stage's content, not its artifacts.** Per
+`references/ba-integrity.md`'s "Refactor" section, state the no-behavior-change claim and confirm
+test coverage in `01-intent.md`. Still write `02-spec.md` (G1 checks for it) with `Type: Refactor`
+selected, Risk set per `references/risk.md`, and the no-behavior-change claim + coverage
+confirmation in place of Scenario AC/NEG/PERM/EDGE — there is no new AC to normalize, so the AC
+section states that plainly instead of being left blank. Then hand off straight to `:build`,
+skipping `:clarify`/`:confirm` (stage-contract.md's entry-point routing) — no spec delta exists
+for `:clarify` to diff. If any claim in the ticket isn't provably behavior-preserving, that claim
+is not Refactor — reclassify it and run this stage's full process for it.
 
 Normalize requirements into worklog. Attach a source/truth label to each decision-driving
 requirement. Reporter wording is `DOCUMENTED`, not independently verified, unless corroborated;
