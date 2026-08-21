@@ -1,7 +1,7 @@
 # 01 Intent: [Feature_Name]
 
 - **Ticket:** [url]
-- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change
+- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change ☐ Refactor
 
 ## Goal (1–2 sentences)
 

@@ -30,17 +30,25 @@ other than P2 always requires the full flow below.
    only the name left as a placeholder for them to edit (the AI cannot fill in the human's name
    itself — that would defeat the anti-forge point of this whole gate). P0: also hand over
    `CONFIRM G3-PM: <Ticket_ID> <your name> <YYYY-MM-DD>` for the PM to send.
-3. The user edits the name and sends it back as their own message — that message, not anything the
-   AI writes unprompted, is the proof of human sign-off.
-4. Write the phrase(s) exactly as the user sent them to **both** `INDEX.md` and
-   `03b-human-confirm.md` (Source: user-message). Never fill in or guess the name, and never
-   silently reinterpret free text as if it were the phrase.
+3. **Simplified reply path — the user does not need to type the line back verbatim.** Any reply
+   that clearly reads as agreement — a name, "ok <name>", "đồng ý, <name>" — is enough. Compose the
+   exact `CONFIRM G3: <Ticket> <Name> <Date>` line from that reply and show it back once so the user
+   sees exactly what gets written, then treat that shown-back line as the record once uncontested
+   (same anti-forge floor, fewer keystrokes). This is a speed/safety tradeoff, not a pure convenience
+   shortcut: the anti-forge floor is preserved only because the exact line is shown back and the
+   user gets one chance to contest it before it's written — if that show-back step is ever skipped,
+   this stops being safe. This applies whether `:confirm` was called directly
+   or reached via `:start`'s step 3 — one rule, not two.
+4. Write the phrase(s) to **both** `INDEX.md` and `03b-human-confirm.md` (Source: user-message).
+   Never fill in or guess the name, and never silently reinterpret free text as if it were the
+   phrase.
    - Reply matches `CONFIRM G3: <Ticket> <Name> <Date>` exactly → write it as-is.
-   - Reply is clearly an agreement but not in that shape (e.g. "ok đồng ý, tên tôi là Hoa") →
-     compose the correct line from what they just gave you (their name, today's date if they
-     didn't state one) and hand it back once more for them to send — don't make them retype from
-     scratch, and don't make them guess the shape a second time either. Still wait for that exact
-     line back before writing anything; a paraphrase of their intent is not the anti-forge artifact.
+   - Reply clearly reads as agreement but not in that shape (a bare name, "ok <name>", "đồng ý, tên
+     tôi là Hoa") → compose the correct line from what they just gave you (their name, today's date
+     if they didn't state one), show it back once, and write it once shown-back and uncontested —
+     don't make them retype from scratch, and don't force a second round-trip waiting for them to
+     resend the exact line. A reply that *corrects* the shown-back line is authoritative over the
+     first read; re-show just the corrected line before writing.
    - Reply doesn't clearly indicate agreement at all → ask a direct yes/no, do not assume.
 5. Forbidden names: AI, ChatGPT, Claude, Copilot, Cursor, Assistant, Bot.
 6. Only then G3 PASS → `:plan`.

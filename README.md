@@ -45,26 +45,85 @@ Risk lanes (P0/P1/P2), evidence provenance, and optional pilot scoring.
 `learning`/`coaching` run independently of this pipeline — the user calls them directly to
 bootstrap/correct domain-knowledge; `:start` never invokes them, it stops at G0 and asks you to.
 
-`:start` (also the bare `/dev-workflow` alias) is the one entry point — same gates, no shortcuts,
-just fewer stops than calling each stage by hand:
+`:start` (also the bare `/dev-workflow` alias) is the one entry point for a single ticket — same
+gates, no shortcuts, just fewer stops than calling each stage by hand. `:decompose` runs first when
+the request is epic-shaped, then hands the single-ticket flow one child at a time.
+
+### Single-ticket flow
 
 ```
-epic-shaped? → decompose → epic-map.md (one confirm) → first child
-                                              ↓
-        start → spec → clarify → confirm → plan   (one analysis pass, one confirm, then continuous)
-                                              ↓
-                                            build
-                                              ↓
-                                           review
-                                              ↓
-                                    fix (if P0/P1 OPEN)
-                                              ↓
-                                            test
-                                              ↓
-                                    check (--strict) → ship (G9) → audit (C1–C8 + human sign-off)
-                                              ↓
-                                    clean (archive worklog)
+:start (analyze once, G0 check, ask once)
+   or a named /dev-workflow:<stage> by hand
+                    ↓
+   ┌────────────────┴─────────────────┐
+   │                                   │
+Trivial (P2, ≤1 file, ≤5 lines,   spec → clarify → confirm → plan
+clean dup-scan) or Refactor        (one analysis pass, one confirm,
+(behavior-preserving)                then continuous)
+→ skip straight to build                     │
+   │                                   │
+   └────────────────┬─────────────────┘
+                    ↓
+                  build
+                    ↓
+                 review
+                    ↓
+          fix (if P0/P1 OPEN)
+                    ↓
+                  test
+                    ↓
+                  check
+                    ↓
+               ship (G9)
+                    ↓
+      audit (C1–C8 + human sign-off)
+                    ↓
+        clean (archive worklog)
 ```
+
+`start` stops at G0 and hands you to `:learning`/`:coaching` if domain knowledge is missing or
+contradicted — it never runs either for you. `check-gates.sh --strict` is the CI-native verify used
+before merge and again before AUDIT; it is not a separate pipeline stage, just a flag on `check`.
+
+### Epic flow (loops the single-ticket flow above, one child at a time)
+
+```
+epic-shaped request
+        ↓
+   decompose (one analysis pass across the whole epic)
+        ↓
+    epic-map.md (child list + Type/Risk estimate + dependencies + duplicate-scan)
+        ↓
+  one confirm covering the whole split
+        ↓
+        ┌─────────────────────────────────────────┐
+        │  pick next unblocked child from          │
+        │  epic-map.md (skip if `blocked by`       │
+        │  still open)                             │
+        └─────────────────┬─────────────────────────┘
+                          ↓
+        that child runs the single-ticket flow above,
+        start to finish, on its own worklog
+                          ↓
+              update epic-map.md status for that child
+                          ↓
+              more unblocked children remain? ──yes──┐
+                          │                            │
+                          no                           │
+                          ↓                            │
+                    epic done                          │
+                          └────────────────────────────┘
+                          (loop back to "pick next unblocked child")
+```
+
+`decompose` writes `epic-map.md` at the project level (not inside any one ticket's worklog) and hands
+off only the **first** unblocked child — it never dispatches multiple children's `:spec`/`:start`
+itself. Each child gets its own full single-ticket flow (own Risk tier, own `CONFIRM G3`, own G0–G9 +
+AUDIT) — the epic's one confirm authorizes the split and the epic-level questions, it does not
+substitute for any child's own gates. A P0 child found during decomposition is exactly as hard-gated
+as a P0 ticket found any other way. `epic-map.md` has not been validated against a multi-level epic
+(children that themselves fan out) — treat the dependency graph as reliable for a flat child list
+only; say so explicitly if a child looks like it needs decomposing again.
 
 | Step | Meaning |
 |------|---------|
@@ -90,7 +149,9 @@ they'd normally read, and mark the result `Source: self-analyzed (no upstream ar
 stages/humans can see it wasn't built from confirmed scope. A one-line typo fix doesn't need a full
 `spec` → `clarify` → `confirm` round-trip: run `/dev-workflow:build <Ticket>` directly and it plans
 and implements from its own reading of the ticket. The only two stages that never soften this way
-are `confirm` and `audit` — their human sign-off can't be self-analyzed. See
+are `confirm` and `audit` — their human sign-off can't be self-analyzed. Exactly how much each other
+stage softens (warn vs. self-analyze vs. full stop) is per-stage, not uniform — see the `(preferred)`
+column in `references/stage-contract.md` for the actual per-stage rule, and
 `references/workflow.md`'s "Independence" section for exactly which stages fall back this way.
 
 ---
@@ -116,7 +177,7 @@ bash install.sh --agy                   # Antigravity only (requires agy)
 bash install.sh --all                   # all supported agents
 ```
 
-`install.sh` installs only the selected host. Cursor and Codex receive all 17 live stage skills;
+`install.sh` installs only the selected host. Cursor and Codex receive all 18 live stage skills;
 their skill directories link to this clone, so skill content does not become a stale copy.
 It writes host integration files under `~/.claude`, `~/.cursor`, `~/.codex`, and optionally
 `~/.agents`; it does not edit product source. See the complete install/update/verification guide:
@@ -193,6 +254,11 @@ worklogs, unrelated host configuration, and any modified Codex marketplace file.
 # → AI derives worklogs/adhoc-confirm-btn-text/ once a decision needs saving;
 #   pure Q&A/read-only work needs no worklog at all
 
+# ...or a genuinely trivial fix (1 file, ≤5 lines, no public identifier change,
+# duplicate-scan clean) — no ask, runs and reports:
+/dev-workflow "sửa lỗi chính tả trong thông báo lỗi"
+# → :build runs immediately, one INDEX log line, no full worklog, no wait for reply
+
 # 4) Typical manual path
 /dev-workflow:spec     TICKET-123
 /dev-workflow:clarify TICKET-123
@@ -252,6 +318,9 @@ still required — these stages write/verify machine-checked evidence keyed to a
 
 ## Gates & risk
 
+This table is a reader-facing summary. `references/stage-contract.md` is the authoritative
+source — if the two disagree, the contract file wins; edit it first, then sync this table.
+
 | Gate | PASS means | Retry with |
 |------|------------|------------|
 | **G0** | Domain knowledge covers ticket | `:learning` / `:coaching` |
@@ -271,6 +340,12 @@ still required — these stages write/verify machine-checked evidence keyed to a
 | **P0** | Hard | Money/auth/PII/legacy — dual CONFIRM, security, G0–G9 + AUDIT |
 | **P1** | Hard | Default product change — full G0–G9 + AUDIT |
 | **P2** | Fast | Chore — G2/G3/G4/G5/G7 soft unless `--strict`; no human CONFIRM round-trip needed |
+
+**Trivial** (a filter on P2, not a 4th tier): P2 + ≤1 file + ≤5 lines + no public identifier change +
+clean duplicate-scan → `:start` skips the P2 "offer and wait" and runs `:build` straight away,
+logging one INDEX line and reporting after the fact instead of asking first. Falls back to normal P2
+if the duplicate-scan finds another occurrence. The `≤5 lines` number is an unvalidated starting
+guess (same status as the epic-signal 4-claims backstop) — see `references/risk.md` "Trivial".
 
 Details: [references/risk.md](./references/risk.md). The authoritative stage interface is
 [references/stage-contract.md](./references/stage-contract.md); every skill follows the evidence and

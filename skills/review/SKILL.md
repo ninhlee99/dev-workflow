@@ -27,6 +27,13 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
 ## Steps
 
 1. Resolve worklog; open `02-spec.md`, `05-impl-log.md`, confirmed claims, INDEX Risk.
+   **Check each of `02-spec.md`, `03-clarify-report.md`, `04-plan.md` for a `Source:
+   self-analyzed` header.** Any one present means that upstream stage never actually ran — the
+   whole chain downstream of it (through `:confirm`, `:plan`, `:build`) was built without the
+   normal spec/clarify/confirm scrutiny. For Risk=P0/P1 this is a real gap, not a formality:
+   state it plainly in the review output (`"⚠ 04-plan.md is self-analyzed — no :spec/:clarify
+   ever ran on this P1 ticket"`) and do not let the review read as routine just because the diff
+   itself looks clean. For Risk=P2 note it but do not block on it alone.
 2. Collect change set (`git diff` base…HEAD or files listed in impl log). No diff → FAIL review; do not invent.
 3. Hunt defect classes per `code-review.md`: **500**, **missing**, **injection**, **case** (downcase/upcase/normalize), **other**. Fill class rows even if `none`.
 

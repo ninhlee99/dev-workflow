@@ -31,6 +31,23 @@ Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
 WAIVE only on INDEX: `Gate/claim | reason | owner | expiry | PM note`.  
 P0: no WAIVE G3/G8. `--strict` or P0/P1: machine evidence required. `--strict`: no G8 WAIVE.
 
+## Phase grouping (for status/user-facing reports only)
+
+11 gate names (G0–G9 + AUDIT) is too many to hold in memory command-to-command. `check-gates.sh`
+and every stage's own PASS/FAIL keep the exact gate names — this grouping changes nothing about
+what's verified, only how `:status` and `:start` summarize it to a human:
+
+| Phase | Gates | Means |
+|---|---|---|
+| **Spec-locked** | G0–G3 | scope understood, decisions made, human signed off |
+| **Built** | G4–G6 | planned, implemented, tests pass |
+| **Verified** | G7–G8 | reviewed, tested with evidence |
+| **Shipped** | G9 + AUDIT | deployed safely, semantically coherent |
+
+Report the phase first (`Verified (G7 PASS, G8 FAIL)`), the individual gate letters second — never
+the reverse. Anyone who wants the exact gate still gets it in the same line; nobody has to look up
+what "G6" means to understand overall progress.
+
 `check-gates.sh` verifies structure only (field present, not a repeated placeholder, SHA matches
 HEAD). It cannot verify a Rollback plan actually undoes the Migration described two sections above
 it — that needs a reader, not a regex. `:audit` is the required semantic layer on top; G9

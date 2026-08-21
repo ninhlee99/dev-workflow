@@ -27,7 +27,8 @@ of one specific step.
 ## Step 0 — preflight and routing
 
 Read `references/workflow.md`, `references/project-root.md`,
-`references/locale.md`, `references/task-isolation.md`.
+`references/locale.md`, `references/task-isolation.md`,
+`references/epic-signal.md`.
 If this is the first `/dev-workflow:*` command in this workspace, ask
 `[LOCALE]` per `references/locale.md` before anything else — do not guess
 from message language. Otherwise read the already-set `Chat locale` from
@@ -39,22 +40,10 @@ Resolve and print `project=<slug> home=<path> ticket=<id-or-adhoc-slug-or-empty>
 Run `bin/check-workspace.sh` once; FAIL → fix layout before gates.
 Ensure worklog is **only** `worklogs/<Ticket_ID>/` — never mix another ticket.
 
-**Epic check.** Check the same signal `skills/decompose/SKILL.md` uses: spans
->1 service/repo, mixes ticket Type, or has independently shippable parts. If
-it matches → say so once and hand off: `"Việc này giống 1 epic (nhiều phần
-độc lập) — chạy /dev-workflow:decompose trước để tách rõ ràng, rồi quay lại
-đây cho từng phần?"` Wait for the answer; do not silently decompose inline.
-
-**In-repo split threshold.** A ticket can mix Type without ever spanning a
-second service/repo — a "mixes ticket Type" epic-signal already covers this,
-but don't wait for step 2's question list to visibly balloon before noticing.
-While running step 1's investigation, if the ticket resolves into **more than
-4 independent claims, or more than 2 distinct Types**, treat that as the same
-epic-signal firing early: say so and offer `:decompose` right there, same
-wording as above, instead of proceeding to one oversized step-2 stop. This
-reuses `:decompose`'s existing in-repo split path (it does not require
-spans->1-repo) — it only moves the offer earlier, before the merged question
-list gets long enough to risk the user skimming past something.
+**Epic check.** Read `references/epic-signal.md` and apply it now, while
+running step 1's investigation below, before the question list visibly
+balloons — this file is the only source for the signal and the numeric
+backstop; do not restate either here.
 
 Otherwise this is one ticket (any size) — continue below.
 
@@ -71,11 +60,22 @@ it to get to code faster; a shallow pass here is exactly what forces a
 second, third, fourth round of questions mid-build, which is what this step
 exists to prevent.
 
-1. Classify `Type:` (Bug / New feature / Spec change / Requirement change —
-   `references/ba-integrity.md`) and run **that type's actual investigation
-   strategy** — reproduce-and-trace for Bug, closest-analog survey for New
-   feature, before/after-and-every-consumer for Spec change, every-encoding
-   for Requirement change. Do not skip straight to writing tasks.
+1. Classify `Type:` (Bug / New feature / Spec change / Requirement change /
+   Refactor — `references/ba-integrity.md`) and run **that type's actual
+   investigation strategy** — reproduce-and-trace for Bug, closest-analog
+   survey for New feature, before/after-and-every-consumer for Spec change,
+   every-encoding for Requirement change, no-behavior-change-claim +
+   coverage-check for Refactor. Do not skip straight to writing tasks.
+
+   **Type=Refactor routes differently, regardless of size.** If every claim
+   in the ticket is provably behavior-preserving (`ba-integrity.md`
+   "Refactor" section), say so once and route straight to `:build <Ticket>`
+   — skip spec/clarify/confirm entirely, same as the fast-path below, but
+   for a different reason (type, not size — a Refactor can span many files
+   and still skip ceremony, because there is no spec delta to normalize).
+   The moment any claim isn't provably behavior-preserving, that claim drops
+   out of Refactor and back into whichever type actually fits; continue this
+   step normally for it.
 2. Run the duplicate-scan (`ba-integrity.md` "Duplicate-scan") regardless of
    Type/Risk — same text/logic elsewhere is a real question, not an
    afterthought.
@@ -97,14 +97,27 @@ exists to prevent.
    without asking; record the inference and its evidence so the user can
    correct it later instead of being asked to pre-approve it now.
 
-**Fast-path.** If step 1 finds the ticket genuinely tiny and non-behavioral
-(single-file, no logic/API/data-shape change — copy text, a config value, a
-comment, a label, a constant), say so once and offer the shortcut instead of
-silently deciding for the user: `"Việc này nhỏ, không đổi hành vi (Risk=P2
-candidate) — chạy :build <Ticket> luôn (tự phân tích, bỏ qua spec/clarify)?
-Nói 'full pipeline' nếu bạn muốn qua đủ từng gate."` Wait for their answer.
-Never offer this if the ticket touches money/authz/PII/legacy or changes
-user-visible behavior/API contract — dispatch the full flow below instead.
+**Fast-path.** This is not a third skip criterion — it's `references/risk.md`'s
+"Single source for 'skip ceremony'" table applied early, before the pipeline
+starts, so the user picks once instead of discovering the soft-gate stage by
+stage. If step 1's classification lands on Risk=P2 (see risk.md "How to
+choose") or Type=Refactor (per `ba-integrity.md`), check `references/risk.md`
+"Trivial" first:
+
+- **Trivial matches** (P2, ≤1 file, ≤5 lines, no public identifier change,
+  duplicate-scan clean, not a multi-file Refactor): skip the offer-and-wait
+  below entirely. Run `:build <Ticket>` directly, log the one-line Trivial
+  entry on INDEX, then report what was done — never ask first. See risk.md
+  "Trivial" for the exact log line and report text.
+- **Otherwise** (P2 or Refactor but not Trivial), say so once and offer the
+  matching shortcut instead of silently deciding for the user:
+  `"Việc này nhỏ, không đổi hành vi (Risk=P2 candidate) — chạy :build <Ticket>
+  luôn (tự phân tích, bỏ qua spec/clarify)? Nói 'full pipeline' nếu bạn muốn qua
+  đủ từng gate."` Wait for their answer.
+
+Never offer either path if the ticket touches money/authz/PII/legacy or
+changes user-visible behavior/API contract — neither qualifies for P2 or
+Refactor, so dispatch the full flow below instead.
 
 ## Step 2 — the one stop (skipped only by the fast-path above)
 
@@ -133,22 +146,13 @@ claim, new scope discovered only once code is touched) —
 guessing in that case; this does not override that safety, it just means the
 *normal* path doesn't hit it.
 
-## Step 3 — confirm, simplified
+## Step 3 — confirm
 
-Once step 2's questions are resolved, hand the user the same pre-filled line
-`skills/confirm/SKILL.md` already produces:
-`CONFIRM G3: <Ticket_ID> ___ <YYYY-MM-DD>` (P0 also `CONFIRM G3-PM:`).
-
-**Simplification, not a new mechanism**: the user does not need to type the
-line back. Any reply that clearly reads as agreement — a name, "ok <name>",
-"đồng ý, <name>" — is enough; compose the exact `CONFIRM G3: <Ticket> <Name>
-<Date>` line from that reply and show it back once so the user sees exactly
-what gets written, per `skills/confirm/SKILL.md` step 4's existing "compose
-it for them, hand it back once" rule. It still needs that one shown-back line
-to exist verbatim in `INDEX.md` and `03b-human-confirm.md` with `Source:
-user-message` — same anti-forge floor, just fewer keystrokes to clear it. A
-reply that doesn't read as agreement at all still gets a direct yes/no ask,
-never assumed.
+Once step 2's questions are resolved, dispatch `skills/confirm/SKILL.md`
+directly — its simplified reply path (a name, "ok <name>", "đồng ý, <name>"
+is enough; it composes and shows back the exact line, no verbatim retype
+required) applies the same way here as it does when the user calls
+`/dev-workflow:confirm` by hand. Nothing to duplicate here.
 
 Risk=P2: still offer the existing skip (`skills/confirm/SKILL.md`'s P2 fast
 path) in the same message as the line, so the user picks once: send the name,
@@ -156,12 +160,14 @@ or say "skip".
 
 ## Step 4 — run to the next real stop, without re-asking settled things
 
-Dispatch in order: plan → build → review → fix (only if P0/P1 OPEN) → test →
-check. Each stage still does its own required work in full (TDD, real diff
-review, real test execution, real checker run) — nothing here shortens what
-an individual stage owes; it only removes the *user* having to type the next
+Dispatch in the order `references/workflow.md` "Stage order" defines (this
+file does not restate that order — read it there so the two never drift).
+Each stage still does its own required work in full (TDD, real diff review,
+real test execution, real checker run) — nothing here shortens what an
+individual stage owes; it only removes the *user* having to type the next
 command each time. Print each stage's normal verdict/evidence as it
-completes — this optimizes stop count, not visibility into what happened.
+completes, grouped by the phase from `references/workflow.md` "Phase
+grouping" — this optimizes stop count, not visibility into what happened.
 
 This ordering is enforced by **you reading and following it**, not by a
 script — `check-gates.sh` verifies each stage's *output artifact* is real,

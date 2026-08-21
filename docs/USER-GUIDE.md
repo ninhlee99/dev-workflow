@@ -119,6 +119,17 @@ You answer with `/dev-workflow:coaching` when AI is wrong or specs change.
 AI analyzes once, asks once, then runs to the **first genuine stop**. You can also run stages
 manually (below).
 
+**Trivial fixes skip even that one ask.** If the ticket is Risk=P2, touches ≤1 file, ≤5 lines, changes
+no public identifier (function/route/API/column name), and the duplicate-scan comes back clean (no
+other occurrence to keep in sync), `:start` runs `:build` immediately and reports what it did instead
+of asking first — say `"full pipeline"` afterward if you want it undone and redone with full ceremony.
+This only fires when the duplicate-scan is clean; if it finds another occurrence, `:start` falls back
+to the normal P2 offer-and-wait. **This no-ask auto-run is `:start`-only** — calling
+`/dev-workflow:build TICKET-123` directly still self-analyzes on a Trivial-shaped ticket, but it
+doesn't skip reporting first, since `:start`'s step-1 offer is what the no-ask behavior lives on.
+See `references/risk.md` "Trivial" — the `≤5 lines` threshold is an
+unvalidated starting guess, tracked the same way as the epic-signal claim-count backstop.
+
 ### 3.3 Spec (G1)
 
 ```
@@ -127,7 +138,7 @@ manually (below).
 
 Must produce `02-spec.md` with:
 
-- Exactly one **Type:** Bug / New feature / Spec change / Requirement change
+- Exactly one **Type:** Bug / New feature / Spec change / Requirement change / Refactor
 - **Risk:** P0 / P1 / P2 (required)
 - Requirement provenance: truth label, source/quote, verification date, confidence, unresolved owner
 - Scenario AC rows (Given / When / Then) filled
@@ -163,6 +174,13 @@ Investigation changes by Type: Bug follows the real execution path; New feature 
 and insertion points; Spec change traces every consumer; Requirement change finds every encoding of
 the old/new rule and requires named authority. Mixed tickets classify each claim separately.
 
+**Duplicate-scan runs on every ticket, not just Spec/Requirement change** — a Bug fix or a P2 copy
+tweak can just as easily touch text or logic duplicated elsewhere. Before closing any claim: grep
+for the same string (copy/label/message) or the same logic (validation rule, calculation,
+permission check) across the codebase. Found more than one occurrence → becomes a question for you
+("keep these in sync?"), not a silent decision either way. See `references/ba-integrity.md`
+"Duplicate-scan".
+
 ### 3.5 Confirm (G3) — **you send this back**
 
 ```
@@ -181,6 +199,12 @@ If Risk = **P0**, also:
 ```text
 CONFIRM G3-PM: TICKET-123 PM Name 2026-08-11
 ```
+
+**You don't have to type the line back exactly.** Any reply that clearly reads as agreement — a
+bare name, `"ok Hoa"`, `"đồng ý, tên tôi là Hoa"` — is enough. AI composes the exact line from your
+reply and shows it back once so you see exactly what gets written; that shown-back line becomes the
+record once you don't contest it. If your reply doesn't clearly read as agreement, AI asks a direct
+yes/no instead of assuming.
 
 Rules:
 
@@ -346,6 +370,9 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 
 ## 6. Gates (G0–G9 + AUDIT) in one table
 
+This table is a reader-facing summary. `references/stage-contract.md` is the authoritative
+source — if the two disagree, the contract file wins; edit it first, then sync this table.
+
 | Gate | PASS means | If FAIL run |
 |------|------------|-------------|
 | G0 | Domain knowledge ready | `:learning` / `:coaching` |
@@ -362,6 +389,10 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 
 **P2 fast lane:** G2/G3/G4/G5/G7 are soft (warn) unless `--strict` — a tiny, non-behavioral P2
 ticket can skip the human `CONFIRM G3` round-trip entirely.
+**Trivial (P2 filter, not a new tier):** ≤1 file, ≤5 lines, no public identifier change, clean
+duplicate-scan → `:start` skips even the P2 offer-and-wait and runs `:build` straight away, reporting
+after the fact. Falls back to normal P2 if the duplicate-scan finds another occurrence. See
+`references/risk.md` "Trivial".
 **P0:** no WAIVE on G3/G8; dual confirm; security file required.
 **P0/P1 finality:** G9 is structural; AUDIT plus human sign-off is required.
 

@@ -23,11 +23,21 @@ PROJECT.md, domain-knowledge/INDEX.md, worklogs/ layout, stray files, per-ticket
 marker-slug consistency) + run its summary directly, do not re-derive by hand. Also list any
 `domain-knowledge/coaching-tickets/*.md` with `Status: OPEN` (id + title) so the user can see
 what's waiting on an answer — these are async and don't block anything, just surface them.
-With ticket: report gate state from **that** worklog INDEX only (`task-isolation.md`); suggest
-`:clean` if G9 PASS and user wants to free memory — `:clean` only needs G9, not `:audit`.
+With ticket: report gate state from **that** worklog INDEX only (`task-isolation.md`); lead with
+the phase group from `references/workflow.md` "Phase grouping" (Spec-locked/Built/Verified/Shipped),
+individual gate letters second — e.g. `Verified (G7 PASS, G8 FAIL)`, not a bare gate-letter dump.
+Suggest `:clean` if G9 PASS and user wants to free memory — `:clean` only needs G9, not `:audit`.
 No code changes; keep default output short.
 Report G9 structural, AUDIT semantic, and human sign-off separately. Run the checker when possible;
 never infer PASS from a checkbox alone. Include uncertainty and exactly one next command.
+
+**Audit-pending nudge.** Without a ticket, also scan `worklogs/*/INDEX.md` for tickets that are
+G9 PASS but have no AUDIT verdict recorded, and surface them as a one-line list (id + days since
+G9) — e.g. `3 ticket(s) shipped, not yet audited: TICKET-42 (6d), TICKET-51 (1d), adhoc-foo (14d)`.
+This is a visibility nudge only — never blocks, never auto-runs `:audit`, never changes any gate.
+It exists because `:audit` is the one gate with no structural enforcement (`references/risk.md`'s
+own timebox table already flags it as the gate most likely to get cut under deadline pressure) —
+`:status` is the cheapest place to keep it visible without adding ceremony to `:ship`.
 
 Calling this mid-pipeline (after some gates PASS, before the ticket is done) is a legitimate,
 low-cost way to re-orient — not just a start/end check. `check-gates.sh --json` gives a full

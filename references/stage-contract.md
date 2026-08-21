@@ -37,8 +37,11 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 | New feature | Closest analog → insertion points → constraints/contracts → negative integration effects |
 | Spec change | Exact before/after → every consumer of changed behavior → signed side effects |
 | Requirement change | Exact old/new rule → every encoding across code/config/copy/docs/repos → named authority |
+| Refactor | State the no-behavior-change claim → confirm existing test coverage → duplicate-scan → route straight to `:build`, skipping spec/clarify |
 
-Mixed tickets use claim-level Type. They must not use one strategy for all claims.
+Mixed tickets use claim-level Type. They must not use one strategy for all claims. A ticket mixing
+Refactor with any other type is not a Refactor — the moment a claim changes observable behavior it
+moves to its real type.
 
 ## Entry-point stages (outside the gate sequence)
 

@@ -453,6 +453,7 @@ if need_gate G1; then
           if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*New feature/) print "New feature"
           if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*Spec change/) print "Spec change"
           if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*Requirement change/) print "Requirement change"
+          if ($0 ~ /(☑|\[x\]|\[X\])[[:space:]]*Refactor/) print "Refactor"
         }
       ' "$src" 2>/dev/null
     }

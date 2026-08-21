@@ -8,7 +8,7 @@ it here either.
 - **Ticket:** [url]
 - **Feature alias:** [name]
 - **Touches UI?** ☐ Yes ☐ No
-- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `01-intent.md`; drives investigation strategy in `:clarify`)
+- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change ☐ Refactor   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `01-intent.md`; drives investigation strategy in `:clarify`; Refactor skips `:clarify`/`:confirm` entirely)
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (see `references/risk.md`)
 - **Pilot:** ☐ yes ☐ no   (if yes, G9 requires row in `pilot/PILOT-*.md`)
 

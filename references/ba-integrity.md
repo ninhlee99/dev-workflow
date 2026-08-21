@@ -133,7 +133,7 @@ at rather than skipped because the ticket looked small.
 
 ## Classify the ticket first — the investigation strategy depends on it
 
-Before choosing *how* to investigate, decide *what kind* of ticket this is. The four types need
+Before choosing *how* to investigate, decide *what kind* of ticket this is. The five types need
 genuinely different strategies, not the same checklist applied uniformly — using a bug's
 root-cause-hunting approach on a greenfield feature wastes effort chasing "existing behavior" that
 doesn't exist yet, and using a feature's design-survey approach on a bug wastes effort mapping
@@ -145,13 +145,16 @@ unrelated architecture instead of chasing the one broken path.
 | **New feature** | No existing behavior to contradict; ticket asks for something that doesn't exist yet | Where it plugs into existing architecture, what patterns/conventions to reuse, what it must not break |
 | **Spec change** | A feature exists and works as originally specified; ticket asks to change that intended behavior | The current spec/AC (if one exists) + every call site/consumer of the behavior being changed |
 | **Requirement change** | Business rule itself changed (policy, pricing, compliance, workflow) independent of any one feature's implementation | Every place the old rule is encoded — often more than one file/repo — plus who signs off on the new rule |
+| **Refactor** | Ticket explicitly claims no observable behavior change — internal structure, naming, dependency, or file organization only; existing tests are the spec | Every existing test/consumer still passes unmodified after the change — see the refactor procedure below |
 
 State the classification explicitly at the top of the intent/spec doc (`01-intent.md`), one line:
-`Type: Bug | New feature | Spec change | Requirement change`. If a ticket is a mix (e.g. "fix this
-bug and also change the behavior while we're in here"), split it into separate claims per type
-rather than forcing one strategy to cover both — a bug claim needs a repro + root cause, a
+`Type: Bug | New feature | Spec change | Requirement change | Refactor`. If a ticket is a mix (e.g.
+"fix this bug and also change the behavior while we're in here"), split it into separate claims per
+type rather than forcing one strategy to cover both — a bug claim needs a repro + root cause, a
 spec-change claim needs a before/after + impact list, and conflating them produces a spec that
-half-investigates both.
+half-investigates both. A ticket that mixes Refactor with any other type is not a Refactor — the
+moment a claim changes observable behavior, that claim moves to whichever type actually matches;
+Refactor is only for claims where "before" and "after" behavior must be identical.
 
 ### Bug — investigate the real execution path, not everything that looks similar
 
@@ -271,6 +274,35 @@ ticket happens to mention.
 3. Confirm who has authority to change this rule (PM, compliance, the reporter themselves) and
    record that as the source — a requirement change without a named authority is itself an open
    question, not something to infer from ticket tone.
+
+### Refactor — prove behavior didn't move, don't design anything new
+
+Nothing is broken (unlike Bug) and nothing new is being added (unlike New feature) — the entire
+job is showing the change is observably a no-op. Spec/clarify ceremony built for the other four
+types doesn't fit here: there's no new AC to write, no spec delta to diff, no business authority to
+name, because the claim is precisely that none of those changed.
+
+1. **State the no-behavior-change claim explicitly** — what structure/naming/dependency/file
+   organization is moving, and why the existing tests are sufficient proof nothing observable
+   changes. If you can't state this in one sentence, the ticket probably isn't a pure refactor —
+   reclassify the parts that don't fit.
+2. **Confirm test coverage already exists for what's being touched** before starting. A refactor
+   with no pre-existing test around the touched code isn't provably safe — either add
+   characterization tests first (still `Type: Refactor`, this is proving the safety net exists, not
+   changing behavior) or reclassify as risk until coverage exists.
+3. **Skip spec/clarify entirely** — route straight to `:build` per `references/stage-contract.md`'s
+   entry-point notes; there is no spec delta to normalize and no claim for a human to decide, only
+   a mechanical transformation to verify. `:start`'s fast-path offer already does this for
+   genuinely tiny non-behavioral tickets; a Refactor-typed ticket gets the same routing regardless
+   of size, because the reason for skipping is the type, not the size.
+4. **Run the duplicate-scan anyway** (see above) — a refactor that renames or moves one copy of
+   duplicated logic while missing a sibling copy silently reintroduces drift, which is exactly the
+   kind of regression a "no behavior change" ticket must not cause.
+5. If, mid-refactor, the change turns out to require touching observable behavior to complete (a
+   rename that must also fix a caller's now-wrong assumption, a dependency bump with a breaking
+   API change) — stop, reclassify that claim under its real type (Bug/Spec change/etc.), and route
+   it through that type's normal spec/clarify requirement. Do not quietly absorb a behavior change
+   into a ticket still labeled Refactor.
 
 ## Multi-angle BA pass — before asking, not after the first answer
 

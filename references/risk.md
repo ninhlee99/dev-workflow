@@ -2,10 +2,67 @@
 
 Set **Risk** on worklog `INDEX.md` and `02-spec.md` before `:plan`.
 
+## Single source for "skip ceremony"
+
+Three different callers used to each carry their own skip logic (P2 soft-gate here, Refactor
+routing in `ba-integrity.md`, a separate "genuinely tiny" fast-path in `start/SKILL.md`). There are
+only two independent reasons ceremony can shrink — **Risk tier** (this file) and **ticket Type**
+(`ba-integrity.md`'s Refactor section) — so this file is the one place that names both and how they
+compose. Every other reference (`start/SKILL.md`, `skills/clarify/SKILL.md`, `skills/confirm/SKILL.md`)
+must point here, not restate its own criteria.
+
+| Reason | Trigger | What shrinks |
+|---|---|---|
+| Risk=P2 | see "How to choose" below | G2/G3/G4/G5/G7 soft (warn, not fail) |
+| Type=Refactor | every claim provably behavior-preserving (`ba-integrity.md` "Refactor") | skip spec/clarify entirely, route straight to `:build` |
+
+They stack independently — a P2 ticket that is also a Refactor gets both. `:start`'s step-1
+fast-path offer (`skills/start/SKILL.md`) is not a third criterion: it is the same P2/Refactor
+determination made early, before the pipeline starts, so the user is asked once instead of
+discovering the soft-gate stage by stage. If a ticket doesn't qualify for either row above, `:start`
+runs the full stop-by-stop flow — it never invents its own "looks small" judgment call.
+
+## Trivial (a filter on P2, not a third tier)
+
+**Trivial** narrows the P2 fast-path offer above into a no-ask auto-run for the smallest possible
+change. It is not a new Risk tier — Risk is still exactly P0/P1/P2, still chosen the same way. Trivial
+only changes whether `:start`'s step-1 fast-path *asks and waits* or *runs and reports*.
+
+A ticket is **Trivial** when **all** of the following hold:
+
+- Risk = P2 (per "How to choose" above).
+- Estimated diff ≤ 1 file, ≤ 5 lines.
+- No public identifier changes (function/route/API/column name).
+- The duplicate-scan (`ba-integrity.md` "Duplicate-scan") returns clean — zero other occurrences —
+  without asking the user to confirm the grep result.
+- Type ≠ Refactor spanning more than 1 file (multi-file Refactor already has its own route above;
+  it does not need Trivial).
+
+**The `≤ 5 lines` threshold is an unvalidated starting guess, not a measured number** — same status
+as epic-signal.md's 4-claims/2-types backstop. Log Trivial-lane outcomes in
+`templates/pilot-metrics.md` and adjust the number from that evidence, not from a new guess.
+
+**On match:** skip the "offer fast-path, wait for reply" step entirely. Run `:build <Ticket>`
+directly, write one INDEX log line (`Trivial: <description>, duplicate-scan clean, Risk=P2`) instead
+of opening a full worklog, then report after the fact: `"Sửa xong (trivial, P2, duplicate-scan
+clean). Nói 'full pipeline' nếu muốn undo và làm lại đầy đủ."` Do not ask before acting — the
+duplicate-scan already answered the one question that would have made this unsafe (does anything
+else depend on this text/logic).
+
+**This no-ask auto-run is a property of `:start`'s step-1 offer, not of Trivial itself.** Calling
+`/dev-workflow:build <Ticket>` (or any other stage) directly on a Trivial-shaped ticket still
+self-analyzes per the stage's own fallback (see `references/stage-contract.md`), but does not get
+the "run and report after the fact" treatment — that behavior only exists inside `:start`'s
+step-1 fast-path check.
+
+**Trivial does not apply** when the duplicate-scan finds ≥1 other occurrence (fall back to the
+normal P2 ask-first flow — that's exactly when "keep these in sync?" needs a human answer), or when
+Risk is P0/P1, or when the ticket doesn't otherwise qualify above.
+
 | Tier | When | Lane | Rules |
 |---|---|---|---|
 | **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | All G0–G9 + AUDIT. No WAIVE G3/G8. Dual `CONFIRM G3` + `CONFIRM G3-PM`. Machine evidence + **CI-native verify** under `--strict`. **`02b-security.md` required**. |
-| **P1** | normal product behavior change | Hard | All G0–G9 + AUDIT. Machine evidence required. `--strict` required for the final AUDIT check. |
+| **P1** | normal product behavior change | Hard | All G0–G9 + AUDIT. Machine evidence required. `--strict` required for the final AUDIT check. **Small-P1 exception below softens AUDIT only** — every other G0–G9 requirement stays hard. |
 | **P2** | copy, config, docs, tiny non-behavioral chore | Fast | Required hard: G0, G1, G6, G8, G9. **G2/G3/G4/G5/G7 soft** unless `--strict` (warn, not fail) — a P2 ticket can reach G9 with no human `CONFIRM G3` round-trip, though one is still welcome. Still prefer INDEX WAIVE rows when skipping intentionally. |
 
 ## How to choose
@@ -14,7 +71,33 @@ Set **Risk** on worklog `INDEX.md` and `02-spec.md` before `:plan`.
 2. Else changes user-visible behavior or API contract → **P1**
 3. Else → **P2**
 
-If unsure → **P1**.
+Ground the call in objective signal before falling back to judgment — check, in order:
+- **Touched paths/routes**: any file under an auth/permission/payment/PII-handling module,
+  or a migration → that alone forces **P0** regardless of diff size.
+- **Diff shape**: new/changed public API contract, new user-visible route or UI state → **P1**
+  floor even if the diff is a few lines.
+- **Diff size + surface**: single file, no route/API/schema change, no new consumer → **P2**
+  is the honest default, not "unsure."
+
+"Unsure" should mean "I checked the above and it's genuinely ambiguous," not "I didn't check."
+Only after checking touched paths and diff shape and still being unable to place it →
+**P1** (fail toward the hard lane, not the fast one).
+
+## Small-P1 audit exception
+
+A P1 ticket still needs every other G0–G9 requirement (this is not a P1.5 tier — Risk stays P1,
+evidence bar stays full), but AUDIT becomes soft (warn, not fail) when **all** of these hold:
+
+- Single file changed, or changes confined to one existing module with no new file.
+- No new/changed public API contract, route, or schema/migration.
+- No new user-visible state (no new error class, no new consumer, no new permission branch) —
+  same "pure analog" bar `skills/clarify/SKILL.md`'s fast path already uses.
+
+If any of these is false, or it's genuinely ambiguous, run full AUDIT — this exception exists for
+a narrow, obviously-small P1 (e.g. a one-line validation-rule fix in a single existing function),
+not as a general P1 discount. `check-gates.sh --min AUDIT` still runs; it warns instead of failing
+when the exception applies and `--strict` was not passed. `--strict` always makes AUDIT hard again,
+same as it does for G3 on P2.
 
 ## Fast lane (P2)
 
