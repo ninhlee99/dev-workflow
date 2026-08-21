@@ -51,34 +51,32 @@ the request is epic-shaped, then hands the single-ticket flow one child at a tim
 
 ### Single-ticket flow
 
-```
-:start (analyze once, G0 check, ask once)
-   or a named /dev-workflow:<stage> by hand
-                    ↓
-   ┌────────────────┴─────────────────┐
-   │                                   │
-Trivial (P2, ≤1 file, ≤5 lines,   spec → clarify → confirm → plan
-clean dup-scan) or Refactor        (one analysis pass, one confirm,
-(behavior-preserving)                then continuous)
-→ skip straight to build                     │
-   │                                   │
-   └────────────────┬─────────────────┘
-                    ↓
-                  build
-                    ↓
-                 review
-                    ↓
-          fix (if P0/P1 OPEN)
-                    ↓
-                  test
-                    ↓
-                  check
-                    ↓
-               ship (G9)
-                    ↓
-      audit (C1–C8 + human sign-off)
-                    ↓
-        clean (archive worklog)
+```mermaid
+flowchart TD
+    start["<b>:start</b><br/>analyze once · G0 check · ask once<br/><i>or a named /dev-workflow:&lt;stage&gt; by hand</i>"]
+
+    trivial["<b>Trivial</b> or <b>Refactor</b><br/>P2, ≤1 file, ≤5 lines, clean dup-scan —<br/>or behavior-preserving refactor<br/><i>→ skip straight to build</i>"]
+    full["<b>spec → clarify → confirm → plan</b><br/>one analysis pass, one confirm,<br/>then continuous"]
+
+    build[build]
+    review[review]
+    fix["fix<br/><i>if P0/P1 OPEN</i>"]
+    test[test]
+    check[check]
+    ship["<b>ship</b><br/>gate G9"]
+    audit["<b>audit</b><br/>C1–C8 + human sign-off"]
+    clean["clean<br/><i>archive worklog</i>"]
+
+    start --> trivial
+    start --> full
+    trivial --> build
+    full --> build
+    build --> review --> fix --> test --> check --> ship --> audit --> clean
+
+    classDef fast fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
+    classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
+    class trivial fast
+    class ship,audit gate
 ```
 
 `start` stops at G0 and hands you to `:learning`/`:coaching` if domain knowledge is missing or
@@ -87,33 +85,26 @@ before merge and again before AUDIT; it is not a separate pipeline stage, just a
 
 ### Epic flow (loops the single-ticket flow above, one child at a time)
 
-```
-epic-shaped request
-        ↓
-   decompose (one analysis pass across the whole epic)
-        ↓
-    epic-map.md (child list + Type/Risk estimate + dependencies + duplicate-scan)
-        ↓
-  one confirm covering the whole split
-        ↓
-        ┌─────────────────────────────────────────┐
-        │  pick next unblocked child from          │
-        │  epic-map.md (skip if `blocked by`       │
-        │  still open)                             │
-        └─────────────────┬─────────────────────────┘
-                          ↓
-        that child runs the single-ticket flow above,
-        start to finish, on its own worklog
-                          ↓
-              update epic-map.md status for that child
-                          ↓
-              more unblocked children remain? ──yes──┐
-                          │                            │
-                          no                           │
-                          ↓                            │
-                    epic done                          │
-                          └────────────────────────────┘
-                          (loop back to "pick next unblocked child")
+```mermaid
+flowchart TD
+    req["epic-shaped request"]
+    decompose["<b>decompose</b><br/>one analysis pass across the whole epic"]
+    map["<b>epic-map.md</b><br/>child list + Type/Risk estimate +<br/>dependencies + duplicate-scan"]
+    confirm["<b>one confirm</b><br/>covers the whole split"]
+    pick["pick next unblocked child from epic-map.md<br/><i>skip if `blocked by` still open</i>"]
+    childflow["that child runs the <b>single-ticket flow</b> above,<br/>start to finish, on its own worklog"]
+    update["update epic-map.md status for that child"]
+    more{"more unblocked<br/>children remain?"}
+    done["epic done"]
+
+    req --> decompose --> map --> confirm --> pick --> childflow --> update --> more
+    more -- yes --> pick
+    more -- no --> done
+
+    classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
+    classDef loop fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
+    class confirm gate
+    class pick,childflow,update loop
 ```
 
 `decompose` writes `epic-map.md` at the project level (not inside any one ticket's worklog) and hands
