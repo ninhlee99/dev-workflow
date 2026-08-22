@@ -1,7 +1,4 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/logo/logo-dark.svg">
-  <img alt="dev-workflow" src="./assets/logo/logo-light.svg" width="200">
-</picture>
+<img alt="dev-workflow" src="./assets/logo/logo-light.svg" width="200">
 
 # dev-workflow
 

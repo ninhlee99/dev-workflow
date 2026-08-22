@@ -1,13 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="dev-workflow icon">
   <title>dev-workflow</title>
-  <defs>
-    <linearGradient id="dw-fav" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#14b8a6"/>
-      <stop offset="1" stop-color="#0ea5e9"/>
-    </linearGradient>
-  </defs>
-  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#dw-fav)"/>
-  <path d="M14 22 L26 32 L14 42" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M30 44 L40 44" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
-  <path d="M40 34 L46 40 L54 24" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="64" height="64" rx="12" fill="#1e1e2e"/>
+  <rect width="64" height="14" rx="12" fill="#161622"/>
+  <rect y="7" width="64" height="7" fill="#161622"/>
+  <circle cx="10" cy="7" r="2.6" fill="#ff5f56"/>
+  <circle cx="18" cy="7" r="2.6" fill="#ffbd2e"/>
+  <circle cx="26" cy="7" r="2.6" fill="#27c93f"/>
+  <rect x="10" y="24" width="22" height="5" rx="2.5" fill="#7aa2f7"/>
+  <rect x="10" y="34" width="34" height="5" rx="2.5" fill="#e2e8f0" opacity="0.55"/>
+  <path d="M12 48 L20 55 L36 40" fill="none" stroke="#27c93f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
