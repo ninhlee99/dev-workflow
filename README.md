@@ -1,10 +1,14 @@
+<img alt="dev-workflow" src="./assets/logo/logo-light.svg" width="200">
+
 # dev-workflow
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#installation)
 
-> **Requirement-first AI delivery workflow.** Clear specs → human confirm → TDD → machine-verified evidence → safe ship. Checker (`bin/check-gates.sh`) is the source of truth — AI must not invent PASS.
+**[English](README.md)** · [Tiếng Việt](README.vi.md) · [日本語](README.ja.md)
+
+> **Requirement-first AI delivery workflow.** Clear specs → human confirm → TDD → machine-verified evidence → safe ship. The checker (`bin/check-gates.sh`) is the source of truth — the AI must not invent a PASS.
 
 **Full how-to (recommended):** [docs/USER-GUIDE.md](./docs/USER-GUIDE.md)
 
@@ -31,21 +35,22 @@
 
 Without a gated process, AI coding often:
 
-- Misses business rules  
-- Ships UI/logic bugs  
-- Marks “done” without evidence  
+- Misses business rules
+- Ships UI/logic bugs
+- Marks "done" without evidence
 
-This plugin blocks advance until structural gates G0–G9 and the required semantic AUDIT pass, with
-Risk lanes (P0/P1/P2), evidence provenance, and optional pilot scoring.
+dev-workflow blocks progress until structural gates G0–G9 and the required semantic AUDIT pass, backed
+by Risk lanes (P0/P1/P2), evidence provenance, and optional pilot scoring.
 
 ---
 
 ## Flow
 
-`learning`/`coaching` run independently of this pipeline — the user calls them directly to
-bootstrap/correct domain-knowledge; `:start` never invokes them, it stops at G0 and asks you to.
+`learning`/`coaching` run independently of the delivery pipeline — you call them directly to
+bootstrap or correct domain knowledge. `:start` never invokes them; it stops at G0 and asks you to
+run them yourself.
 
-`:start` (also the bare `/dev-workflow` alias) is the one entry point for a single ticket — same
+`:start` (also the bare `/dev-workflow` alias) is the single entry point for one ticket — same
 gates, no shortcuts, just fewer stops than calling each stage by hand. `:decompose` runs first when
 the request is epic-shaped, then hands the single-ticket flow one child at a time.
 
@@ -79,7 +84,7 @@ flowchart TD
     class ship,audit gate
 ```
 
-`start` stops at G0 and hands you to `:learning`/`:coaching` if domain knowledge is missing or
+`:start` stops at G0 and hands you to `:learning`/`:coaching` if domain knowledge is missing or
 contradicted — it never runs either for you. `check-gates.sh --strict` is the CI-native verify used
 before merge and again before AUDIT; it is not a separate pipeline stage, just a flag on `check`.
 
@@ -107,14 +112,15 @@ flowchart TD
     class pick,childflow,update loop
 ```
 
-`decompose` writes `epic-map.md` at the project level (not inside any one ticket's worklog) and hands
-off only the **first** unblocked child — it never dispatches multiple children's `:spec`/`:start`
-itself. Each child gets its own full single-ticket flow (own Risk tier, own `CONFIRM G3`, own G0–G9 +
-AUDIT) — the epic's one confirm authorizes the split and the epic-level questions, it does not
-substitute for any child's own gates. A P0 child found during decomposition is exactly as hard-gated
-as a P0 ticket found any other way. `epic-map.md` has not been validated against a multi-level epic
-(children that themselves fan out) — treat the dependency graph as reliable for a flat child list
-only; say so explicitly if a child looks like it needs decomposing again.
+`:decompose` writes `epic-map.md` at the project level (not inside any one ticket's worklog) and
+hands off only the **first** unblocked child — it never dispatches multiple children's
+`:spec`/`:start` itself. Each child gets its own full single-ticket flow (own Risk tier, own
+`CONFIRM G3`, own G0–G9 + AUDIT) — the epic's one confirm authorizes the split and the epic-level
+questions; it does not substitute for any child's own gates. A P0 child found during decomposition is
+exactly as hard-gated as a P0 ticket found any other way. `epic-map.md` has not been validated
+against a multi-level epic (children that themselves fan out) — treat the dependency graph as
+reliable for a flat child list only, and say so explicitly if a child looks like it needs
+decomposing again.
 
 | Step | Meaning |
 |------|---------|
@@ -130,20 +136,20 @@ only; say so explicitly if a child looks like it needs decomposing again.
 
 `:start` and the named `/dev-workflow:<stage>` commands are both valid ways to work a ticket —
 `:start` minimizes stops for "just get this done"; calling each stage yourself gives full manual
-control of one specific step. Neither weakens a gate; `:start` reruns the exact same
+control over one specific step. Neither weakens a gate: `:start` runs the exact same
 `check-gates.sh` checks the manual path does.
 
 **Every stage above runs standalone — the diagram is the full path, not a hard requirement.** Call
 any `/dev-workflow:<stage>` directly on a ticket with no upstream artifact on disk yet; `clarify`,
 `plan`, and `build` self-analyze the ticket in place of the missing `spec`/`clarify`/`plan` output
 they'd normally read, and mark the result `Source: self-analyzed (no upstream artifact)` so later
-stages/humans can see it wasn't built from confirmed scope. A one-line typo fix doesn't need a full
-`spec` → `clarify` → `confirm` round-trip: run `/dev-workflow:build <Ticket>` directly and it plans
-and implements from its own reading of the ticket. The only two stages that never soften this way
-are `confirm` and `audit` — their human sign-off can't be self-analyzed. Exactly how much each other
-stage softens (warn vs. self-analyze vs. full stop) is per-stage, not uniform — see the `(preferred)`
-column in `references/stage-contract.md` for the actual per-stage rule, and
-`references/workflow.md`'s "Independence" section for exactly which stages fall back this way.
+stages and humans can see it wasn't built from confirmed scope. A one-line typo fix doesn't need a
+full `spec` → `clarify` → `confirm` round-trip: run `/dev-workflow:build <Ticket>` directly, and it
+plans and implements from its own reading of the ticket. The only two stages that never soften this
+way are `confirm` and `audit` — their human sign-off can't be self-analyzed. Exactly how much each
+other stage softens (warn vs. self-analyze vs. full stop) is per-stage, not uniform — see the
+`(preferred)` column in `references/stage-contract.md` for the actual per-stage rule, and the
+"Independence" section of `references/workflow.md` for exactly which stages fall back this way.
 
 ---
 
@@ -234,30 +240,30 @@ worklogs, unrelated host configuration, and any modified Codex marketplace file.
 /dev-workflow:learning
 
 # 2) Epic-shaped request? Split before opening any child worklog.
-/dev-workflow:decompose "tách monolith thanh toán thành microservice riêng"
+/dev-workflow:decompose "split the payment monolith into its own service"
 # → epic-map.md + one confirm, then hands off the first unblocked child
 
 # 3) Start a ticket (default entry point — analyze once, ask once, run to first real stop)
 /dev-workflow TICKET-123 https://tracker/TICKET-123
 
 # ...or with no Ticket ID at all — still works, no ID required up front
-/dev-workflow "sửa text nút xác nhận đơn hàng"
+/dev-workflow "fix the confirm-order button text"
 # → AI derives worklogs/adhoc-confirm-btn-text/ once a decision needs saving;
 #   pure Q&A/read-only work needs no worklog at all
 
 # ...or a genuinely trivial fix (1 file, ≤5 lines, no public identifier change,
 # duplicate-scan clean) — no ask, runs and reports:
-/dev-workflow "sửa lỗi chính tả trong thông báo lỗi"
+/dev-workflow "fix the typo in the error message"
 # → :build runs immediately, one INDEX log line, no full worklog, no wait for reply
 
 # 4) Typical manual path
 /dev-workflow:spec     TICKET-123
-/dev-workflow:clarify TICKET-123
+/dev-workflow:clarify  TICKET-123
 /dev-workflow:confirm  TICKET-123    ← AI hands you a ready CONFIRM G3: line; edit name, send it back
 /dev-workflow:plan     TICKET-123
 /dev-workflow:build    TICKET-123
 /dev-workflow:review   TICKET-123
-/dev-workflow:fix     TICKET-123    ← if P0/P1 findings OPEN
+/dev-workflow:fix      TICKET-123    ← if P0/P1 findings OPEN
 /dev-workflow:test     TICKET-123
 /dev-workflow:check    TICKET-123
 /dev-workflow:ship     TICKET-123
@@ -268,9 +274,10 @@ worklogs, unrelated host configuration, and any modified Codex marketplace file.
 /dev-workflow:status TICKET-123
 ```
 
-Ticket ID is optional for the conversational stages (`:spec`, `:clarify`, `:plan`, `:build`,
-`:start`, `:decompose`) — omit it and the stage still runs; see the `[Ticket]` note under
-[Commands](#commands) below for exactly when a worklog gets created.
+Chat and setup follow your language (see [references/locale.md](./references/locale.md)); the
+examples above are in English for readability. Ticket ID is optional for the conversational stages
+(`:spec`, `:clarify`, `:plan`, `:build`, `:start`, `:decompose`) — omit it and the stage still runs;
+see the `[Ticket]` note under [Commands](#commands) below for exactly when a worklog gets created.
 
 Worklogs live at: `~/.workspaces/<project-slug>/worklogs/<Ticket_ID-or-adhoc-slug>/`.
 

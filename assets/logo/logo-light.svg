@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" width="220" height="180" role="img" aria-label="dev-workflow logo">
+  <title>dev-workflow</title>
+
+  <!-- editor window -->
+  <rect x="10" y="10" width="200" height="160" rx="14" fill="#1e1e2e"/>
+
+  <!-- title bar -->
+  <rect x="10" y="10" width="200" height="30" rx="14" fill="#161622"/>
+  <rect x="10" y="26" width="200" height="14" fill="#161622"/>
+  <circle cx="30" cy="25" r="5" fill="#ff5f56"/>
+  <circle cx="48" cy="25" r="5" fill="#ffbd2e"/>
+  <circle cx="66" cy="25" r="5" fill="#27c93f"/>
+
+  <!-- code lines: what a dev actually writes -->
+  <rect x="30" y="60" width="70" height="8" rx="4" fill="#7aa2f7"/>
+  <rect x="30" y="78" width="110" height="8" rx="4" fill="#e2e8f0" opacity="0.55"/>
+  <rect x="46" y="96" width="90" height="8" rx="4" fill="#e2e8f0" opacity="0.55"/>
+  <rect x="30" y="114" width="50" height="8" rx="4" fill="#7aa2f7"/>
+
+  <!-- terminal prompt with passing check: the test run -->
+  <path d="M30 140 L40 146 L30 152" fill="none" stroke="#27c93f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M172 138 L182 148 L200 128" fill="none" stroke="#27c93f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

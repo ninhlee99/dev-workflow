@@ -1,8 +1,8 @@
 # Structure — dev-workflow v0.4
 
-Annotated layout. Edit the owning source (`skills/`, `references/`, `templates/`, `commands/`, or
-`bin/`) and rerun `bash install.sh` with the original target flag when host-installed copies/links
-must be refreshed.
+Annotated repository layout. Edit the owning source (`skills/`, `references/`, `templates/`,
+`commands/`, or `bin/`), then rerun `bash install.sh` with the original target flag whenever
+host-installed copies or links need refreshing.
 
 ---
 
@@ -70,15 +70,15 @@ dev-workflow/
 └── LICENSE
 ```
 
-**Stages in `install.sh`:**  
-`start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback`
+**Stages in `install.sh`:**
+`decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback`
 
-**Host selection:** default `claude`; shorthand `--claude|--cursor|--codex|--agy|--all` (long-form
-`--host`/`--agent` is also supported). Cursor and
-Codex receive live per-stage links; Antigravity is rebuilt, validated, and installed through `agy`.
-`update.sh` requires a clean worktree, fast-forwards source, then refreshes the selected target.
-`uninstall.sh` mirrors these targets and removes only dev-workflow-owned host entries; it preserves
-the repository clone, worklogs, unrelated files, and modified Codex marketplace configuration.
+**Host selection:** default is `claude`; shorthand flags are `--claude`, `--cursor`, `--codex`,
+`--agy`, `--all` (the long-form `--host`/`--agent` is also supported). Cursor and Codex receive live
+per-stage links; Antigravity is rebuilt, validated, and installed through `agy`. `update.sh` requires
+a clean worktree, fast-forwards the source, then refreshes the selected target. `uninstall.sh`
+mirrors these targets and removes only dev-workflow-owned host entries — it preserves the repository
+clone, worklogs, unrelated files, and any modified Codex marketplace configuration.
 
 ---
 
@@ -103,6 +103,6 @@ the repository clone, worklogs, unrelated files, and modified Codex marketplace 
 ## Design principles
 
 1. **Single source of truth** — `stage-contract.md`, root `references/`, and `templates/`; drift is regression-tested.
-2. **Load on demand** — skills list only needed refs (token discipline).  
-3. **Neutral paths** — no hardcoded customer repos; resolve via env/marker/git.  
-4. **Programmatic truth** — `check-gates.sh` / `pilot-score.sh`, not AI self-claim.
+2. **Load on demand** — each skill lists only the references it needs (token discipline).
+3. **Neutral paths** — no hardcoded customer repos; paths resolve via env var, marker file, or git.
+4. **Programmatic truth** — `check-gates.sh` / `pilot-score.sh` decide PASS/FAIL, not AI self-claim.

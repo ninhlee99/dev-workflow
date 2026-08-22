@@ -1,6 +1,6 @@
 # Marketplace & install — v0.4
 
-For prerequisites, files changed, update steps, and troubleshooting, use
+For prerequisites, files changed, update steps, and troubleshooting, see
 **[docs/INSTALL.md](./docs/INSTALL.md)**. This page is the short host command reference.
 
 ## Hosts

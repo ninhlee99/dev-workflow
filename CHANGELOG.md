@@ -1,7 +1,7 @@
 # Changelog
 
-All notable changes to **dev-workflow** are documented here.  
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).  
+All notable changes to **dev-workflow** are documented here.
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---

@@ -1,6 +1,6 @@
 # Install and update dev-workflow
 
-This guide describes what is installed, how to verify it, and how to update safely. For daily
+This guide describes what gets installed, how to verify it, and how to update safely. For daily
 ticket usage, continue with [USER-GUIDE.md](./USER-GUIDE.md).
 
 ## Requirements

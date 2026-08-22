@@ -1,8 +1,10 @@
 # User guide — dev-workflow v0.4
 
-This guide explains **how to use** the plugin day-to-day.  
-For installation/update → [INSTALL.md](./INSTALL.md). For host command summary →
-[MARKETPLACE.md](../MARKETPLACE.md). For design layout → [STRUCTURE.md](../STRUCTURE.md).
+**[English](USER-GUIDE.md)** · [Tiếng Việt](USER-GUIDE.vi.md) · [日本語](USER-GUIDE.ja.md)
+
+This guide explains **how to use** the plugin day-to-day.
+For installation/update, see [INSTALL.md](./INSTALL.md). For the host command summary, see
+[MARKETPLACE.md](../MARKETPLACE.md). For the design layout, see [STRUCTURE.md](../STRUCTURE.md).
 
 ---
 
@@ -10,19 +12,19 @@ For installation/update → [INSTALL.md](./INSTALL.md). For host command summary
 
 Forces a **requirement-first** path before code:
 
-1. Learn / coach domain knowledge  
-2. Write testable acceptance criteria (and Risk tier)  
-3. Detect conflicts with current code  
-4. **You** confirm decisions (`CONFIRM G3:…`)  
-5. Plan → build (TDD) → **neutral code review** → fix justified findings → run tests with machine proof  
-6. Ship safety checklist (G9) and checker PASS  
+1. Learn / coach domain knowledge
+2. Write testable acceptance criteria (and a Risk tier)
+3. Detect conflicts with current code
+4. **You** confirm decisions (`CONFIRM G3:…`)
+5. Plan → build (TDD) → **neutral code review** → fix justified findings → run tests with machine proof
+6. Ship safety checklist (G9) and checker PASS
 7. **Semantic audit** (`:audit`) — G9 PASS means every field is filled and not a placeholder; it
-   does not mean the content is logically consistent (Rollback actually undoes Migration, Decision
-   actually answers Proposal). `:audit` is the required human-confirmed layer on top before ship
-   is treated as final.
+   does not mean the content is logically consistent (that Rollback actually undoes Migration, or
+   that Decision actually answers Proposal). `:audit` is the required human-confirmed layer on top
+   before ship is treated as final.
 
-AI must not invent PASS. `bin/check-gates.sh` is the judge for structure; `:audit` + your sign-off
-is the judge for meaning — neither substitutes for the other.
+The AI must not invent a PASS. `bin/check-gates.sh` is the judge of structure; `:audit` plus your
+sign-off is the judge of meaning — neither substitutes for the other.
 
 **Language:** chat + setup follow **your language** (see `references/locale.md`). Gate keywords (`CONFIRM G3:`, PASS/FAIL) stay English.
 
