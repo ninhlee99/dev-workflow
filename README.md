@@ -46,14 +46,15 @@ once, ask once, then run to the first real stop. `learning`/`coaching` bootstrap
 knowledge independently, outside this pipeline.
 
 ```mermaid
+%%{init: {"flowchart": {"curve": "basis", "nodeSpacing": 45, "rankSpacing": 65}}}%%
 flowchart LR
-    start(["start"]) --> spec["spec → clarify\n→ confirm → plan"] --> build --> review --> test --> ship --> audit(["audit"])
-    start -.trivial P2.-> build
+    start((" ")):::fast -.-> spec("spec → clarify\n→ confirm → plan"):::default --> build("build"):::fast --> review("review"):::default --> test("test"):::default --> ship("ship"):::gate --> audit((" ")):::gate
+    start -. small fix, skip straight to build .-> build
 
-    classDef fast fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
-    classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
-    class start,build fast
-    class ship,audit gate
+    classDef default fill:#f9fafb,stroke:#d1d5db,stroke-width:1px,color:#1f2937,rx:18,ry:18;
+    classDef fast fill:#5eead4,stroke:#0d9488,stroke-width:2px,color:#134e4a;
+    classDef gate fill:#fcd34d,stroke:#b45309,stroke-width:2px,color:#78350f;
+    linkStyle default stroke:#d1d5db,stroke-width:1.5px
 ```
 
 Between `review` and `ship`, `fix` runs if findings are OPEN, `check` verifies gates, and `clean`
