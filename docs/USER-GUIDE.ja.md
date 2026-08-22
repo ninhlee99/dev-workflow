@@ -104,6 +104,43 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 
 ## 3. 1チケットあたりの日々のフロー
 
+### 3.0 epic的なリクエスト
+
+リクエストがepic的な形をしている場合は `:decompose` が先に走り、その後1チケットフローをchildごとに
+順番に引き渡す — これは単一チケットに使うのと同じフローをループするものだ
+（そのダイアグラムは [README.md](../README.md) にある）:
+
+```mermaid
+flowchart TD
+    req["epic的なリクエスト"]
+    decompose["<b>decompose</b><br/>epic全体を対象に1回だけ分析"]
+    map["<b>epic-map.md</b><br/>childリスト + Type/Riskの見積もり +<br/>依存関係 + duplicate-scan"]
+    confirm["<b>1回のconfirm</b><br/>分割全体をカバー"]
+    pick["epic-map.mdからブロックされていない次のchildを選ぶ<br/><i>`blocked by` がまだ開いていればスキップ</i>"]
+    childflow["そのchildが<b>単一チケットフロー</b>を<br/>最初から最後まで、自分のworklogで実行"]
+    update["そのchildについてepic-map.mdのstatusを更新"]
+    more{"ブロックされていない<br/>childがまだ残っているか?"}
+    done["epic完了"]
+
+    req --> decompose --> map --> confirm --> pick --> childflow --> update --> more
+    more -- はい --> pick
+    more -- いいえ --> done
+
+    classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
+    classDef loop fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
+    class confirm gate
+    class pick,childflow,update loop
+```
+
+`:decompose` はプロジェクトレベルで `epic-map.md` を書き込み（どのチケットのworklog内にも置かない）、
+ブロックされていない**最初の**childだけを引き渡す — 複数childの `:spec`/`:start` を自分でまとめて
+発行することはない。各childは自分自身の完全な単一チケットフロー（独自のRisk tier、独自の
+`CONFIRM G3`、独自のG0–G9 + AUDIT）を持つ — epicの1回のconfirmは分割自体とepicレベルの質問だけを
+承認するものであり、どのchildの独自ゲートも代替しない。decompose中に発見されたP0のchildは、他の方法
+で見つかったP0チケットとまったく同じ厳格さでゲートされる。`epic-map.md` は多階層epic（child自体が
+さらに分岐するケース）に対しては検証されていない — 依存グラフはフラットなchildリストに対してのみ
+信頼できるものとして扱い、childがさらにdecomposeを必要としそうな場合はその旨を明示すること。
+
 ### 3.1 プロジェクトで初めて使うとき
 
 ```

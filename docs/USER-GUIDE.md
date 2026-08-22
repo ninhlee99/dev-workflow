@@ -102,6 +102,44 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 
 ## 3. Daily flow for one ticket
 
+### 3.0 Epic-shaped requests
+
+`:decompose` runs first when a request is epic-shaped, then hands off the single-ticket flow one
+child at a time — it loops the same flow used for any single ticket ([README.md](../README.md) has
+that diagram):
+
+```mermaid
+flowchart TD
+    req["epic-shaped request"]
+    decompose["<b>decompose</b><br/>one analysis pass across the whole epic"]
+    map["<b>epic-map.md</b><br/>child list + Type/Risk estimate +<br/>dependencies + duplicate-scan"]
+    confirm["<b>one confirm</b><br/>covers the whole split"]
+    pick["pick next unblocked child from epic-map.md<br/><i>skip if `blocked by` still open</i>"]
+    childflow["that child runs the <b>single-ticket flow</b>,<br/>start to finish, on its own worklog"]
+    update["update epic-map.md status for that child"]
+    more{"more unblocked<br/>children remain?"}
+    done["epic done"]
+
+    req --> decompose --> map --> confirm --> pick --> childflow --> update --> more
+    more -- yes --> pick
+    more -- no --> done
+
+    classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
+    classDef loop fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
+    class confirm gate
+    class pick,childflow,update loop
+```
+
+`:decompose` writes `epic-map.md` at the project level (not inside any one ticket's worklog) and
+hands off only the **first** unblocked child — it never dispatches multiple children's
+`:spec`/`:start` itself. Each child gets its own full single-ticket flow (own Risk tier, own
+`CONFIRM G3`, own G0–G9 + AUDIT) — the epic's one confirm authorizes the split and the epic-level
+questions; it does not substitute for any child's own gates. A P0 child found during decomposition is
+exactly as hard-gated as a P0 ticket found any other way. `epic-map.md` has not been validated
+against a multi-level epic (children that themselves fan out) — treat the dependency graph as
+reliable for a flat child list only, and say so explicitly if a child looks like it needs
+decomposing again.
+
 ### 3.1 First time on a project
 
 ```
