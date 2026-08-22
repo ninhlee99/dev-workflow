@@ -105,6 +105,44 @@ export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
 
 ## 3. Luồng hằng ngày cho một ticket
 
+### 3.0 Request dạng epic
+
+`:decompose` chạy trước khi request có dạng epic, sau đó chuyển giao luồng một-ticket cho từng child
+một — nó lặp lại chính luồng dùng cho một ticket đơn ([README.md](../README.md) có sơ đồ đó):
+
+```mermaid
+flowchart TD
+    req["request dạng epic"]
+    decompose["<b>decompose</b><br/>một lượt phân tích cho toàn bộ epic"]
+    map["<b>epic-map.md</b><br/>danh sách child + ước tính Type/Risk +<br/>dependency + duplicate-scan"]
+    confirm["<b>một lượt confirm</b><br/>bao trùm toàn bộ việc chia nhỏ"]
+    pick["chọn child chưa bị block tiếp theo từ epic-map.md<br/><i>bỏ qua nếu `blocked by` vẫn còn mở</i>"]
+    childflow["child đó chạy <b>luồng một-ticket</b>,<br/>từ đầu đến cuối, trên worklog riêng"]
+    update["cập nhật trạng thái epic-map.md cho child đó"]
+    more{"tất cả child<br/>đã hoàn tất?"}
+    stuck["không còn child nào chưa bị block,<br/>nhưng vẫn còn child chưa xong<br/><i>→ gỡ block, đừng coi là xong</i>"]
+    done["epic hoàn tất"]
+
+    req --> decompose --> map --> confirm --> pick --> childflow --> update --> more
+    more -- chưa, còn child chưa bị block --> pick
+    more -- chưa, mọi child còn lại đều bị block --> stuck
+    more -- có --> done
+
+    classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
+    classDef loop fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
+    class confirm gate
+    class pick,childflow,update loop
+```
+
+`:decompose` ghi `epic-map.md` ở cấp project (không nằm trong worklog của bất kỳ ticket nào) và chỉ
+chuyển giao child **đầu tiên** chưa bị block — nó không bao giờ tự gọi `:spec`/`:start` cho nhiều
+child cùng lúc. Mỗi child có luồng một-ticket đầy đủ của riêng nó (Risk tier riêng, `CONFIRM G3`
+riêng, G0–G9 + AUDIT riêng) — lượt confirm duy nhất của epic chỉ xác nhận việc chia nhỏ và các câu
+hỏi ở cấp epic, không thay thế gate riêng của bất kỳ child nào. Một child P0 phát hiện trong lúc
+decompose bị gate chặt chẽ y hệt như một ticket P0 phát hiện theo cách khác. `epic-map.md` chưa được
+kiểm chứng với epic nhiều cấp (child tự phân nhánh tiếp) — chỉ coi sơ đồ dependency là đáng tin cho
+danh sách child phẳng; nếu một child trông như cần decompose tiếp, hãy nói rõ điều đó.
+
 ### 3.1 Lần đầu trên một project
 
 ```

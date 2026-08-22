@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose a change to a stage, gate, or the overall workflow.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What friction or gap prompted this?
+      description: A concrete scenario, not just "it would be nice if" — what actually happened when you hit this?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Which stage/skill/gate does this touch? What should the new behavior be?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing workaround, or why the current behavior falls short.
+    validations:
+      required: false

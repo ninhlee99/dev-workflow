@@ -48,7 +48,7 @@ else
   bad "--claude installs Claude only"
 fi
 
-if [[ "$(rg -l '^disable-model-invocation: false$' "$ROOT"/skills/*/SKILL.md | wc -l | tr -d ' ')" -eq 16 ]]; then
+if [[ "$(rg -l '^disable-model-invocation: false$' "$ROOT"/skills/*/SKILL.md | wc -l | tr -d ' ')" -eq 18 ]]; then
   ok "all source skills permit model invocation"
 else
   bad "all source skills permit model invocation"
@@ -57,7 +57,7 @@ fi
 new_home
 if run_install --host cursor &&
    [[ -L "$TEST_HOME/.cursor/skills/dev-workflow-audit" ]] &&
-   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -type l -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 16 ]] &&
+   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -type l -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 18 ]] &&
    [[ -f "$TEST_HOME/.cursor/commands/dev-workflow:audit.md" ]] &&
    [[ ! -e "$TEST_HOME/.claude" ]] &&
    cmp -s "$ROOT/skills/audit/SKILL.md" "$TEST_HOME/.cursor/skills/dev-workflow-audit/SKILL.md"; then
@@ -78,7 +78,7 @@ fi
 new_home
 if run_install --host codex &&
    [[ -L "$TEST_HOME/.codex/skills/dev-workflow-audit" ]] &&
-   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -type l -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 16 ]] &&
+   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -type l -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 18 ]] &&
    [[ -L "$TEST_HOME/.codex/plugins/dev-workflow" ]] &&
    [[ -L "$TEST_HOME/.agents/plugins/plugins/dev-workflow" ]] &&
    grep -q '"path": "./plugins/dev-workflow"' "$TEST_HOME/.agents/plugins/marketplace.json" &&
