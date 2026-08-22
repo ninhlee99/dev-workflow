@@ -46,32 +46,19 @@ lần, hỏi một lần, rồi chạy tới điểm dừng thật đầu tiên.
 knowledge độc lập, nằm ngoài pipeline này.
 
 ```mermaid
-flowchart TD
-    start["<b>:start</b><br/>phân tích một lần · kiểm tra G0 · hỏi một lần<br/><i>hoặc gọi tay /dev-workflow:&lt;stage&gt;</i>"]
-
-    trivial["<b>Trivial</b> hoặc <b>Refactor</b><br/>P2, ≤1 file, ≤5 dòng, dup-scan sạch —<br/>hoặc refactor giữ nguyên hành vi<br/><i>→ bỏ thẳng vào build</i>"]
-    full["<b>spec → clarify → confirm → plan</b><br/>một lượt phân tích, một lượt confirm,<br/>rồi chạy liên tục"]
-
-    build[build]
-    review[review]
-    fix["fix<br/><i>nếu còn P0/P1 OPEN</i>"]
-    test[test]
-    check[check]
-    ship["<b>ship</b><br/>gate G9"]
-    audit["<b>audit</b><br/>C1–C8 + con người ký xác nhận"]
-    clean["clean<br/><i>lưu trữ worklog</i>"]
-
-    start --> trivial
-    start --> full
-    trivial --> build
-    full --> build
-    build --> review --> fix --> test --> check --> ship --> audit --> clean
+flowchart LR
+    start(["start"]) --> spec["spec → clarify\n→ confirm → plan"] --> build --> review --> test --> ship --> audit(["audit"])
+    start -.trivial P2.-> build
 
     classDef fast fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
     classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
-    class trivial fast
+    class start,build fast
     class ship,audit gate
 ```
+
+Giữa `review` và `ship`, `fix` chạy nếu còn phát hiện OPEN, `check` xác minh các gate, và `clean`
+lưu trữ worklog sau đó — toàn bộ chuỗi và vai trò từng stage: [docs/USER-GUIDE.md
+§3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket).
 
 Một request dạng epic sẽ chạy qua `:decompose` trước, chia nó thành các ticket con rồi lặp lại chính
 luồng này cho từng child một — xem [docs/USER-GUIDE.md](./docs/USER-GUIDE.md) để có sơ đồ đó và toàn

@@ -46,32 +46,19 @@ once, ask once, then run to the first real stop. `learning`/`coaching` bootstrap
 knowledge independently, outside this pipeline.
 
 ```mermaid
-flowchart TD
-    start["<b>:start</b><br/>analyze once · G0 check · ask once<br/><i>or a named /dev-workflow:&lt;stage&gt; by hand</i>"]
-
-    trivial["<b>Trivial</b> or <b>Refactor</b><br/>P2, ≤1 file, ≤5 lines, clean dup-scan —<br/>or behavior-preserving refactor<br/><i>→ skip straight to build</i>"]
-    full["<b>spec → clarify → confirm → plan</b><br/>one analysis pass, one confirm,<br/>then continuous"]
-
-    build[build]
-    review[review]
-    fix["fix<br/><i>if P0/P1 OPEN</i>"]
-    test[test]
-    check[check]
-    ship["<b>ship</b><br/>gate G9"]
-    audit["<b>audit</b><br/>C1–C8 + human sign-off"]
-    clean["clean<br/><i>archive worklog</i>"]
-
-    start --> trivial
-    start --> full
-    trivial --> build
-    full --> build
-    build --> review --> fix --> test --> check --> ship --> audit --> clean
+flowchart LR
+    start(["start"]) --> spec["spec → clarify\n→ confirm → plan"] --> build --> review --> test --> ship --> audit(["audit"])
+    start -.trivial P2.-> build
 
     classDef fast fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
     classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
-    class trivial fast
+    class start,build fast
     class ship,audit gate
 ```
+
+Between `review` and `ship`, `fix` runs if findings are OPEN, `check` verifies gates, and `clean`
+archives the worklog after — full sequence and every stage's job: [docs/USER-GUIDE.md
+§3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket).
 
 An epic-shaped request runs through `:decompose` first, which splits it into child tickets and then
 loops this same flow one child at a time — see [docs/USER-GUIDE.md](./docs/USER-GUIDE.md) for that

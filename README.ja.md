@@ -47,32 +47,19 @@ host別のインストール/更新/アンインストールの完全な手順: 
 パイプラインの外で独立してドメイン知識を初期構築・修正する。
 
 ```mermaid
-flowchart TD
-    start["<b>:start</b><br/>一度だけ分析・G0チェック・一度だけ質問<br/><i>または手動で /dev-workflow:&lt;stage&gt;</i>"]
-
-    trivial["<b>Trivial</b> または <b>Refactor</b><br/>P2、≤1ファイル、≤5行、dup-scanクリーン —<br/>または挙動を変えないrefactor<br/><i>→ そのままbuildへ</i>"]
-    full["<b>spec → clarify → confirm → plan</b><br/>1回の分析、1回のconfirm、<br/>その後は連続実行"]
-
-    build[build]
-    review[review]
-    fix["fix<br/><i>P0/P1がOPENの場合</i>"]
-    test[test]
-    check[check]
-    ship["<b>ship</b><br/>ゲートG9"]
-    audit["<b>audit</b><br/>C1–C8 + 人によるサインオフ"]
-    clean["clean<br/><i>worklogをアーカイブ</i>"]
-
-    start --> trivial
-    start --> full
-    trivial --> build
-    full --> build
-    build --> review --> fix --> test --> check --> ship --> audit --> clean
+flowchart LR
+    start(["start"]) --> spec["spec → clarify\n→ confirm → plan"] --> build --> review --> test --> ship --> audit(["audit"])
+    start -.trivial P2.-> build
 
     classDef fast fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
     classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
-    class trivial fast
+    class start,build fast
     class ship,audit gate
 ```
+
+`review` と `ship` の間で、`fix` はOPENな指摘がある場合に実行され、`check` はゲートを検証し、
+`clean` はその後worklogをアーカイブする — 完全なシーケンスと各stageの役割:
+[docs/USER-GUIDE.md §3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket)。
 
 epic的なリクエストはまず `:decompose` を通り、childチケットに分割してから、このフローをchildごとに
 繰り返す — その図と完全なstage別ガイドは [docs/USER-GUIDE.md](./docs/USER-GUIDE.md) を参照。
