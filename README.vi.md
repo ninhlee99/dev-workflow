@@ -99,6 +99,8 @@ có bảng dành cho người đọc.
 | [STRUCTURE.md](./STRUCTURE.md) | Cây thư mục có chú thích |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Cách thay đổi plugin |
 | [CHANGELOG.md](./CHANGELOG.md) | Lịch sử phiên bản |
+| [SECURITY.md](./SECURITY.md) | Báo cáo lỗ hổng bảo mật |
+| [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) | Quy tắc ứng xử cộng đồng |
 | [references/](./references/) | Gate, risk, security, pilot, enforcement — cho AI + người dùng nâng cao |
 
 ## Giấy phép

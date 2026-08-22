@@ -1,0 +1,37 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bin/check-gates.sh + pilot-score.sh regression suite
+        run: bash tests/regression.sh
+
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure ripgrep is present (tests/install.sh depends on rg)
+        run: command -v rg || sudo apt-get update && sudo apt-get install -y ripgrep
+      - name: install.sh acceptance tests (isolated fake HOME per host)
+        run: bash tests/install.sh
+
+  uninstall:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: uninstall.sh acceptance tests
+        run: bash tests/uninstall.sh
+
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: update.sh acceptance tests
+        run: bash tests/update.sh

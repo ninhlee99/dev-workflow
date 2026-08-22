@@ -99,6 +99,8 @@ epic的なリクエストはまず `:decompose` を通り、childチケットに
 | [STRUCTURE.md](./STRUCTURE.md) | 注釈付きリポジトリレイアウト |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | プラグインを変更する方法 |
 | [CHANGELOG.md](./CHANGELOG.md) | バージョン履歴 |
+| [SECURITY.md](./SECURITY.md) | 脆弱性の報告 |
+| [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) | コミュニティ行動規範 |
 | [references/](./references/) | ゲート、risk、security、pilot、enforcement — AI + 上級ユーザー向け |
 
 ## ライセンス

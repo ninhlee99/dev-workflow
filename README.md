@@ -99,6 +99,8 @@ has the reader-facing table.
 | [STRUCTURE.md](./STRUCTURE.md) | Annotated repo layout |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | How to change the plugin |
 | [CHANGELOG.md](./CHANGELOG.md) | Version history |
+| [SECURITY.md](./SECURITY.md) | Report a vulnerability |
+| [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) | Community standards |
 | [references/](./references/) | Gates, risk, security, pilot, enforcement — AI + advanced users |
 
 ## License
