@@ -4,7 +4,7 @@
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#install)
+[![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](./docs/INSTALL.md)
 
 [English](README.md) · **[Tiếng Việt](README.vi.md)** · [日本語](README.ja.md)
 
@@ -49,7 +49,7 @@ knowledge độc lập, nằm ngoài pipeline này.
 %%{init: {"flowchart": {"curve": "basis", "nodeSpacing": 45, "rankSpacing": 65}}}%%
 flowchart LR
     start((" ")):::fast -.-> spec("spec → clarify\n→ confirm → plan"):::default --> build("build"):::fast --> review("review"):::default --> test("test"):::default --> ship("ship"):::gate --> audit((" ")):::gate
-    start -. sửa nhỏ, bỏ thẳng vào build .-> build
+    start -. ticket Trivial, bỏ thẳng vào build .-> build
 
     classDef default fill:#f9fafb,stroke:#d1d5db,stroke-width:1px,color:#1f2937,rx:18,ry:18;
     classDef fast fill:#5eead4,stroke:#0d9488,stroke-width:2px,color:#134e4a;
@@ -59,7 +59,9 @@ flowchart LR
 
 Giữa `review` và `ship`, `fix` chạy nếu còn phát hiện OPEN, `check` xác minh các gate, và `clean`
 lưu trữ worklog sau đó — toàn bộ chuỗi và vai trò từng stage: [docs/USER-GUIDE.md
-§3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket).
+§3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket). "Trivial" có định nghĩa chính xác (Risk=P2,
+≤1 file, ≤5 dòng, không đổi định danh công khai, duplicate-scan sạch) — xem [docs/USER-GUIDE.md
+§3.2](./docs/USER-GUIDE.md#32-start-a-ticket).
 
 Một request dạng epic sẽ chạy qua `:decompose` trước, chia nó thành các ticket con rồi lặp lại chính
 luồng này cho từng child một — xem [docs/USER-GUIDE.md](./docs/USER-GUIDE.md) để có sơ đồ đó và toàn

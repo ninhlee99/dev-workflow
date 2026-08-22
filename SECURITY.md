@@ -11,12 +11,19 @@ Only the latest released version (see [CHANGELOG.md](./CHANGELOG.md)) receives s
 
 ## Reporting a vulnerability
 
-Do not open a public issue for a security problem. Email **levanninh2101@gmail.com** with the
-subject `dev-workflow security: <short summary>`.
+This is a solo-maintained repository, not an organization — there is no dedicated security team or
+org-owned mailbox behind it. Two channels, in order of preference:
 
-(GitHub's private vulnerability reporting will replace this once enabled for the repository —
-check the [Security tab](https://github.com/ninhlee99/dev-workflow/security) for a "Report a
-vulnerability" button; if present, use that instead of email.)
+1. [GitHub private vulnerability reporting](https://github.com/ninhlee99/dev-workflow/security) —
+   use the "Report a vulnerability" button on the Security tab if present. This is the preferred
+   channel once enabled; it keeps the report private to maintainer + GitHub and supports draft
+   advisories.
+2. If that button isn't there yet, email **levanninh2101@gmail.com** with subject
+   `dev-workflow security: <short summary>`. This is a personal address, not a monitored security
+   inbox — expect the same response time as channel 1, not faster, but no stronger delivery
+   guarantee than any other personal email.
+
+Do not open a public issue for a security problem either way.
 
 Include:
 - The affected file(s) or command

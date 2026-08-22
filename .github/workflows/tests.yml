@@ -5,11 +5,16 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   regression:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: bin/check-gates.sh + pilot-score.sh regression suite
         run: bash tests/regression.sh
 
@@ -17,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Ensure ripgrep is present (tests/install.sh depends on rg)
         run: command -v rg || sudo apt-get update && sudo apt-get install -y ripgrep
       - name: install.sh acceptance tests (isolated fake HOME per host)
@@ -26,6 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: uninstall.sh acceptance tests
         run: bash tests/uninstall.sh
 
@@ -33,5 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: update.sh acceptance tests
         run: bash tests/update.sh

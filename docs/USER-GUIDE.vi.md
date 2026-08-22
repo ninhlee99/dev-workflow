@@ -119,12 +119,14 @@ flowchart TD
     pick["chọn child chưa bị block tiếp theo từ epic-map.md<br/><i>bỏ qua nếu `blocked by` vẫn còn mở</i>"]
     childflow["child đó chạy <b>luồng một-ticket</b>,<br/>từ đầu đến cuối, trên worklog riêng"]
     update["cập nhật trạng thái epic-map.md cho child đó"]
-    more{"còn child<br/>chưa bị block?"}
+    more{"tất cả child<br/>đã hoàn tất?"}
+    stuck["không còn child nào chưa bị block,<br/>nhưng vẫn còn child chưa xong<br/><i>→ gỡ block, đừng coi là xong</i>"]
     done["epic hoàn tất"]
 
     req --> decompose --> map --> confirm --> pick --> childflow --> update --> more
-    more -- có --> pick
-    more -- không --> done
+    more -- chưa, còn child chưa bị block --> pick
+    more -- chưa, mọi child còn lại đều bị block --> stuck
+    more -- có --> done
 
     classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
     classDef loop fill:#e6f8f5,stroke:#0d9488,color:#0f172a;

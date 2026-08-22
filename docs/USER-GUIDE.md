@@ -117,12 +117,14 @@ flowchart TD
     pick["pick next unblocked child from epic-map.md<br/><i>skip if `blocked by` still open</i>"]
     childflow["that child runs the <b>single-ticket flow</b>,<br/>start to finish, on its own worklog"]
     update["update epic-map.md status for that child"]
-    more{"more unblocked<br/>children remain?"}
+    more{"all children<br/>complete?"}
+    stuck["no unblocked child left,<br/>but some remain incomplete<br/><i>→ resolve the block, don't call it done</i>"]
     done["epic done"]
 
     req --> decompose --> map --> confirm --> pick --> childflow --> update --> more
-    more -- yes --> pick
-    more -- no --> done
+    more -- no, unblocked child exists --> pick
+    more -- no, all remaining are blocked --> stuck
+    more -- yes --> done
 
     classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
     classDef loop fill:#e6f8f5,stroke:#0d9488,color:#0f172a;

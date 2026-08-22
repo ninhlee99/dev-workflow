@@ -4,7 +4,7 @@
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#install)
+[![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](./docs/INSTALL.md)
 
 [English](README.md) · [Tiếng Việt](README.vi.md) · **[日本語](README.ja.md)**
 
@@ -50,7 +50,7 @@ host別のインストール/更新/アンインストールの完全な手順: 
 %%{init: {"flowchart": {"curve": "basis", "nodeSpacing": 45, "rankSpacing": 65}}}%%
 flowchart LR
     start((" ")):::fast -.-> spec("spec → clarify\n→ confirm → plan"):::default --> build("build"):::fast --> review("review"):::default --> test("test"):::default --> ship("ship"):::gate --> audit((" ")):::gate
-    start -. 小さな修正、直接buildへ .-> build
+    start -. Trivialチケット、直接buildへ .-> build
 
     classDef default fill:#f9fafb,stroke:#d1d5db,stroke-width:1px,color:#1f2937,rx:18,ry:18;
     classDef fast fill:#5eead4,stroke:#0d9488,stroke-width:2px,color:#134e4a;
@@ -60,7 +60,9 @@ flowchart LR
 
 `review` と `ship` の間で、`fix` はOPENな指摘がある場合に実行され、`check` はゲートを検証し、
 `clean` はその後worklogをアーカイブする — 完全なシーケンスと各stageの役割:
-[docs/USER-GUIDE.md §3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket)。
+[docs/USER-GUIDE.md §3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket)。「Trivial」には正確な定義
+がある（Risk=P2、≤1ファイル、≤5行、公開識別子の変更なし、duplicate-scanクリーン）:
+[docs/USER-GUIDE.md §3.2](./docs/USER-GUIDE.md#32-start-a-ticket)。
 
 epic的なリクエストはまず `:decompose` を通り、childチケットに分割してから、このフローをchildごとに
 繰り返す — その図と完全なstage別ガイドは [docs/USER-GUIDE.md](./docs/USER-GUIDE.md) を参照。

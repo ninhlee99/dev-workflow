@@ -49,7 +49,7 @@ knowledge independently, outside this pipeline.
 %%{init: {"flowchart": {"curve": "basis", "nodeSpacing": 45, "rankSpacing": 65}}}%%
 flowchart LR
     start((" ")):::fast -.-> spec("spec → clarify\n→ confirm → plan"):::default --> build("build"):::fast --> review("review"):::default --> test("test"):::default --> ship("ship"):::gate --> audit((" ")):::gate
-    start -. small fix, skip straight to build .-> build
+    start -. Trivial fix, skip straight to build .-> build
 
     classDef default fill:#f9fafb,stroke:#d1d5db,stroke-width:1px,color:#1f2937,rx:18,ry:18;
     classDef fast fill:#5eead4,stroke:#0d9488,stroke-width:2px,color:#134e4a;
@@ -59,7 +59,9 @@ flowchart LR
 
 Between `review` and `ship`, `fix` runs if findings are OPEN, `check` verifies gates, and `clean`
 archives the worklog after — full sequence and every stage's job: [docs/USER-GUIDE.md
-§3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket).
+§3](./docs/USER-GUIDE.md#3-daily-flow-for-one-ticket). "Trivial" has a precise definition (Risk=P2,
+≤1 file, ≤5 lines, no public identifier change, clean duplicate-scan) — see [docs/USER-GUIDE.md
+§3.2](./docs/USER-GUIDE.md#32-start-a-ticket).
 
 An epic-shaped request runs through `:decompose` first, which splits it into child tickets and then
 loops this same flow one child at a time — see [docs/USER-GUIDE.md](./docs/USER-GUIDE.md) for that

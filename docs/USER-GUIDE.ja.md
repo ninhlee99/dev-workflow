@@ -119,12 +119,14 @@ flowchart TD
     pick["epic-map.mdからブロックされていない次のchildを選ぶ<br/><i>`blocked by` がまだ開いていればスキップ</i>"]
     childflow["そのchildが<b>単一チケットフロー</b>を<br/>最初から最後まで、自分のworklogで実行"]
     update["そのchildについてepic-map.mdのstatusを更新"]
-    more{"ブロックされていない<br/>childがまだ残っているか?"}
+    more{"すべてのchildが<br/>完了したか?"}
+    stuck["ブロックされていないchildは<br/>もう残っていないが、<br/>未完了のchildがまだある<br/><i>→ ブロックを解消する。完了扱いにしない</i>"]
     done["epic完了"]
 
     req --> decompose --> map --> confirm --> pick --> childflow --> update --> more
-    more -- はい --> pick
-    more -- いいえ --> done
+    more -- いいえ、ブロックされていないchildが残っている --> pick
+    more -- いいえ、残り全てブロック中 --> stuck
+    more -- はい --> done
 
     classDef gate fill:#fef3e2,stroke:#b45309,color:#0f172a;
     classDef loop fill:#e6f8f5,stroke:#0d9488,color:#0f172a;
