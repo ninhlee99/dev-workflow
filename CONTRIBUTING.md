@@ -1,6 +1,7 @@
 # Contributing to dev-workflow
 
-Thank you for improving this plugin. This document explains how to contribute changes, add stages, or fix bugs.
+Thanks for improving this plugin. This document explains how to contribute changes, add stages, or
+fix bugs.
 
 ---
 
@@ -82,10 +83,10 @@ DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
 
 ## Token discipline
 
-- Keep the smallest sufficient interface; move genuinely shared policy to one reference.
+- Keep the smallest sufficient interface; move genuinely shared policy into one reference file.
 - No filler phrases ("please", "make sure to", "note that").
-- Load references on demand; do not duplicate a contract merely to save one file read.
-- Measure token use before claiming an optimization; shorter text is not automatically more accurate.
+- Load references on demand — don't duplicate a contract just to save one file read.
+- Measure token use before claiming an optimization; shorter text isn't automatically more accurate.
 
 ---
 

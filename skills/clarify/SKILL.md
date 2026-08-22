@@ -34,7 +34,8 @@ and record `Type:` (and a minimal Risk) into INDEX.md before proceeding — do n
 and note `Source: self-analyzed (no upstream :spec)` next to it so later stages know a full `:spec`
 pass never happened.
 
-Read `references/clarify-check.md` (full 5-step MAP→DIFF→CONFIRM→LOG process).
+Read `references/clarify-check.md` (full 5-step process: read spec+risk, classify+investigate by
+Type, write claims, write questions, ask/match/echo/re-ask).
 Write this ticket's own artifacts: `03-clarify-report.md`, `03-qa-log.md`. `03-clarify-README.md`
 is static process documentation (G2 PASS rules, forbidden shortcuts) — read it, do not fill it in
 per ticket.
@@ -89,8 +90,9 @@ Then:
    **remainder**, renumbered, same short format — not the original full list again. Repeat until
    every non-MATCH claim has a decision or an explicit WAIVE.
 
-This reaches the same G2 PASS bar as before (`clarify-check.md` "G2 PASS when") through a
-conversation instead of a form — the required per-claim MATCH/NO/UNCLEAR confirm is unchanged,
+This reaches the same G2 PASS bar as before (`clarify-check.md`'s "any unresolved claim or OPEN
+row means G2/G5 FAIL") through a conversation instead of a form — the required per-claim
+MATCH/NO/UNCLEAR confirm is unchanged,
 only how you solicit and record the answer changes. The echo-back in step 3 is what keeps this
 free-text flow honest: `Source: user-message` on a `Decision` should mean the user's actual
 decision, not the AI's best guess at what they meant. If a claim is genuinely hard to reason about
